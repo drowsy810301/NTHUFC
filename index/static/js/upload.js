@@ -14,6 +14,7 @@ function checkImgNumber(action) {
         }
     }
     else if(action == 'submit'){
+        return checkLoginState();
         if(imgNumber == 0){
             showMsgModal('At least submit one photo!');
             return false;

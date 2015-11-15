@@ -5,6 +5,7 @@ from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
 
+
 # Create your views here.
 def index(request):
     title = 'NTHUFC'
@@ -14,6 +15,7 @@ def index(request):
     all_photos = test_account.photos.all()
     '''
     return render(request, "index/index.html", {"title":title})
+
 
 def participate(request, id_account=None):
     title = 'Participate'
