@@ -19,7 +19,7 @@ class UserProfile(models.Model):
 
 class Account(models.Model):
     username = models.CharField(max_length=20, default='')
-    FB_ID = models.CharField(max_length=40)
+    FB_ID = models.CharField(max_length=40, primary_key=True)
 
     #year_in_school choice
     FRESHMAN = 'FR'

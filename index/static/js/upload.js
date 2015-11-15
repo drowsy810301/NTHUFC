@@ -3,6 +3,12 @@ var currentImgID = 0;
 var nameset = '';
 var fileName = '';
 var firstfile = true;
+
+function setFB_ID(){
+    FB.api('/me', function(response){
+      $('#id_main-FB_ID').val(response.id);
+    });
+}
 //check img number whether exceed 5
 function checkImgNumber(action) {
     if(action == 'upload'){
@@ -14,15 +20,18 @@ function checkImgNumber(action) {
         }
     }
     else if(action == 'submit'){
-        return checkLoginState();
+        if(checkLoginState() == false)
+            return false;
         if(imgNumber == 0){
             showMsgModal('At least submit one photo!');
             return false;
         }
+        return true;
     }
 }
 
 function selectImg(){
+    setFB_ID();
     document.getElementById('id_nested-'+currentImgID+'-image').click();
     $(document).ready(function(){
         $('#id_nested-'+currentImgID+'-image').change(function(e){

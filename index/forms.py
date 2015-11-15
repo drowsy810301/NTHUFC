@@ -10,7 +10,7 @@ class AccountCreationFrom(forms.ModelForm):
 
     class Meta:
         model = Account
-        fields = ('username', 'major', 'year_in_school', 'remarks')
+        fields = ('username', 'FB_ID', 'major', 'year_in_school', 'remarks')
 
     def __init__(self, *args, **kwargs):
         super(AccountCreationFrom, self).__init__(*args, **kwargs)
@@ -29,6 +29,7 @@ class AccountCreationFrom(forms.ModelForm):
             Fieldset(
                 u'報名資料',
                 Field('username'),
+                Field('FB_ID'),
                 Field('major'),
                 InlineRadios('year_in_school'),
                 Field('remarks'),

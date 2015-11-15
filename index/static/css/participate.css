@@ -53,3 +53,7 @@ legend {
   box-sizing: border-box;
   resize: none;
 }
+
+#div_id_main-FB_ID{
+  display: none;
+}
