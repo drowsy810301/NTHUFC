@@ -31,7 +31,7 @@ function checkImgNumber(action) {
 }
 
 function selectImg(){
-    setFB_ID();
+    //setFB_ID();
     document.getElementById('id_nested-'+currentImgID+'-image').click();
     $(document).ready(function(){
         $('#id_nested-'+currentImgID+'-image').change(function(e){
@@ -44,11 +44,11 @@ function selectImg(){
 
 //setImgInfo except img file url
 function setImgInfo() {
+    setFB_ID();
     //check modal form
     var valid = validationError();
     if(valid == false){
         return false;
-    }
     else {
         $('#image-Modal').modal('toggle');
         var title = $('#img-title').val();
