@@ -36,7 +36,7 @@ def show(request):
 		user_access_token = request.POST.get('user_access_token','')
 		return JsonResponse({'photo_list':[getPhotoDetails(x,user_access_token) for x in photo_list]})
 	else:
-		photo_id_list = [ x.id for x in Photo.objects.all() ]
+		photo_id_list = [ int(x.id) for x in Photo.objects.all() ]
 		return render(request,"photos/show.html",{'photo_id_list':photo_id_list})
 
 def ajax_post_comment(request):
