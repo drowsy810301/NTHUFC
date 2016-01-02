@@ -1,11 +1,11 @@
 #-*- encoding=UTF-8 -*-
 from django.shortcuts import render, redirect
-from photos.models import Photo
+from photos.models import Photo,Tag
 from users.models import Account
 from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
-
+from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto
 
 # Create your views here.
@@ -45,5 +45,14 @@ def participate(request, id_account=None):
 
         form = AccountCreationFrom(instance=account, prefix="main")
         formset = PhotoInlineFormSet(instance=account, prefix="nested")
-
-    return render(request, "index/participate.html", {"form":form, "formset": formset})
+        all_tags = Tag.objects.all()
+        hot_tags = Tag.objects.order_by('-tag_count')[:5]
+        recent_tags = Tag.objects.order_by('-update_time')[:5]
+        return render(request, "index/participate.html", {
+            "form":form,
+            "formset": formset,
+            "marker_list": Marker.objects.all(),
+            "all_tags":[ x.tag_name for x in all_tags],
+            "hot_tags":[ x.tag_name for x in hot_tags],
+            "recent_tags":[ x.tag_name for x in recent_tags],
+        })

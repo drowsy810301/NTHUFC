@@ -24,12 +24,6 @@ legend {
   margin-top: 5px;
 }
 
-#select-btn {
-  position: relative;
-  top: -33px;
-  left: -10px;
-}
-
 .modal-body {
   padding-bottom: 0px;
 }
@@ -52,9 +46,4 @@ legend {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   resize: none;
-}
-
-#preview_img{
-  max-width: 100%;
-  display: none;
 }

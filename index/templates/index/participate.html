@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title_name %}
-  <title>報名</title>
+<title>報名</title>
 {% endblock title_name %}
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/sign_up.css" %} media="screen">
@@ -12,14 +12,8 @@
 <script src={% static "js/upload.js" %}></script>
 {% endblock import_source %}
 {% block body_block %}
+
 <script type="text/javascript">
-    {% if user.is_authenticated %}
-    showMsgModal("你已經報名過了!");
-    setInterval(function(){
-        window.location.href  = "http://" + window.location.host +
-        "{% url 'index:index' %}";
-      }, 2000);
-    {% endif %}
     init(0, 'participate');
 </script>
 <div class="well">

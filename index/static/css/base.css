@@ -34,8 +34,61 @@ body > .container {
   padding-left: 15px;
 }
 
-#alert-modal {
+#modal-body {
   color: white;
-  background-color: #f04124;
-  border-bottom: 1px solid #f04124;
 }
+
+/* entypo */
+[class*="entypo-"]:before {
+  font-family: "entypo", sans-serif;
+}
+a {
+  text-decoration: none;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#sticky-social {
+  left: 0;
+  position: fixed;
+  top: 30%;
+}
+#sticky-social a {
+  background: #333;
+  color: #fff;
+  display: block;
+  height: 50px;
+  font: 20px "Open Sans", sans-serif;
+  line-height: 50px;
+  position: relative;
+  text-align: center;
+  width: 50px;
+}
+#sticky-social a span {
+  line-height: 50px;
+  left: -120px;
+  position: absolute;
+  text-align:center;
+  width:120px;
+}
+#sticky-social a:hover span {
+  left: 100%;
+}
+#sticky-social a[class*="facebook"],
+#sticky-social a[class*="facebook"]:hover,
+#sticky-social a[class*="facebook"] span { background: #3b5998; }
+
+#sticky-social a[class*="flickr"],
+#sticky-social a[class*="flickr"]:hover,
+#sticky-social a[class*="flickr"] span { background: #0063dc; }
+
+#sticky-social a[class*="graduation-cap"],
+#sticky-social a[class*="graduation-cap"]:hover,
+#sticky-social a[class*="graduation-cap"] span { background: #333; }
+
+#sticky-social a[class*="info-circled"],
+#sticky-social a[class*="info-circled"]:hover,
+#sticky-social a[class*="info-circled"] span { background: #eb4924; }

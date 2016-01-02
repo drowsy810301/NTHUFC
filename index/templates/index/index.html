@@ -9,16 +9,17 @@
 <link rel="stylesheet" href={% static "css/index.css" %} media="screen">
 {% endblock import_source %}
 {% block body_block %}
+
 <center>
-  <!-- test related_name
-  {% for photo in all_photos %}
-    {{ photo.title }}
-  {% endfor %}
-  -->
   <h1 style="margin-top: 0px;">六十週年校慶攝影比賽</h1>
   <hr>
+  <div class="well" style="padding: 10px; width: 70%">
+    <marquee direction="right" scrollamount="10" id="scrolling-text"></marquee>
+  </div>
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
+
+    <br>
     <ol class="carousel-indicators">
       <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
       <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -74,4 +75,21 @@
   <br><br>
   <a href="{% url 'index:participate' %}" class="btn btn-primary">Participate</a>
 </center>
+
+<script type="text/javascript">
+var Qsheet_Key = '1pf3fxSs73JM9mZq8buFv5oDKeAg1bYHSwAmz8oQL2zU';
+var url = 'https://spreadsheets.google.com/feeds/cells/'+ Qsheet_Key +'/1/public/values?alt=json-in-script&callback=?';
+
+var scrolling_text;
+$.getJSON(url, function(data) {
+    result = data.feed.entry;
+    for (var i = 0; i < result.length; i++){
+        if(parseInt(result[i].gs$cell.col) == 1 && i == result.length - 1){
+            scrolling_text = result[i].gs$cell.$t;
+        }
+    }
+}).then(function(){
+    $("#scrolling-text").text(scrolling_text);
+});
+</script>
 {% endblock body_block %}

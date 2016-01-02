@@ -7,7 +7,6 @@
   <title>Profile</title>
 {% endblock title_name %}
 {% block import_source %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href={% static "css/profile.css" %} media="screen">
 <link rel="stylesheet" href={% static "css/participate.css" %} media="screen">
 <script src={% static "js/profile.js" %}></script>
@@ -33,14 +32,14 @@
       <div class="thumbnail">
         <div class="caption">
           <p>
-            <a target="_blank" href="https://www.flickr.com/photos/138506275@N05/{{ photo.flickr_photo_id }}" rel="tooltip" title="flickr">
-              <i class="fa fa-flickr fa-3x" style="color: #0063dc"></i>
-            </a>
             <a target="_blank" href="#" rel="tooltip" title="facebook" onclick="fb_link('{{ photo.facebook_post_id }}',this)">
-              <i class="fa fa-facebook-square fa-3x" style="color: #3b5998;"></i>
+              <span class="entypo-facebook-squared" style="font-size: 40px;color: #3b5998;"></span>
+            </a>
+            <a target="_blank" href="https://www.flickr.com/photos/138506275@N05/{{ photo.flickr_photo_id }}" rel="tooltip" title="flickr">
+              <span class="entypo-flickr-circled" style="font-size: 40px;color: #0063dc;"></span>
             </a>
             <a href="#" rel="tooltip" title="delete" class="popconfirm test-jquery-click" id="{{ photo.id }}">
-              <i class="fa fa-times fa-3x" style="color: red;"></i>
+              <span class="entypo-trash" style="font-size: 40px;color: red;"></span>
             </a>
           </p>
         </div>

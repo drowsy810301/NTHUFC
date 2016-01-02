@@ -10,25 +10,50 @@
     <link rel="stylesheet" href={% static "css/base.css" %} media="screen">
     <script src={% static "js/jquery-2.1.4.min.js" %}></script>
     <script src={% static "js/bootstrap.min.js" %}></script>
+
     <script type="text/javascript">
         //show msg modal
-        function showMsgModal(msg){
+        function showMsgModal(msg, classType){
             $('#msg-Modal').modal('show');
             $('#msg-txt').text(msg);
+            if(classType == 'primary'){
+                $('#modal-body').css('background-color', '#008cba');
+                $('#modal-body').css('border-bottom', '1px solid #0079a1');
+            }
+            else if(classType == 'success'){
+                $('#modal-body').css('background-color', '#43ac6a');
+                $('#modal-body').css('border-bottom', '1px solid #3c9a5f');
+            }
+            else if(classType == 'info'){
+                $('#modal-body').css('background-color', '#5bc0de');
+                $('#modal-body').css('border-bottom', '1px solid #46b8da');
+            }
+            else if(classType == 'warning'){
+                $('#modal-body').css('background-color', '#e99002');
+                $('#modal-body').css('border-bottom', '1px solid #d08002');
+            }
+            else if(classType == 'danger'){
+                $('#modal-body').css('background-color', '#f04124');
+                $('#modal-body').css('border-bottom', '1px solid #ea2f10');
+            }
         }
     </script>
+    <style type="text/css">
+      @import url(http://weloveiconfonts.com/api/?family=entypo);
+    </style>
     {% block import_source %}
     {% endblock import_source %}
   </head>
   <body>
     {% include "index/navbar.html" %}
+    {% include "index/sidebar.html" %}
     <center>
       <!-- Modal -->
       <div class="modal fade" id="msg-Modal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content-->
           <div class="modal-content">
-            <div class="modal-header" id="alert-modal">
+            <div class="modal-header" id="modal-body">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title"><strong id="msg-txt"></strong></h4>
             </div>

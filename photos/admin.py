@@ -4,7 +4,10 @@ from photos.models import Photo, Tag
 
 class PhotoAdmin(admin.ModelAdmin):
 	list_display = ('id','title');
-	
+
+class TagAdmin(admin.ModelAdmin):
+	list_display = ('tag_name','tag_count');
+
 admin.site.register(Photo,PhotoAdmin)
-admin.site.register(Tag)
+admin.site.register(Tag,TagAdmin)
 

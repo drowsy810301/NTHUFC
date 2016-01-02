@@ -5,15 +5,15 @@ from django.utils import timezone
 from django.conf import settings
 from users.models import Account
 from locationMarker.models import Marker
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import RegexValidator
 import os, re
 
 # Create your models here.
 class Tag(models.Model):
 
-    tag_name = models.CharField(max_length=20, default='')
-    tag_count = models.IntegerField(default=0)
+    tag_name = models.CharField(max_length=20, unique=True)
+    tag_count = models.IntegerField(default=1)
     update_time = models.DateTimeField(default=timezone.now, blank=False)
     def __unicode__(self):
         return self.tag_name
@@ -35,7 +35,7 @@ class Tag(models.Model):
 
 def getDefaultMarker():
 	if len(Marker.objects.all()) == 0 :
-		Marker.objects.create(title='清華大學', latitude=1, longitude=2)
+		Marker.objects.create(title='清華大學', latitude=24.7913341, longitude=120.994148)
 	return Marker.objects.all()[0].id;
 
 def getFilePath(instance, filname):
@@ -54,6 +54,7 @@ class Photo(models.Model):
     facebook_post_id = models.CharField(max_length=50,blank=True)
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
     image = models.ImageField(upload_to=getFilePath)
+    isReady = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title
@@ -63,3 +64,35 @@ class Photo(models.Model):
         for tag in self.tags:
             tagString += tag.tag_name;
         return tagString;
+
+    def delete(self, *args, **kwargs):
+        for tag_text in self.tags.split(' '):
+            if tag_text == '':
+                continue
+            try:
+                tag = Tag.objects.get(tag_name = tag_text)
+                tag.tag_count -= 1
+                tag.save()
+            except ObjectDoesNotExist:
+                pass
+
+        super(Photo,self).delete(*args, **kwargs)
+
+
+
+class WorkerManager(models.Manager):
+    def create(self,*args,**kwargs):
+        book = super(WorkerManager,self).create(*args,**kwargs)
+        print 'creating...'
+        return book
+
+class Worker(models.Model):
+    name = models.CharField(max_length=5)
+    objects = WorkerManager()
+    def save(self,*args,**kwargs):
+        print 'saving...'
+        super(Worker,self).save(*args,**kwargs)
+
+    def delete(self,*args,**kwargs):
+        print 'deleting...'
+        super(Worker,self).delete(*args,**kwargs)

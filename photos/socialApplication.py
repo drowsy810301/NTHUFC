@@ -4,8 +4,11 @@ import facebook
 import json
 import time
 import threading
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+
 from .authorization_token import __facebook_page_token, __flickr_api_key, __flickr_api_secret
-from .models import Photo
+from .models import Photo,Tag
 
 def run_in_thread(func):
 	'''
@@ -38,13 +41,45 @@ class Comment(object):
 			'comment_facebook_id': self.comment_facebook_id,
 		}
 
-@run_in_thread
 def uploadPhoto(photo):
 	'''
 		先將照片上傳到 Flickr，再張貼到 Facebook。
 		Flickr驗證會用到 oauth_verifier.txt ，要放在 NTHUFC 根目錄中
 		authorization_token.py 存放 Facebook 和 Flickr 驗證會用到的資訊，不要放到 github 上
 	'''
+
+	if not photo.isReady:
+		for tag_text in photo.tags.split(' '):
+			if tag_text == '':
+				continue
+			try:
+				tag = Tag.objects.get(tag_name = tag_text)
+				tag.update_time = timezone.now()
+				tag.tag_count += 1
+				tag.save()
+			except ObjectDoesNotExist:
+				Tag.objects.create(tag_name=tag_text)
+
+		uploadUsingThread(photo)
+
+
+
+def getFacebookPostContent(photo, isValid=True):
+	'''
+		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
+	'''
+	label = ' '+photo.tags;
+	label = label.replace(' ',' #');
+
+	if isValid:
+		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
+	else:
+		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+			photo.title, label, photo.location_marker.title, photo.content, photo.flickr_photo_id)
+
+@run_in_thread
+def uploadUsingThread(photo):
 	photo_file_path = photo.image.path
 	result = {}
 
@@ -86,21 +121,10 @@ def uploadPhoto(photo):
 		result['facebook_response'] = updateFlickrPhotoURL(photo)
 
 	print 'uploadPhotoresult' + str(result)
+
+	photo.isReady = True
+	photo.save()
 	return result
-
-def getFacebookPostContent(photo, isValid=True):
-	'''
-		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
-	'''
-	label = ' '+photo.tags;
-	label = label.replace(' ',' #');
-
-	if isValid:
-		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
-			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
-	else:
-		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
-			photo.title, label, photo.location_marker.title, photo.content, photo.flickr_photo_id)
 
 def uploadToFacebook(photo):
 	'''

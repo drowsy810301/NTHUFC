@@ -6,10 +6,11 @@ from random import randrange
 from .forms import LocationForm,PhotoModelForm
 from .models import Marker, DemoPhoto
 from photos.models import Tag
+import json
 
 # Create your views here.
 def editMarker (request):
-	context = { 'markerList':Marker.objects.all()};
+	context = { 'marker_list':Marker.objects.all()};
 	return render(request,'locationMarker/editMarker.html', context);
 
 def post (request):
@@ -17,12 +18,16 @@ def post (request):
 	titleList = request.POST.getlist('title');
 	latList = request.POST.getlist('lat');
 	lngList = request.POST.getlist('lng');
+	allMarker = []
 	if len(titleList) > 0:
 		Marker.objects.all().delete();
 	for i in range(len(titleList)):
 		Marker.objects.create(title=titleList[i], latitude=latList[i], longitude=lngList[i]);
-
+		allMarker.append({'title':titleList[i], 'latitude':latList[i], 'longitude':lngList[i]})
 	context = {'pack':Marker.objects.all()};
+	fp = open('allMarker.json','w')
+	fp.write(json.dumps(allMarker))
+	fp.close()
 	return  HttpResponseRedirect(reverse('locationMarker:editMarker'));
 
 def demo(request):

@@ -45,7 +45,7 @@ class AccountCreationFrom(forms.ModelForm):
 class PhotoCreationForm(forms.ModelForm):
     class Meta:
         model = Photo
-        fields = ('title', 'content', 'image')
+        fields = ('title', 'content','tags','location_marker','image')
 
     def __init__(self, *args, **kwargs):
         super(PhotoCreationForm, self).__init__(*args, **kwargs)
@@ -62,6 +62,8 @@ class PhotoCreationForm(forms.ModelForm):
                     u'上傳相片',
                     Field('title'),
                     Field('content'),
+                    Field('tags'),
+                    Field('location_marker'),
                     Field('image'),
                     HTML('<br>')
                 ),
