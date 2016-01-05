@@ -168,7 +168,7 @@ function validationError(){
         valid = false;
     }
 
-    isLocationValid = false;
+    var isLocationValid = false;
     for (i in markerList){
         if (markerList[i].title == $('#img-location').val() ){
             isLocationValid = true;

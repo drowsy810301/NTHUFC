@@ -56,3 +56,6 @@ def participate(request, id_account=None):
             "hot_tags":[ x.tag_name for x in hot_tags],
             "recent_tags":[ x.tag_name for x in recent_tags],
         })
+
+def q_a(request):
+    return render(request,'index/q_a.html')
