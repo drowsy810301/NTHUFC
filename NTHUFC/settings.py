@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'users',
     'crispy_forms',
     'locationMarker',
+    'axes',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,6 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.FailedLoginMiddleware'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -111,3 +113,11 @@ MEDIA_URL = '/media/'
 
 #django-crispy-forms setting
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#axe-settings
+AXES_USE_USER_AGENT = True
+AXES_LOGIN_FAILURE_LIMIT = 100
+#hours
+AXES_COOLOFF_TIME = (0.1)
+AXES_LOCKOUT_URL = '/users/locked'
+

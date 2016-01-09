@@ -13,7 +13,27 @@ from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto, deletePhoto
+from axes.utils import reset
+from axes.decorators import watch_login, get_ip, FAILURE_LIMIT
+from axes.models import AccessAttempt
 # Create your views here.
+
+
+def get_attemps(request):
+    remain_times = 0
+    try:
+        attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
+        print len(attempts)
+        for attempt in attempts:
+            print attempt.failures_since_start
+            remain_times =  FAILURE_LIMIT - attempt.failures_since_start
+
+
+    except:
+        print 'something goes wrong!'
+
+    print remain_times
+    return remain_times
 
 @login_required
 def users(request):
@@ -50,7 +70,11 @@ def users(request):
             "recent_tags":[ x.tag_name for x in recent_tags],
         })
 
+@watch_login
 def login(request):
+
+    remain_times = 0
+    remain_times = get_attemps(request)
     F = LoginForm
     if request.method == 'GET':
         form = F()
@@ -63,8 +87,12 @@ def login(request):
             if user:
                 auth_login(request,user)
                 return redirect(reverse('users:profile'))
-    ctx = {'form': form}
-    return render(request, 'index/login.html', ctx)
+
+        else:
+            return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
+
+    return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
+
 
 def logout(request):
     auth_logout(request)
@@ -82,3 +110,18 @@ def delete_photo(request, delete_id):
             print('Photo id %ld does not exist!' % long(delete_id))
 
     return redirect(reverse('users:profile'))
+
+
+def locked_out(request):
+    """Block login for over 3 wrong tries."""
+    print 213215132
+    '''
+    attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
+    for attempt in attempts:
+        if attempt.failures_since_start >= FAILURE_LIMIT:
+            unblock_time = attempt.attempt_time + COOLOFF_TIME
+    '''
+    return render(request, 'users/lock_out.html', {})
+    # No block attempt
+    #return redirect(reverse('index:index'))
+
