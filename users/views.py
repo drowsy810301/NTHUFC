@@ -14,25 +14,27 @@ from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto, deletePhoto
 from axes.utils import reset
-from axes.decorators import watch_login, get_ip, FAILURE_LIMIT
+from axes.decorators import watch_login, get_ip, FAILURE_LIMIT, get_user_attempts
 from axes.models import AccessAttempt
 # Create your views here.
 
 
 def get_attemps(request):
     remain_times = 0
+
     try:
         attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
-        print len(attempts)
-        for attempt in attempts:
-            print attempt.failures_since_start
-            remain_times =  FAILURE_LIMIT - attempt.failures_since_start
+        if len(attempts) > 0:
+            for attempt in attempts:
+                print attempt.failures_since_start
+                remain_times =  FAILURE_LIMIT - attempt.failures_since_start
+        else:
+            remain_times = FAILURE_LIMIT
 
 
     except:
         print 'something goes wrong!'
 
-    print remain_times
     return remain_times
 
 @login_required
@@ -89,6 +91,7 @@ def login(request):
                 return redirect(reverse('users:profile'))
 
         else:
+            remain_times = remain_times - 1
             return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
 
     return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
