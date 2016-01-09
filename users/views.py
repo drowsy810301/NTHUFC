@@ -21,20 +21,22 @@ from axes.models import AccessAttempt
 
 def get_attemps(request):
     remain_times = 0
-
+    att = 0
     try:
         attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
         if len(attempts) > 0:
             for attempt in attempts:
                 print attempt.failures_since_start
-                remain_times =  FAILURE_LIMIT - attempt.failures_since_start
+                att =  att + attempt.failures_since_start
         else:
             remain_times = FAILURE_LIMIT
-
 
     except:
         print 'something goes wrong!'
 
+    remain_times = FAILURE_LIMIT - att
+    print '==='
+    print remain_times
     return remain_times
 
 @login_required
@@ -117,7 +119,7 @@ def delete_photo(request, delete_id):
 
 def locked_out(request):
     """Block login for over 3 wrong tries."""
-    print 213215132
+
     '''
     attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
     for attempt in attempts:

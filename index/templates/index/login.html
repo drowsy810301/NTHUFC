@@ -29,6 +29,9 @@ legend {
 <form method="POST">
   {% csrf_token %}
   {% crispy form %}
-  <center><p>{{ remain_times }}</p></center>
+  <br>
+  <div class="login-form" style="text-align: right">
+  剩餘嘗試登入次數: {{ remain_times }}
+  </div>
 </form>
 {% endblock body_block %}
