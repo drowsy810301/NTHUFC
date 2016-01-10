@@ -11,7 +11,7 @@ class AccountCreationFrom(forms.ModelForm):
 
     class Meta:
         model = Account
-        fields = ('username', 'nickname', 'identity', 'major', 'email', 'cellphone')
+        fields = ('username', 'nickname', 'identity', 'major', 'email', 'cellphone', 'ID_card')
 
     def __init__(self, *args, **kwargs):
         super(AccountCreationFrom, self).__init__(*args, **kwargs)
@@ -23,6 +23,7 @@ class AccountCreationFrom(forms.ModelForm):
         self.fields['identity'].label = u'身份'
         self.fields['major'].label = u'系所或單位'
         self.fields['email'].label = u'信箱'
+        self.fields['ID_card'].label = u'身份證'
         self.fields['cellphone'].label = u'手機'
 
         self.helper.layout = Layout(
@@ -31,6 +32,7 @@ class AccountCreationFrom(forms.ModelForm):
                 Field('username'),
                 Field('nickname'),
                 Field('email'),
+                Field('ID_card'),
                 Field('cellphone'),
                 InlineRadios('identity'),
                 Field('major')

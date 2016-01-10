@@ -41,6 +41,8 @@ def participate(request, id_account=None):
                 photo.save()
                 uploadPhoto(photo)
             return redirect(reverse('index:index'))
+        else:
+            return render(request, "index/participate.html", {"form":form, "formset": formset,})
     else:
 
         form = AccountCreationFrom(instance=account, prefix="main")

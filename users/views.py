@@ -26,7 +26,6 @@ def get_attemps(request):
         attempts = AccessAttempt.objects.filter(ip_address=get_ip(request))
         if len(attempts) > 0:
             for attempt in attempts:
-                print attempt.failures_since_start
                 att =  att + attempt.failures_since_start
         else:
             remain_times = FAILURE_LIMIT
@@ -35,8 +34,6 @@ def get_attemps(request):
         print 'something goes wrong!'
 
     remain_times = FAILURE_LIMIT - att
-    print '==='
-    print remain_times
     return remain_times
 
 @login_required
@@ -87,7 +84,8 @@ def login(request):
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'])
+                email=form.cleaned_data['email'],
+                ID_card=form.cleaned_data['ID_card'])
             if user:
                 auth_login(request,user)
                 return redirect(reverse('users:profile'))
