@@ -1,0 +1,160 @@
+{% extends "index/base.html" %}
+{% load static %}
+{% block title_name %}
+  <title>Vote</title>
+{% endblock title_name %}
+
+{% block import_source %}
+<link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
+{% endblock import_source %}
+
+{% block body_block %}
+<script>
+var small_frame_height = 0;
+
+function render_images(){
+	$('.image_frame').each(function(index){
+    	$(this).height($(this).width()*3/4)
+    });
+
+    $('.small_frame').each(function(index){
+    	if (index == 0)
+    		small_frame_height = $(this).width()*3/4
+    	$(this).height(small_frame_height)
+    });
+
+    $('img').each(function(index){
+    	if ( $(this).height() >= $(this).width() ){
+    		$(this).width(Math.floor($(this).parent().width()))
+    		$(this).css('margin-top',-1*($(this).height()-$(this).parent().height())/2)
+    	}
+    	else{
+    		$(this).height(Math.floor($(this).parent().height()))
+    		$(this).css('margin-left',-1*($(this).width()-$(this).parent().width())/2)
+    	}
+    })
+}
+
+window.addEventListener("resize", render_images);
+$(document).ready(function(){
+    render_images();
+});
+
+function postLike_btn(facebook_post_id){
+	FB.login(function(response) {
+		if (response.status === 'connected') {
+			var __facebook_user_id = response.authResponse.userID;
+	      	if (response && !response.error) {
+        		FB.api(
+				    "/"+facebook_post_id+"/likes",
+				    "POST",
+				    function (response) {
+				    	console.log(response)
+				      	if (response && !response.error) {
+				        	getVotes(facebook_post_id);
+				      	}
+				    }
+				);
+	      	}
+	      	else{
+	      		console.log('login failed');
+	      		console.log(response);
+	      	}
+		}
+		else{
+		   	console.log('Please login and grant the permission');
+		   	alert('Please login and grant the permission');
+		}
+	}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
+}
+
+function getVotes(facebook_post_id){
+	$.ajax({
+		url: "{% url 'photos:ajax_get_votes' %}",
+		method: 'POST',
+		data:{
+			'csrfmiddlewaretoken': getCookie('csrftoken'),
+			'facebook_post_id': facebook_post_id,
+		},
+		success: function(response){
+			console.log(response)
+			$('#'+facebook_post_id+' h2').html(response.votes+'票');
+		},
+		error: function(response){
+			console.log(response)
+		},
+	});
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+window.fbAsyncInit = function() {
+	FB.init({
+		appId      : '1645068735761448',
+		cookie     : true,  // enable cookies to allow the server to access
+	                        // the session
+		xfbml      : true,  // parse social plugins on this page
+		version    : 'v2.5' // use version 2.2
+	});
+};
+
+(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "//connect.facebook.net/en_US/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk')
+);
+
+</script>
+
+	<div class='container'>
+		{% for account in data_list %}
+		<h3>{{account.nickname}}</h3>
+		<hr>
+		<div class="row">
+			{% for photo in account.photo_list %}
+				{% if forloop.counter0 == 0 %}
+			  	<div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-6 image_frame">
+			  	{% else %}
+				<div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-3 image_frame small_frame">
+				{% endif %}
+			  	<div class="hovereffect black_border">
+			        <img src="{{photo.img_src}}" alt="">
+			            <div class="overlay">
+			                <h2>{{photo.votes}}票</h2>
+			                <p class="icon-links">
+			                    <a href="#">
+			                        <span class="entypo-info-circled hover-green"></span>
+			                    </a>
+			                    <a href="{{photo.flickr_link}}" target='_flickr'>
+			                       <span class="entypo-flickr-circled hover-pink"></span>
+			                    </a>
+			                    <a onclick="postLike_btn('{{photo.facebook_post_id}}')" >
+                            <span class="entypo-facebook-squared hover-blue"></span>
+			                    </a>
+			                </p>
+			            </div>
+			    </div>
+				</div>
+			{% endfor %}
+		</div>
+		{% endfor %}
+	</div>
+	<br>
+{% endblock body_block %}
