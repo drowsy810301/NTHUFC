@@ -273,3 +273,16 @@ def deletePhoto(photo):
 
 	print 'deletePhoto result:'+str(result)
 	return result
+
+def getVotes(photo):
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	flickr_api.set_auth_handler('oauth_verifier.txt')
+	favorites = flickr_api.Photo(id = photo.flickr_photo_id).getFavorites()
+
+	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
+	response = graph.get_object(id=photo.facebook_post_id, fields='likes.summary(true)')
+	likes =  response['likes']['summary']['total_count']
+	photo.favorites = len(favorites)
+	photo.likes = likes
+	photo.save(update_fields=['favorites','likes'])
+	return photo.favorites+photo.likes
