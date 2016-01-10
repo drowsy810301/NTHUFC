@@ -79,6 +79,8 @@
 	float: right;
 	color: #ffffff;
 	font-size: 1.4em;
+  position: relative;
+  top: -5px;
 }
 
 /*.hovereffect:hover p.icon-links a:hover,
@@ -148,3 +150,4 @@
 	-webkit-transition-delay: 0.2s;
 	transition-delay: 0.2s;
 }
+.icon-link
