@@ -49,9 +49,11 @@ class Photo(models.Model):
     owner = models.ForeignKey(Account, related_name='photos')
     tags = models.CharField(max_length=32, default='tag1',validators=[RegexValidator(regex='^[^ ]{1,10}( [^ ]{1,10}){0,2}$',message='You can only enter at most 3 tags and seperate any 2 tags with a space.')])
     location_marker = models.ForeignKey(Marker, default=getDefaultMarker)
-    flickr_photo_id = models.CharField(max_length=50,blank=True)
+    flickr_photo_id = models.CharField(max_length=50,blank=True,unique=True)
     flickr_photo_url = models.URLField(max_length=100,blank=True)
-    facebook_post_id = models.CharField(max_length=50,blank=True)
+    facebook_post_id = models.CharField(max_length=50,blank=True,unique=True)
+    favorites = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
     image = models.ImageField(upload_to=getFilePath)
     isReady = models.BooleanField(default=False)
@@ -77,22 +79,3 @@ class Photo(models.Model):
                 pass
 
         super(Photo,self).delete(*args, **kwargs)
-
-
-
-class WorkerManager(models.Manager):
-    def create(self,*args,**kwargs):
-        book = super(WorkerManager,self).create(*args,**kwargs)
-        print 'creating...'
-        return book
-
-class Worker(models.Model):
-    name = models.CharField(max_length=5)
-    objects = WorkerManager()
-    def save(self,*args,**kwargs):
-        print 'saving...'
-        super(Worker,self).save(*args,**kwargs)
-
-    def delete(self,*args,**kwargs):
-        print 'deleting...'
-        super(Worker,self).delete(*args,**kwargs)
