@@ -45,21 +45,26 @@
   </head>
   <body>
     {% include "index/navbar.html" %}
-    {% include "index/sidebar.html" %}
+    {% if messages %}
     <center>
-      <!-- Modal -->
-      <div class="modal fade" id="msg-Modal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header" id="modal-body">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title"><strong id="msg-txt"></strong></h4>
-            </div>
-          </div>
+      <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{message.tags}}{% endif %} fade in">
+          {{message}}
         </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                setInterval(function(){
+                    $(".alert").alert('close')
+                }, 2000);
+            });
+        </script>
+      {% endfor %}
       </div>
     </center>
+    {% endif %}
+
+    {% include "index/sidebar.html" %}
 
     <!-- wrap all page elements to div -->
     <div class="wrap-body container-fluid">

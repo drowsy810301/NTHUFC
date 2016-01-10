@@ -53,7 +53,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'axes.middleware.FailedLoginMiddleware'
+    'axes.middleware.FailedLoginMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (

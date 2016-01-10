@@ -17,15 +17,8 @@ function checkImgNumber(action) {
             $('#image-Modal').modal('toggle');
         }
         else{
-            showMsgModal('Max photo number is five!', 'danger');
+            return false
         }
-    }
-    else if(action == 'submit'){
-        if(imgNumber == 0){
-            showMsgModal('At least submit one photo!', 'danger');
-            return false;
-        }
-        showMsgModal('Photos are uploading...', 'success');
     }
 }
 
@@ -114,6 +107,9 @@ function setImgInfo() {
             document.getElementById('profile_update').click();
         }
 
+        if(imgNumber == 5){
+            document.getElementById('upload-btn').style.display = "none";
+        }
     }
 }
 
@@ -138,7 +134,7 @@ function resetParticipateForm(){
 
     //reset upload-img-btn name
     $('#upload-btn').val('上傳');
-
+    document.getElementById('upload-btn').style.display = "";
     firstfile = true;
 }
 

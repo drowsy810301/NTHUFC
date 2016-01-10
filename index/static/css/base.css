@@ -93,3 +93,15 @@ ul {
 #sticky-social a[class*="info-circled"],
 #sticky-social a[class*="info-circled"]:hover,
 #sticky-social a[class*="info-circled"] span { background: #eb4924; }
+
+.messages .alert {
+  text-align: center;
+  font-size: 24px;
+  padding: 5px;
+  margin-top: -21px;
+  width: 70%;
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 9999;
+}
