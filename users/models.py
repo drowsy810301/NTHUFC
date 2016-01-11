@@ -32,11 +32,22 @@ class Account(models.Model):
         (TEACHER, '教師')
     )
 
+    ADMIN = 'ADMIN'
+    JUDGE = 'JUDGE'
+    USER = 'USER'
+    USER_LEVEL_CHOICE = (
+        (ADMIN, 'Admin'),
+        (JUDGE, 'Judge'),
+        (USER, 'User'),
+    )
+
     identity = models.CharField(max_length=2, choices=IDENTITY_CHOICES, default=None)
     major = models.CharField(max_length=20, default='', blank=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
     cellphone = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^\d{10}$', message='Invalid number', code='Invalid number')])
     ID_card = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^([A-Z][12]\d{8})$', message='Invalid id number', code='Invalid id number')])
+    user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
+    is_agree = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.username
@@ -64,3 +75,7 @@ class Account(models.Model):
 
     def has_module_perms(self, app_label):
         return self.is_admin
+
+    def has_judge_auth(self):
+        has_auth = ((self.user_level == self.ADMIN) or (self.user_level == self.JUDGE))
+        return has_auth

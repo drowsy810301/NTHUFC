@@ -4,20 +4,27 @@ from users.models import Account
 from photos.models import Photo
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML, Field, Div
-from crispy_forms.bootstrap import  FormActions, InlineRadios
+from crispy_forms.bootstrap import  FormActions, InlineRadios, PrependedText
 from django.contrib.auth.models import User
 
 class AccountCreationFrom(forms.ModelForm):
 
     class Meta:
         model = Account
-        fields = ('username', 'nickname', 'identity', 'major', 'email', 'cellphone', 'ID_card')
+        fields = ('username', 'nickname', 'identity', 'major', 'email', 'cellphone', 'ID_card', 'is_agree')
 
     def __init__(self, *args, **kwargs):
         super(AccountCreationFrom, self).__init__(*args, **kwargs)
         # Set layout for fields.
         self.helper = FormHelper()
         self.helper.form_tag = False
+
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-10'
+
+        link = '<a data-toggle="modal" data-target="#rule" style="cursor:pointer">' + \
+                 u'同意參賽規則' + '</a>'
         self.fields['username'].label = u'姓名'
         self.fields['nickname'].label = u'暱稱'
         self.fields['identity'].label = u'身份'
@@ -25,6 +32,7 @@ class AccountCreationFrom(forms.ModelForm):
         self.fields['email'].label = u'信箱'
         self.fields['ID_card'].label = u'身份證'
         self.fields['cellphone'].label = u'手機'
+        self.fields['is_agree'].label = link
 
         self.helper.layout = Layout(
             Fieldset(
@@ -35,7 +43,15 @@ class AccountCreationFrom(forms.ModelForm):
                 Field('ID_card'),
                 Field('cellphone'),
                 InlineRadios('identity'),
-                Field('major')
+                Field('major'),
+                Div(
+                    Field('is_agree'),
+                    css_class='col-lg-offset-9 col-lg-4',
+                ),
+            ),
+            Div(
+                HTML('<hr>'),
+                css_class='account-hr'
             ),
             #type="Submit" name="submit" value="確定送出" class="btn btn-primary"
             #FormActions(
@@ -43,6 +59,15 @@ class AccountCreationFrom(forms.ModelForm):
                 #css_class="submit-btn"
             #)
         )
+
+    def clean_is_agree(self):
+        cleaned_data = self.cleaned_data
+        is_agree = self.cleaned_data.get("is_agree")
+
+        if not is_agree:
+            raise forms.ValidationError(u'尚未同意參賽規則')
+
+        return is_agree
 
 class PhotoCreationForm(forms.ModelForm):
     class Meta:
