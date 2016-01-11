@@ -3,141 +3,92 @@
 {% load static %}
 
 {% block title_name %}
-<title>報名</title>
+<title>Q&A</title>
 {% endblock title_name %}
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/q_a.css" %} media="screen">
 {% endblock import_source %}
 {% block body_block %}
 <div class = "container">
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingOne">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class = "panelT">
-          Q: 攝影器材有無限制? 照片有沒有大小限制?
-        </a>
-        </stong>
+        Q: 攝影器材有無限制? 照片有沒有大小限制?
       </h4>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-        A: 攝影器材沒有限制，所以不論是手機、相機都可以喔。照片大小也沒有限制。
-      </div>
+    <div class="panel-body">
+      A: 攝影器材沒有限制，所以不論是手機、相機都可以喔。照片大小也沒有限制。
     </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingTwo">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class = "panelT">
-          Q: 如果不是校友或教職員生可以參賽嗎?
-        </a>
-        </stong>
+        Q: 如果不是校友或教職員生可以參賽嗎?
       </h4>
     </div>
-    <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-        A: 很抱歉不行喔，本活動僅限本校校友、教師、職員及學生參加，並無對外開放喔。
-      </div>
+    <div class="panel-body">
+      A: 很抱歉不行喔，本活動僅限本校校友、教師、職員及學生參加，並無對外開放喔。
     </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingThree">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree" class = "panelT">
-          Q: 參賽的照片能不能更換?
-        </a>
-        </stong>
+        Q: 參賽的照片能不能更換?
       </h4>
     </div>
-    <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-      <div class="panel-body">
-        A: 一旦參賽了就不能更換照片喔，所以請謹慎選擇您要參賽的照片，而且一位參賽者最多只能上傳5張照片喔。
-      </div>
-    </div>
-    </div>
-    <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingFour">
-      <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour" class = "panelT">
-          Q: 上傳照片的時候找不到拍攝地點的選項怎麼辦?        </a>
-        </stong>
-      </h4>
-    </div>
-    <div id="collapseFour" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingFour">
-      <div class="panel-body">
-        A:  WOW~~我想你一定是找到了傳說中的清華秘境，趕快寄信跟我們說吧，我們會幫您建立。信箱:<u>marker.report@gmail.com</u>
-      </div>
+    <div class="panel-body">
+      A: 一旦參賽了就不能更換照片喔，所以請謹慎選擇您要參賽的照片，而且一位參賽者最多只能上傳5張照片喔。
     </div>
   </div>
-   <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingFive">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFour">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive" class = "panelT">
-          Q: 想上傳照片但是不知道作品說明要寫什麼怎麼辦?       </a>
-        </stong>
+          Q: 上傳照片的時候找不到拍攝地點的選項怎麼辦?
       </h4>
     </div>
-    <div id="collapseFive" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingFive">
+    <div class="panel-body">
+      A:  WOW~~我想你一定是找到了傳說中的清華秘境，趕快寄信跟我們說吧，我們會幫您建立。信箱:<u>marker.report@gmail.com</u>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFive">
+      <h4 class="panel-title">
+          Q: 想上傳照片但是不知道作品說明要寫什麼怎麼辦?
+      </h4>
+    </div>
       <div class="panel-body">
         A: 施主，這個問題要問你自己！我們也不知道您的創作概念是什麼阿，但是可以確定的是作品說明不是必填欄位。
       </div>
-    </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingSix">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix" class = "panelT">
           Q: 照片有沒有時間限制呢?
-       </a>
-        </stong>
       </h4>
     </div>
-    <div id="collapseSix" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSix">
-      <div class="panel-body">
-        A: 我們鼓勵以近期的照片為主，不但符合學校的現況，也可以引起較多的共鳴。
-      </div>
+    <div class="panel-body">
+      A: 我們鼓勵以近期的照片為主，不但符合學校的現況，也可以引起較多的共鳴。
     </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingSeven">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven" class = "panelT">
           Q: 照片後來會拿去做什麼用途嗎?
-       </a>
-        </stong>
       </h4>
     </div>
-    <div id="collapseSeven" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSeven">
       <div class="panel-body">
         A: 我們會把適合的照片用在3D校園地圖導覽系統，並且在校慶的時候展示我們的成果。
       </div>
-    </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingEight">
       <h4 class="panel-title">
-      	<stong>
-        <a role = "button" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight" class = "panelT">
           Q: 如果同時具有多重身分的話，要以哪個身分參賽呢?
-       </a>
-        </stong>
       </h4>
     </div>
-    <div id="collapseEight" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingEight">
-      <div class="panel-body">
-        A: 請以最新的身分參賽，例如您原本是本校的學生，畢業後請以校友身分參賽，如果後來又回到學校就業或唸書，那就依您的最新身分來選擇是教師、職員還是學生囉~
-      </div>
+    <div class="panel-body">
+      A: 請以最新的身分參賽，例如您原本是本校的學生，畢業後請以校友身分參賽，如果後來又回到學校就業或唸書，那就依您的最新身分來選擇是教師、職員還是學生囉~
     </div>
   </div>
 </div>
-</div>
-
 {% endblock body_block %}

@@ -7,17 +7,14 @@ from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto
+from django.contrib import messages
 
 # Create your views here.
 def index(request):
-    #test related_name
-    '''
-    test_account = Account.objects.all()[:1].get()
-    all_photos = test_account.photos.all()
-    '''
     return render(request, "index/index.html", {})
 
 def participate(request, id_account=None):
+
     if id_account is None:
         account = Account()
         PhotoInlineFormSet = inlineformset_factory(Account, Photo,
@@ -34,13 +31,21 @@ def participate(request, id_account=None):
         form = AccountCreationFrom(request.POST, request.FILES, instance=account, prefix="main")
         formset = PhotoInlineFormSet(request.POST, request.FILES, instance=account, prefix="nested")
 
-        if form.is_valid() and formset.is_valid():
-            form.save()
-            photoList = formset.save(commit=False)
-            for photo in photoList:
-                photo.save()
-                uploadPhoto(photo)
-            return redirect(reverse('index:index'))
+
+        if form.is_valid():
+            if formset.is_valid():
+                messages.add_message(request, messages.SUCCESS, 'Photos are uploading...')
+                form.save()
+                photoList = formset.save(commit=False)
+                for photo in photoList:
+
+                    photo.save()
+                    uploadPhoto(photo)
+                return redirect(reverse('index:index'))
+            else:
+                messages.add_message(request, messages.ERROR, 'At least upload one photo!')
+
+        return render(request, "index/participate.html", {"form":form, "formset": formset,})
     else:
 
         form = AccountCreationFrom(instance=account, prefix="main")
@@ -58,4 +63,4 @@ def participate(request, id_account=None):
         })
 
 def q_a(request):
-    return render(request,'index/q_a.html')
+    return render(request, 'index/q_a.html')

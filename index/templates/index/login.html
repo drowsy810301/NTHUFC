@@ -7,14 +7,14 @@
 {% endblock title_name %}
 {% block import_source %}
 <style type="text/css">
-.login-form{
+.login-form, .alert-block{
   width: 40%;
   margin-left: 25%;
 }
 .submit-btn {
   text-align: right;
 }
-.control-label {
+.control-label, .alert-block {
   font-size: 20px;
 }
 legend {
@@ -29,5 +29,9 @@ legend {
 <form method="POST">
   {% csrf_token %}
   {% crispy form %}
+  <br>
+  <div class="login-form" style="text-align: right">
+  剩餘嘗試登入次數: {{ remain_times }}
+  </div>
 </form>
 {% endblock body_block %}

@@ -14,7 +14,7 @@
   <h1 style="margin-top: 0px;">六十週年校慶攝影比賽</h1>
   <hr>
   <div class="well" style="padding: 10px; width: 70%">
-    <marquee direction="right" scrollamount="10" id="scrolling-text"></marquee>
+    <marquee direction="right" scrollamount="5" id="scrolling-text"></marquee>
   </div>
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
@@ -77,19 +77,23 @@
 </center>
 
 <script type="text/javascript">
-var Qsheet_Key = '1pf3fxSs73JM9mZq8buFv5oDKeAg1bYHSwAmz8oQL2zU';
+var Qsheet_Key = '1iy2_G0DR_RNaTbFNBm8-VDMf-rMkbQhTZDMP1pBYEZU';
 var url = 'https://spreadsheets.google.com/feeds/cells/'+ Qsheet_Key +'/1/public/values?alt=json-in-script&callback=?';
-
-var scrolling_text;
+var count = 0;
+var result;
+var scrolling_text = "";
 $.getJSON(url, function(data) {
     result = data.feed.entry;
-    for (var i = 0; i < result.length; i++){
-        if(parseInt(result[i].gs$cell.col) == 1 && i == result.length - 1){
-            scrolling_text = result[i].gs$cell.$t;
-        }
-    }
 }).then(function(){
-    $("#scrolling-text").text(scrolling_text);
+    changeText();
+    setInterval(changeText,30000);
 });
+
+function changeText(){
+  document.getElementById("scrolling-text").innerHTML = result[count].gs$cell.$t;
+  count ++;
+  if(count >= result.length)
+    count = 0;
+}
 </script>
 {% endblock body_block %}

@@ -79,6 +79,8 @@
 	float: right;
 	color: #ffffff;
 	font-size: 1.4em;
+  position: relative;
+  top: -5px;
 }
 
 /*.hovereffect:hover p.icon-links a:hover,

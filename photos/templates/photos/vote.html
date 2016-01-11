@@ -6,7 +6,6 @@
 
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
-<link rel="stylesheet" href={% static "css/font-awesome/css/font-awesome.min.css" %} media="screen">
 {% endblock import_source %}
 
 {% block body_block %}
@@ -141,13 +140,13 @@ window.fbAsyncInit = function() {
 			                <h2>{{photo.votes}}票</h2>
 			                <p class="icon-links">
 			                    <a href="#">
-			                        <span class="fa fa-info-circle hover-green"></span>
+			                        <span class="entypo-info-circled hover-green"></span>
 			                    </a>
 			                    <a href="{{photo.flickr_link}}" target='_flickr'>
-			                        <span class="fa fa-flickr hover-pink"></span>
+			                       <span class="entypo-flickr-circled hover-pink"></span>
 			                    </a>
 			                    <a onclick="postLike_btn('{{photo.facebook_post_id}}')" >
-			                        <span class="fa fa-facebook-square hover-blue"></span>
+                            <span class="entypo-facebook-squared hover-blue"></span>
 			                    </a>
 			                </p>
 			            </div>
