@@ -102,5 +102,3 @@ def ajax_get_votes(request):
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 		return JsonResponse({'votes': getVotes(photo)})
-
-
