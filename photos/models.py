@@ -44,14 +44,14 @@ def getFilePath(instance, filname):
 
 class Photo(models.Model):
     title = models.CharField(max_length=30)
-    content = models.TextField(default=None)
+    content = models.TextField(default=None, blank=True, null=True)
     #related_name can reverse foreign krey to one-to-many
     owner = models.ForeignKey(Account, related_name='photos')
-    tags = models.CharField(max_length=32, default='tag1',validators=[RegexValidator(regex='^[^ ]{1,10}( [^ ]{1,10}){0,2}$',message='You can only enter at most 3 tags and seperate any 2 tags with a space.')])
+    tags = models.CharField(max_length=32, default='tag1', validators=[RegexValidator(regex='^[^ ]{1,10}( [^ ]{1,10}){0,2}$',message='You can only enter at most 3 tags and seperate any 2 tags with a space.')])
     location_marker = models.ForeignKey(Marker, default=getDefaultMarker)
-    flickr_photo_id = models.CharField(max_length=50,blank=True,unique=True)
-    flickr_photo_url = models.URLField(max_length=100,blank=True)
-    facebook_post_id = models.CharField(max_length=50,blank=True,unique=True)
+    flickr_photo_id = models.CharField(max_length=50, blank=True, unique=True)
+    flickr_photo_url = models.URLField(max_length=100, blank=True)
+    facebook_post_id = models.CharField(max_length=50, blank=True, unique=True)
     favorites = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
