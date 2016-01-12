@@ -31,25 +31,31 @@
   <div class="row thumbnails" id="hover-cap-4col">
     {% comment %}
     {% for photo in photos %}
-    <div class="col-sm-3">
-      <center><h3>{{ photo.title }}</h3></center>
-      <div class="thumbnail">
-        <div class="caption">
-          <p>
-            <a target="_blank" href="#" rel="tooltip" title="facebook" onclick="fb_link('{{ photo.facebook_post_id }}',this)">
-              <span class="entypo-facebook-squared" style="font-size: 40px;color: #3b5998;"></span>
-            </a>
-            <a target="_blank" href="https://www.flickr.com/photos/138506275@N05/{{ photo.flickr_photo_id }}" rel="tooltip" title="flickr">
-              <span class="entypo-flickr-circled" style="font-size: 40px;color: #0063dc;"></span>
-            </a>
-            <a href="#" rel="tooltip" title="delete" class="popconfirm test-jquery-click" id="{{ photo.id }}">
-              <span class="entypo-trash" style="font-size: 40px;color: red;"></span>
-            </a>
-          </p>
+      <div class="col-sm-3">
+        {% if photo.isReady %}
+        <center><h3>{{ photo.title }}</h3></center>
+        <div class="thumbnail">
+          <div class="caption">
+            <p>
+              <a target="_blank" href="#" rel="tooltip" title="facebook" onclick="fb_link('{{ photo.facebook_post_id }}',this)">
+                <span class="entypo-facebook-squared" style="font-size: 40px;color: #3b5998;"></span>
+              </a>
+              <a target="_blank" href="https://www.flickr.com/photos/138506275@N05/{{ photo.flickr_photo_id }}" rel="tooltip" title="flickr">
+                <span class="entypo-flickr-circled" style="font-size: 40px;color: #0063dc;"></span>
+              </a>
+              <a href="#" rel="tooltip" title="delete" class="popconfirm test-jquery-click" id="{{ photo.id }}">
+                <span class="entypo-trash" style="font-size: 40px;color: red;"></span>
+              </a>
+            </p>
+          </div>
+          <img src="{{ photo.flickr_photo_url }}" alt="ALT NAME">
         </div>
-        <img src="{{ photo.flickr_photo_url }}" alt="ALT NAME">
+        {% else %}
+        <div class="thumbnail" style="width:300px; height:300px;">
+          <h2>上傳中......</h2>
+        </div>
+        {% endif %}
       </div>
-    </div>
     {% endfor %}
     {% endcomment %}
     {% for photo in photos %}

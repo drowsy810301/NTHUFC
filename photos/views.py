@@ -106,3 +106,4 @@ def ajax_get_votes(request):
 def test(request):
 	return render(request,'photos/photoDetailModal.html')
 
+
