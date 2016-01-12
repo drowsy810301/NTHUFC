@@ -81,7 +81,7 @@ function setImgInfo() {
         document.getElementById("preview_img").style.display = "none";
 
         changeValidationError('title', 'correct');
-        changeValidationError('content', 'correct');
+        //changeValidationError('content', 'correct');
         changeValidationError('tags', 'correct');
         changeValidationError('location', 'correct');
         changeValidationError('txt', 'correct');
@@ -148,14 +148,14 @@ function validationError(){
     else
         changeValidationError('title', 'correct');
 
-
+    /*
     if($('#img-content').val() == ''){
         changeValidationError('content', 'wrong');
         valid = false;
     }
     else
         changeValidationError('content', 'correct');
-
+    */
     if(/^[^,]{1,6}(,[^,]{1,6}){0,2}$/.test($('#img-tags').val())){
         changeValidationError('tags', 'correct');
     }
@@ -200,6 +200,7 @@ function changeValidationError(field, status){
             $('#popup-img-form .asteriskField:eq(0)').css("color","#222222");
         }
     }
+    /*
     else if(field == 'content'){
         if(status == 'wrong'){
             $('#popup-img-form .form-group:eq(1)').addClass('has-error');
@@ -210,6 +211,7 @@ function changeValidationError(field, status){
             $('#popup-img-form .asteriskField:eq(1)').css("color","#222222");
         }
     }
+    */
     else if(field == 'tags'){
         if(status == 'wrong'){
             $('#img-tags').parent().children(':eq(0)').addClass('red_border');

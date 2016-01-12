@@ -1,0 +1,37 @@
+<!-- rule Modal -->
+<div class="modal modal-wide fade" id="rule" tabindex="-1" role="dialog" aria-labelledby="ruleModalLabel">
+  <div class="modal-dialog" role="document">
+
+    <div class="modal-content" >
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="ruleModalLabel">參賽規則</h2>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+
+<pre class="form-control" id="textArea" style="font-size:18px;height: 300px;" disabled>You can type more than two lines worth of text into the text box above, but it will only show two lines of text. Note: some modern browsers will allow you to resize a text-box. Whilst this is a helpful convenience to a visitor, it is not the same as auto resizing the text box as you type.
+Fortunately it is quite a simple matter to add some JavaScript to auto-grow the text box as someone types. You simply need to:
+1. Add some JavaScript (given below)
+2. Make a slight change to the textarea definition in your html.
+</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="agree();">我同意</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#id_main-is_agree').attr('disabled', '');
+});
+function agree(){
+    $('#rule').modal('hide');
+    $('#id_main-is_agree').removeAttr('disabled');
+    $('#id_main-is_agree').prop('checked', true);
+}
+
+</script>

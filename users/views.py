@@ -88,7 +88,7 @@ def login(request):
                 email=form.cleaned_data['email'],
                 ID_card=form.cleaned_data['ID_card'])
             if user:
-                auth_login(request,user)
+                auth_login(request, user)
                 return redirect(reverse('users:profile'))
 
         else:

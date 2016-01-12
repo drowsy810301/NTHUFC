@@ -9,6 +9,9 @@ from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto
 from django.contrib import messages
 
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
+
 # Create your views here.
 def index(request):
     return render(request, "index/index.html", {})
@@ -33,14 +36,25 @@ def participate(request, id_account=None):
 
 
         if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            ID_card = form.cleaned_data['ID_card']
+
             if formset.is_valid():
                 messages.add_message(request, messages.SUCCESS, 'Photos are uploading...')
                 form.save()
                 photoList = formset.save(commit=False)
                 for photo in photoList:
-
                     photo.save()
                     uploadPhoto(photo)
+
+                user = authenticate(username=username, email=email, ID_card=ID_card)
+
+                if user:
+                    auth_login(request, user)
+                else:
+                    print 'login failed'
+
                 return redirect(reverse('index:index'))
             else:
                 messages.add_message(request, messages.ERROR, 'At least upload one photo!')
