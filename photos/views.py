@@ -37,7 +37,7 @@ def show(request):
 		user_access_token = request.POST.get('user_access_token','')
 		return JsonResponse({'photo_list':[getPhotoDetails(x,user_access_token) for x in photo_list]})
 	else:
-		photo_id_list = [ x.id for x in Photo.objects.all() ]
+		photo_id_list = [ x.id for x in Photo.all() ]
 		return render(request,"photos/show.html",{'photo_id_list':photo_id_list})
 
 def ajax_post_comment(request):
@@ -81,7 +81,7 @@ def vote(request):
 	data_list = []
 	for account in all_account:
 		account_data = {}
-		all_photos = account.photos.all()
+		all_photos = account.photos.order_by('-votes')
 		if not all_photos:
 			continue
 		account_data['nickname'] = account.nickname
@@ -102,3 +102,8 @@ def ajax_get_votes(request):
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 		return JsonResponse({'votes': getVotes(photo)})
+
+def test(request):
+	return render(request,'photos/photoDetailModal.html')
+
+

@@ -54,6 +54,7 @@ class Photo(models.Model):
     facebook_post_id = models.CharField(max_length=50, blank=True, unique=True)
     favorites = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
+    votes = models.IntegerField(default=0)
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
     image = models.ImageField(upload_to=getFilePath)
     isReady = models.BooleanField(default=False)

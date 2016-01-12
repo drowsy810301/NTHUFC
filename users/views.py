@@ -39,7 +39,8 @@ def get_attemps(request):
 @login_required
 def users(request):
     account = request.user
-    photos = account.photos.all()
+    photos = account.photos.order_by('-votes')
+    #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
     #print photos.count()
     form_number = 5 - photos.count();
     PhotoInlineFormSet = inlineformset_factory(Account, Photo,
