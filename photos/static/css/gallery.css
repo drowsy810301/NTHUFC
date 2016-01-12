@@ -103,6 +103,15 @@
 	color: 	#FF0080;
 }
 
+.hover-red:hover,
+.hover-red:focus{
+	color: 	#FF0000;
+}
+
+.liked{
+	color: 	#0072E3;
+}
+
 
 .hovereffect h2,
 .hovereffect h1,

@@ -284,5 +284,6 @@ def getVotes(photo):
 	likes =  response['likes']['summary']['total_count']
 	photo.favorites = len(favorites)
 	photo.likes = likes
-	photo.save(update_fields=['favorites','likes'])
+	photo.votes = photo.likes + photo.favorites
+	photo.save(update_fields=['favorites','likes','votes'])
 	return photo.favorites+photo.likes
