@@ -14,6 +14,7 @@ from django.contrib.auth import login as auth_login
 
 # Create your views here.
 def index(request):
+
     return render(request, "index/index.html", {})
 
 def participate(request, id_account=None):
