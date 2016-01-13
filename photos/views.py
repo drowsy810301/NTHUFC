@@ -77,7 +77,7 @@ def ajax_post_like(request):
 		return JsonResponse(context)
 
 def vote(request):
-	all_account = Account.objects.all()
+	all_account = Account.objects.order_by('-photos_rank')
 	data_list = []
 	for account in all_account:
 		account_data = {}

@@ -45,11 +45,12 @@ def participate(request, id_account=None):
                 form.save()
                 photoList = formset.save(commit=False)
                 for photo in photoList:
+                    photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
                     photo.save()
                     uploadPhoto(photo)
 
                 user = authenticate(username=username, email=email, ID_card=ID_card)
-
+                user.updatePhotosRank()
                 if user:
                     auth_login(request, user)
                 else:

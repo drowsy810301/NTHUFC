@@ -46,11 +46,26 @@ class Account(models.Model):
     email = models.EmailField(max_length=250, unique=True)
     cellphone = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^\d{10}$', message='Invalid number', code='Invalid number')])
     ID_card = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^([A-Z][12]\d{8})$', message='Invalid id number', code='Invalid id number')])
+    #score of photos description
+    photos_rank = models.FloatField(default=0)
     user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
     is_agree = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.username
+
+    def updatePhotosRank(self):
+        count = 0
+        rank_sum = 0
+        for photo in self.photos.all():
+            rank_sum += photo.rank
+            count += 1
+        if count > 0:
+            self.photos_rank = 1.0*rank_sum/count
+        else:
+            self.photos_rank = 0
+
+        self.save(update_fields=['photos_rank'])
 
     '''custom authentication resolve 'is_authenticated' problem'''
     def is_authenticated(self):
