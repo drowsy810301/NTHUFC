@@ -43,6 +43,7 @@ def getFilePath(instance, filname):
 	return os.path.join('uploads','images',re.sub('\W','_',timeStr))
 
 class Photo(models.Model):
+
     title = models.CharField(max_length=30)
     content = models.TextField(default=None, blank=True, null=True)
     #related_name can reverse foreign krey to one-to-many
@@ -58,6 +59,9 @@ class Photo(models.Model):
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
     image = models.ImageField(upload_to=getFilePath)
     isReady = models.BooleanField(default=False)
+    last_modified_time = models.DateTimeField(default=timezone.now)
+    #score of the photo description
+    rank = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.title

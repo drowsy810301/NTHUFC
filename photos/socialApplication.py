@@ -5,6 +5,7 @@ import json
 import time
 import threading
 from django.utils import timezone
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
 from .authorization_token import __facebook_page_token, __flickr_api_key, __flickr_api_secret
@@ -111,7 +112,7 @@ def uploadUsingThread(photo):
 			except Exception as e:
 				print str(e)
 				try_count -= 1
-			time.sleep(1)
+			time.sleep(10)
 	else:
 		result['flickr_response'] = 'already upload to flickr'
 
@@ -270,7 +271,7 @@ def deletePhoto(photo):
 
 	result['facebook_response'] = facebook_response
 	result['flick_response'] = flick_response
-
+	photo.image.delete()
 	print 'deletePhoto result:'+str(result)
 	return result
 
@@ -285,5 +286,6 @@ def getVotes(photo):
 	photo.favorites = len(favorites)
 	photo.likes = likes
 	photo.votes = photo.likes + photo.favorites
-	photo.save(update_fields=['favorites','likes','votes'])
+	photo.last_modified_time = timezone.now()
+	photo.save(update_fields=['favorites','likes','votes','last_modified_time'])
 	return photo.favorites+photo.likes
