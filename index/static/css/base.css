@@ -105,3 +105,7 @@ ul {
   transform: translate(-50%);
   z-index: 9999;
 }
+
+span[class*="entypo-"]:hover {
+  cursor: pointer;
+}
