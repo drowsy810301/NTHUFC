@@ -271,7 +271,7 @@ def deletePhoto(photo):
 
 	result['facebook_response'] = facebook_response
 	result['flick_response'] = flick_response
-
+	photo.image.delete()
 	print 'deletePhoto result:'+str(result)
 	return result
 

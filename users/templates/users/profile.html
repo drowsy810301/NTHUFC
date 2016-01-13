@@ -7,6 +7,7 @@
   <title>Profile</title>
 {% endblock title_name %}
 {% block import_source %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href={% static "css/profile.css" %} media="screen">
 <link rel="stylesheet" href={% static "css/participate.css" %} media="screen">
 <link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
@@ -48,7 +49,7 @@
               </a>
             </p>
           </div>
-          <img src="{{ photo.flickr_photo_url }}" alt="ALT NAME">
+          <img src="{{ photo.flickr_photo_url }}" alt="ALT NAME" >
         </div>
         {% else %}
         <div class="thumbnail" style="width:300px; height:300px;">
@@ -65,16 +66,26 @@
         <div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-3 image_frame small_frame">
         {% endif %}
           <div class="hovereffect black_border">
+              {% if photo.isReady %}
               <img src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
+              {% else %}
+              <img src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class = 'desaturate'>
+              {% endif %}
                   <div class="overlay">
+                      {% if photo.isReady %}
                       <h2>{{photo.favorites|add:photo.likes}}票</h2>
+                      {% else %}
+                      <h2>審核中...</h2>
+                      {% endif %}
                       <p class="icon-links">
                           <a href="#" class="popconfirm test-jquery-click" id="{{ photo.id }}">
-                            <span class="entypo-trash hover-red"></span>
+                            <span class="fa fa-times hover-red"></span>
                           </a>
+                          {% if photo.isReady %}
                           <a href="#">
-                              <span class="entypo-info-circled hover-green"></span>
+                              <span class="fa fa-info-circle hover-green"></span>
                           </a>
+                          {% endif %}
                       </p>
                   </div>
           </div>

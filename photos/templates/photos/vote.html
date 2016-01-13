@@ -152,7 +152,7 @@ window.fbAsyncInit = function() {
 		            <div class="overlay">
 		                <h2><font>{{photo.votes}}</font>票</h2>
 		                <p class="icon-links">
-		                    <a href="#">
+		                    <a style="cursor:pointer;" onclick='getPhotoInfo(dataObj)'>
 		                        <span class="fa fa-info-circle hover-green"></span>
 		                    </a>
 		                    <a href="{{photo.flickr_link}}" target='_flickr'>
@@ -174,4 +174,5 @@ window.fbAsyncInit = function() {
 		{% endfor %}
 	</div>
 	<br>
+	{% include "photos/photo_detail_modal.html" %}
 {% endblock body_block %}

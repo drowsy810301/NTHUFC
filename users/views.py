@@ -48,6 +48,9 @@ def users(request):
     form=PhotoCreationForm, max_num=5, validate_max=True,
         min_num=1, validate_min=True, extra=form_number, can_delete=True)
 
+    all_tags = Tag.objects.all()
+    hot_tags = Tag.objects.order_by('-tag_count')[:5]
+    recent_tags = Tag.objects.order_by('-update_time')[:5]
     if request.method == "POST":
         #form = AccountCreationFrom(request.POST, request.FILES, instance=account, prefix="main")
         formset = PhotoInlineFormSet(request.POST, request.FILES, instance=account, prefix="nested")
@@ -60,12 +63,19 @@ def users(request):
                 uploadPhoto(photo)
             account.updatePhotosRank()
             return redirect(reverse('users:profile'))
+        else:
+            formset = PhotoInlineFormSet(instance=account, prefix="nested")
+            return render(request, "users/profile.html", {
+                "photos": photos,
+                "formset": formset,
+                "marker_list": Marker.objects.all(),
+                "all_tags":[ x.tag_name for x in all_tags],
+                "hot_tags":[ x.tag_name for x in hot_tags],
+                "recent_tags":[ x.tag_name for x in recent_tags],
+            })
     else:
         #form = AccountCreationFrom(instance=account, prefix="main")
         formset = PhotoInlineFormSet(instance=account, prefix="nested")
-        all_tags = Tag.objects.all()
-        hot_tags = Tag.objects.order_by('-tag_count')[:5]
-        recent_tags = Tag.objects.order_by('-update_time')[:5]
         return render(request, "users/profile.html", {
             "photos": photos,
             "formset": formset,
