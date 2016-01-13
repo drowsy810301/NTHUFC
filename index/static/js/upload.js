@@ -76,6 +76,8 @@ function setImgInfo() {
         $('#img-tags').tagsinput('removeAll');
         $('#img-location').val('');
         $('#select-txt').val('');
+        $('#tag_count').html(0);
+
         //clean the preview img
         document.getElementById("preview_img").src = "#";
         document.getElementById("preview_img").style.display = "none";
@@ -117,6 +119,7 @@ function resetModalForm(){
     //clean img modal
     document.getElementById("popup-img-form").reset();
     $('#img-tags').tagsinput('removeAll');
+    $('#tag_count').html(0)
     //clean the preview img
     document.getElementById("preview_img").src = "#";
     document.getElementById("preview_img").style.display = "none";

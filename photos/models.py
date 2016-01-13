@@ -58,6 +58,7 @@ class Photo(models.Model):
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
     image = models.ImageField(upload_to=getFilePath)
     isReady = models.BooleanField(default=False)
+    last_modified_time = models.DateTimeField(default=timezone.now)
 
     def __unicode__(self):
         return self.title

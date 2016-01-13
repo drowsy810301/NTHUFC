@@ -5,6 +5,7 @@
 {% endblock title_name %}
 
 {% block import_source %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
 <script src="{% static "js/gallery.js" %}" ></script>
 {% endblock import_source %}
@@ -12,6 +13,7 @@
 {% block body_block %}
 <script>
 
+var hasLogin = false
 initGallery();
 
 function postLike_btn(button,facebook_post_id){
@@ -24,31 +26,59 @@ function postLike_btn(button,facebook_post_id){
 	}
 	$('span',button).toggleClass("liked");
 
-	FB.login(function(response) {
-		if (response.status === 'connected') {
-			var __facebook_user_id = response.authResponse.userID;
-	      	if (response && !response.error) {
-        		FB.api(
-				    "/"+facebook_post_id+"/likes",
-				    method,
-				    function (response) {
-				    	console.log(response)
-				      	if (response && !response.error) {
-				        	getVotes(facebook_post_id);
-				      	}
-				    }
-				);
-	      	}
-	      	else{
-	      		console.log('login failed');
-	      		console.log(response);
-	      	}
-		}
-		else{
-		   	console.log('Please login and grant the permission');
-		   	alert('Please login and grant the permission');
-		}
-	}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
+	if (hasLogin){
+		FB.api(
+		    "/"+facebook_post_id+"/likes",
+		    method,
+		    function (response) {
+		    	console.log(response)
+		      	if (response && !response.error) {
+		      		var v = $('#'+facebook_post_id+' h2 font')
+		      		if (method == 'POST')
+		      			v.html(Number(v.html())+1);
+		      		else
+		      			v.html(v.html()-1);
+		      		console.log(v.html())
+		        	//getVotes(facebook_post_id);
+		      	}
+		    }
+		);
+	}
+	else{
+		FB.login(function(response) {
+			if (response.status === 'connected') {
+				var __facebook_user_id = response.authResponse.userID;
+				hasLogin = true
+		      	if (response && !response.error) {
+	        		FB.api(
+					    "/"+facebook_post_id+"/likes",
+					    method,
+					    function (response) {
+					    	console.log(response)
+					      	if (response && !response.error) {
+					      		var v = $('#'+facebook_post_id+' h2 font')
+					      		if (method == 'POST')
+					      			v.html(Number(v.html())+1);
+					      		else
+					      			v.html(v.html()-1);
+					      		console.log(v.html())
+					        	//getVotes(facebook_post_id);
+					      	}
+					    }
+					);
+		      	}
+		      	else{
+		      		console.log('login failed');
+		      		console.log(response);
+		      	}
+			}
+			else{
+			   	console.log('Please login and grant the permission');
+			   	alert('Please login and grant the permission');
+			}
+		}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
+	}
+
 }
 
 function getVotes(facebook_post_id){
@@ -108,7 +138,7 @@ window.fbAsyncInit = function() {
 
 	<div class='container'>
 		{% for account in data_list %}
-		<h3>{{account.nickname}}</h3>
+		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
 		<hr>
 		<div class="row">
 			{% for photo in account.photo_list %}
@@ -119,24 +149,28 @@ window.fbAsyncInit = function() {
 				{% endif %}
 			  	<div class="hovereffect black_border">
 			        <img src="{{photo.img_src}}" alt="" onload="render_image($(this))">
-			            <div class="overlay">
-			                <h2>{{photo.votes}}票</h2>
-			                <p class="icon-links">
-			                    <a href="#">
-			                        <span class="entypo-info-circled hover-green"></span>
-			                    </a>
-			                    <a href="{{photo.flickr_link}}" target='_flickr'>
-			                       <span class="entypo-flickr-circled hover-pink"></span>
-			                    </a>
-			                    <a onclick="postLike_btn($(this),'{{photo.facebook_post_id}}')" >
-                            <span class="entypo-facebook-squared hover-blue"></span>
-			                    </a>
-			                </p>
-			            </div>
+		            <div class="overlay">
+		                <h2><font>{{photo.votes}}</font>票</h2>
+		                <p class="icon-links">
+		                    <a href="#">
+		                        <span class="fa fa-info-circle hover-green"></span>
+		                    </a>
+		                    <a href="{{photo.flickr_link}}" target='_flickr'>
+		                       <span class="fa fa-flickr hover-pink"></span>
+		                    </a>
+		                    <a style="cursor:pointer;" onclick="postLike_btn($(this),'{{photo.facebook_post_id}}')">
+		                    	<span class="fa fa-thumbs-up hover-blue">
+
+							   	</span>
+		                    </a>
+		                </p>
+		            </div>
 			    </div>
 				</div>
+
 			{% endfor %}
 		</div>
+		<br>
 		{% endfor %}
 	</div>
 	<br>

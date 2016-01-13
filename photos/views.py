@@ -81,7 +81,7 @@ def vote(request):
 	data_list = []
 	for account in all_account:
 		account_data = {}
-		all_photos = account.photos.order_by('-votes')
+		all_photos = account.photos.filter(isReady=True).order_by('-votes')
 		if not all_photos:
 			continue
 		account_data['nickname'] = account.nickname
