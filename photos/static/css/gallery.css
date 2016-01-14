@@ -160,7 +160,7 @@
 	transition-delay: 0.2s;
 }
 
-img.desaturate {
+img .desaturate {
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
 }
