@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
 from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes
-from .models import Photo
+from .models import Photo, Tag
+from locationMarker.models import Marker
 from users.models import Account
 
 # Create your views here.
@@ -37,7 +38,7 @@ def show(request):
 		user_access_token = request.POST.get('user_access_token','')
 		return JsonResponse({'photo_list':[getPhotoDetails(x,user_access_token) for x in photo_list]})
 	else:
-		photo_id_list = [ x.id for x in Photo.all() ]
+		photo_id_list = [ x.id for x in Photo.objects.all() ]
 		return render(request,"photos/show.html",{'photo_id_list':photo_id_list})
 
 def ajax_post_comment(request):
@@ -105,3 +106,15 @@ def ajax_get_votes(request):
 
 def test(request):
 	return render(request,'photos/photoDetailModal.html')
+
+def photo_map(request):
+	all_tags = Tag.objects.all()
+	hot_tags = Tag.objects.order_by('-tag_count')[:3]
+	recent_tags = Tag.objects.order_by('-update_time')[:3]
+	return render(request,'photos/photo_map.html',{
+		"marker_list": Marker.objects.all(),
+        "all_tags":[ x.tag_name for x in all_tags],
+        "hot_tags":[ x.tag_name for x in hot_tags],
+        "recent_tags":[ x.tag_name for x in recent_tags],
+	})
+
