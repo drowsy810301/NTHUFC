@@ -98,7 +98,6 @@ def vote(request):
 	return render(request,'photos/vote.html',{'data_list':data_list})
 
 def ajax_get_votes(request):
-
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
@@ -119,8 +118,8 @@ def photo_map(request):
 	})
 
 def ajax_get_photo_details(request):
-
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
+
 		return JsonResponse({'photo': getPhotoModalDetails(photo) })
