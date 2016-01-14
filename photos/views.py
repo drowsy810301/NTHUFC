@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
-from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes
+from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails
 from .models import Photo, Tag
 from locationMarker.models import Marker
 from users.models import Account
@@ -118,3 +118,9 @@ def photo_map(request):
         "recent_tags":[ x.tag_name for x in recent_tags],
 	})
 
+def ajax_get_photo_details(request):
+
+	if request.method == 'POST' and 'facebook_post_id' in request.POST:
+		facebook_post_id = request.POST['facebook_post_id']
+		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
+		return JsonResponse({'photo': getPhotoModalDetails(photo) })

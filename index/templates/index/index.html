@@ -7,6 +7,7 @@
 {% endblock title_name %}
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/index.css" %} media="screen">
+<script src="{% static 'js/fb_post_like.js' %}" ></script>
 {% endblock import_source %}
 {% block body_block %}
 
@@ -36,11 +37,21 @@
         {% else %}
         <div class="item">
         {% endif %}
-        <img class="index-img" src="{{ photo.flickr_photo_url }}" alt="">
+        <img class="index-img" src="{{ photo.flickr_photo_url }}" alt="" style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
           <div class="carousel-caption">
             <h3>{{ photo.title }}</h3>
             <br>
           </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- used for record liked and votes-->
+    <div style='display:none;'>
+      {% for photo in photos %}
+        <div id="{{photo.facebook_post_id}}">
+          <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
+          <a><span class="fa fa-thumbs-up hover-blue"></span></a>
         </div>
       {% endfor %}
     </div>
@@ -94,4 +105,5 @@ $(function(){
     });
 });
 </script>
+{% include "photos/photoDetailModal.html" %}
 {% endblock body_block %}
