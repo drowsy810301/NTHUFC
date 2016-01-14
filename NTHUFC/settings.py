@@ -128,7 +128,9 @@ BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
 
 BOWER_INSTALLED_APPS = (
     'jquery',
-    'https://github.com/FortAwesome/Font-Awesome.git'
+    'https://github.com/FortAwesome/Font-Awesome.git',
+    'https://github.com/bootstrap-tagsinput/bootstrap-tagsinput.git',
+    'https://github.com/twitter/typeahead.js.git',
 )
 
 STATICFILES_FINDERS = (

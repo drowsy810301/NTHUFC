@@ -8,6 +8,7 @@
 * python-mysqldb
 * django-crispy-forms
 * django-axes
+* [South](http://south.readthedocs.org/en/latest/installation.html)
 * [django-bower](http://django-bower.readthedocs.org/en/latest/installation.html)
 * [facebook-sdk](https://github.com/EelaiWind/facebook-sdk)
 * [python_oauth](https://github.com/EelaiWind/python_oauth)
