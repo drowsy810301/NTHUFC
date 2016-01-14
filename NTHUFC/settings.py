@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'locationMarker',
     'axes',
+    'djangobower',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -121,3 +122,17 @@ AXES_LOGIN_FAILURE_LIMIT = 5
 #hours
 AXES_COOLOFF_TIME = 24
 AXES_LOCKOUT_URL = '/users/locked'
+
+# django-bower settings
+BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_ROOT, 'components')
+
+BOWER_INSTALLED_APPS = (
+    'jquery',
+    'https://github.com/FortAwesome/Font-Awesome.git'
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
+)
