@@ -57,8 +57,14 @@ legend {
 }
 
 .modal.modal-wide .modal-dialog {
-  width: 50%;
+  width: 60%;
 }
 .modal-wide .modal-body {
   overflow-y: auto;
+}
+
+.form-group pre {
+  margin: 0px;
+  color:black;
+  font-size: 18px;
 }
