@@ -140,7 +140,6 @@
     <center>
       <h1>搜尋內容: {{ query }}</h1>
   		{% if photos.count == 0 %}
-        {{ photos.count }}
         <h1>查無資料</h1>
       {% endif %}
     </center>
@@ -169,11 +168,9 @@
       {% endfor %}
       </div>
       <div class="col-md-6">
-
-          <div id="google_map">
-            Google Map
-          </div>
-
+        <div id="google_map">
+          Google Map
+        </div>
       </div>
 	 </div>
 
