@@ -86,3 +86,24 @@ def participate(request, id_account=None):
 
 def q_a(request):
     return render(request, 'index/q_a.html')
+
+def map(request):
+    if request.method =="GET":
+        query = request.GET.get('search', False)
+        q = request.GET.get('search')
+        photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
+        #search_title_result =
+        #search_content_result =
+
+
+
+
+
+
+    return render(request, "index/map.html",
+        {
+            'photos': photos,
+            #'titles': search_title_result,
+            #'contents': search_content_result,
+            'query': q
+        })
