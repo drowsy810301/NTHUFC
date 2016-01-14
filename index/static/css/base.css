@@ -38,10 +38,7 @@ body > .container {
   color: white;
 }
 
-/* entypo */
-[class*="entypo-"]:before {
-  font-family: "entypo", sans-serif;
-}
+
 a {
   text-decoration: none;
 }
@@ -86,13 +83,13 @@ ul {
 #sticky-social a[class*="flickr"]:hover,
 #sticky-social a[class*="flickr"] span { background: #0063dc; }
 
-#sticky-social a[class*="graduation-cap"],
-#sticky-social a[class*="graduation-cap"]:hover,
-#sticky-social a[class*="graduation-cap"] span { background: #333; }
+#sticky-social a[class*="graduation"],
+#sticky-social a[class*="graduation"]:hover,
+#sticky-social a[class*="graduation"] span { background: #333; }
 
-#sticky-social a[class*="info-circled"],
-#sticky-social a[class*="info-circled"]:hover,
-#sticky-social a[class*="info-circled"] span { background: #eb4924; }
+#sticky-social a[class*="info"],
+#sticky-social a[class*="info"]:hover,
+#sticky-social a[class*="info"] span { background: #eb4924; }
 
 .messages .alert {
   text-align: center;
@@ -104,8 +101,4 @@ ul {
   left: 50%;
   transform: translate(-50%);
   z-index: 9999;
-}
-
-span[class*="entypo-"]:hover {
-  cursor: pointer;
 }
