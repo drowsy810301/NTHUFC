@@ -71,7 +71,7 @@ WSGI_APPLICATION = 'NTHUFC.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 CONFIG_PATH = os.path.join(BASE_DIR, 'NTHUFC/config/NTHUFC.cfg')
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -87,7 +87,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-'''
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
