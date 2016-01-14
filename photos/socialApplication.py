@@ -292,3 +292,35 @@ def getVotes(photo):
 	photo.last_modified_time = timezone.now()
 	photo.save(update_fields=['favorites','likes','votes','last_modified_time'])
 	return photo.favorites+photo.likes
+
+def getCommentList(facebook_post_id):
+	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
+	response = graph.get_object(id='1528712347441804_1541961836116855', fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
+	comment_list = []
+	for c in response['comments']['data']:
+		comment_list.append({
+			'id': c['id'],
+			'message': c['message'],
+			'from':{
+				'name': c['from']['name'],
+				'avatar_url': c['from']['picture']['data']['url'],
+			},
+			'likes_count': c['likes']['summary']['total_count'],
+		})
+
+	return comment_list
+
+def getPhotoModalDetails(photo):
+	obj = {
+		'title': photo.title,
+		'votes': photo.votes,
+		'content': photo.content,
+		'comment_list': getCommentList(photo.facebook_post_id),
+		'location': photo.location_marker.title,
+		'tags': photo.tags,
+		'owner': photo.owner.nickname,
+		'photo_url': photo.flickr_photo_url,
+		'flickr_url': 'https://www.flickr.com/photos/138506275@N05/'+photo.flickr_photo_id,
+		'facebook_post_id': photo.facebook_post_id,
+	}
+	return obj
