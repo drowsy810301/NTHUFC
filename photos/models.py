@@ -62,6 +62,7 @@ class Photo(models.Model):
     last_modified_time = models.DateTimeField(default=timezone.now)
     #score of the photo description
     rank = models.IntegerField(default=0)
+    oh = models.CharField(default='喔',max_length=5)
 
     def __unicode__(self):
         return self.title
