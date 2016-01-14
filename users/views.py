@@ -43,6 +43,7 @@ def users(request):
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
     #print photos.count()
+
     form_number = 5 - photos.count();
     PhotoInlineFormSet = inlineformset_factory(Account, Photo,
     form=PhotoCreationForm, max_num=5, validate_max=True,
@@ -55,6 +56,7 @@ def users(request):
         #form = AccountCreationFrom(request.POST, request.FILES, instance=account, prefix="main")
         formset = PhotoInlineFormSet(request.POST, request.FILES, instance=account, prefix="nested")
         #if form.is_valid() and formset.is_valid():
+
         if formset.is_valid():
             photoList = formset.save(commit=False)
             for photo in photoList:
@@ -117,12 +119,21 @@ def logout(request):
 
 @login_required()
 def delete_photo(request, delete_id):
+
+    photo_info = {}
     if delete_id != '':
         try:
             photo = Photo.objects.get(id=long(delete_id))
             user = photo.owner
-            deletePhoto(photo)
+            photo_info['facebook_post_id'] = photo.facebook_post_id
+            photo_info['title'] = photo.title
+            photo_info['location_marker_title'] = photo.location_marker.title
+            photo_info['content'] = photo.content
+            photo_info['flickr_photo_id'] = photo.flickr_photo_id
+            photo_info['tags'] = photo.tags
             photo.delete()
+            deletePhoto(photo_info)
+
             user.updatePhotosRank()
             print('Photo id %ld deletes successfully!' % long(delete_id))
         except Photo.DoesNotExist:

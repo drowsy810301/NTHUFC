@@ -4,6 +4,9 @@ media/
 # Configs
 config/
 
+# Bower
+components/
+
 # Migrations
 migrations/
 

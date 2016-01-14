@@ -107,7 +107,6 @@ def ajax_get_votes(request):
 def test(request):
 	return render(request,'photos/photoDetailModal.html')
 
-
 def photo_map(request):
 	all_tags = Tag.objects.all()
 	hot_tags = Tag.objects.order_by('-tag_count')[:3]
@@ -118,3 +117,4 @@ def photo_map(request):
         "hot_tags":[ x.tag_name for x in hot_tags],
         "recent_tags":[ x.tag_name for x in recent_tags],
 	})
+

@@ -65,19 +65,22 @@ def uploadPhoto(photo):
 
 
 
-def getFacebookPostContent(photo, isValid=True):
+def getFacebookPostContent(photo, isValid=True, photo_info={}):
 	'''
 		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
 	'''
-	label = ' '+photo.tags;
-	label = label.replace(' ',' #');
+
 
 	if isValid:
+		label = ' '+photo.tags;
+		label = label.replace(' ',' #');
 		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
 	else:
+		label = ' '+photo_info['tags'];
+		label = label.replace(' ',' #');
 		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
-			photo.title, label, photo.location_marker.title, photo.content, photo.flickr_photo_id)
+			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
 
 @run_in_thread
 def uploadUsingThread(photo):
@@ -246,32 +249,32 @@ def getHasLiked(photo_facebook_id, user_access_token):
 		return False
 
 @run_in_thread
-def deletePhoto(photo):
+def deletePhoto(photo_info):
 	result = {}
 	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
 	facebook_response = graph.update_photo(
-		facebook_post_id=photo.facebook_post_id,
-		message= getFacebookPostContent(photo,isValid=False)
+		facebook_post_id=photo_info['facebook_post_id'],
+		message= getFacebookPostContent(None, isValid=False, photo_info=photo_info)
 	)
 
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
 	flickr_api.set_auth_handler('oauth_verifier.txt')
-	uni_title = u'[無效] '+photo.title
+	uni_title = u'[無效] '+ photo_info['title']
 	uni_title = uni_title.encode('utf-8')
-	uni_description = u'[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n'+photo.content
+	uni_description = u'[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n'+ photo_info['content']
 	uni_description = uni_description.encode('utf-8')
 
 	flick_response = flickr_api.objects.Photo(
-        id=photo.flickr_photo_id,
-        editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo.flickr_photo_id
+        id=photo_info['flickr_photo_id'],
+        editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo_info['flickr_photo_id']
     ).setMeta(
-    	title =uni_title,
-		description = uni_description,
+    	title=uni_title,
+		description=uni_description,
 	)
 
 	result['facebook_response'] = facebook_response
 	result['flick_response'] = flick_response
-	photo.image.delete()
+	#photo.image.delete()
 	print 'deletePhoto result:'+str(result)
 	return result
 

@@ -1,7 +1,7 @@
 var small_frame_height = 0;
 
 function render_gallery(){
-	$('.image_frame').each(function(index){
+    $('.image_frame').each(function(index){
     	$(this).height($(this).width()*3/4)
     });
 

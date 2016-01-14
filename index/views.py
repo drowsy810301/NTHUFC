@@ -8,13 +8,14 @@ from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
 from photos.socialApplication import uploadPhoto
 from django.contrib import messages
-
+from photos.models import Photo
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 
 # Create your views here.
 def index(request):
-    return render(request, "index/index.html", {})
+    top_five = Photo.objects.all().order_by('-votes')[:5]
+    return render(request, "index/index.html", {'photos': top_five})
 
 def participate(request, id_account=None):
 

@@ -7,7 +7,6 @@
   <title>Profile</title>
 {% endblock title_name %}
 {% block import_source %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href={% static "css/profile.css" %} media="screen">
 <link rel="stylesheet" href={% static "css/participate.css" %} media="screen">
 <link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
@@ -69,7 +68,7 @@
               {% if photo.isReady %}
               <img src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
               {% else %}
-              <img src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class = 'desaturate'>
+              <img src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class="desaturate">
               {% endif %}
                   <div class="overlay">
                       {% if photo.isReady %}
