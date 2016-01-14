@@ -51,6 +51,8 @@ class Account(models.Model):
     user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
     is_agree = models.BooleanField(default=False)
 
+
+
     def __unicode__(self):
         return self.username
 
