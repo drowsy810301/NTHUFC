@@ -30,6 +30,7 @@
     </ol>
 
     <!-- Wrapper for slides -->
+    {% if photos %}
     <div class="carousel-inner" id="carousel-img" role="listbox">
       {% for photo in photos %}
         {% if forloop.first %}
@@ -45,6 +46,7 @@
         </div>
       {% endfor %}
     </div>
+    {% endif %}
 
     <!-- used for record liked and votes-->
     <div style='display:none;'>

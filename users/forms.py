@@ -6,12 +6,11 @@ from crispy_forms.bootstrap import  FormActions, InlineRadios
 from users.models import Account
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-
+from  django.contrib.auth.hashers import check_password
 
 class LoginForm(forms.Form):
     username = forms.CharField()
-    email = forms.EmailField()
-    ID_card = forms.CharField(max_length=10, validators=[RegexValidator(regex='^([A-Z][12]\d{8})$', message='Invalid ID', code='Invalid ID')])
+    password = forms.CharField(widget=forms.PasswordInput,max_length=10)
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
@@ -20,15 +19,13 @@ class LoginForm(forms.Form):
         self.helper.form_tag = False
 
         self.fields['username'].label = u'姓名'
-        self.fields['email'].label = u'信箱'
-        self.fields['ID_card'].label = u'身份證'
+        self.fields['password'].label = u'密碼'
         self.helper.layout = Layout(
             Div(
                 Fieldset(
                     u'登入',
                     Field('username'),
-                    Field('email'),
-                    Field('ID_card'),
+                    Field('password'),
                     HTML('<br>')
                 ),
                 FormActions(
@@ -45,11 +42,12 @@ class LoginForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
         username = self.cleaned_data.get("username")
-        email = self.cleaned_data.get("email")
-        ID_card = self.cleaned_data.get("ID_card")
+        password = self.cleaned_data.get("password")
 
         try:
-            user = Account.objects.get(username=username, email=email, ID_card=ID_card)
+            user = Account.objects.get(username=username)
+            if not check_password(password, user.password):
+                raise forms.ValidationError("登入失敗")
         except Account.DoesNotExist:
             raise forms.ValidationError("登入失敗")
 

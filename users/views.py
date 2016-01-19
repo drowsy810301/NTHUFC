@@ -100,11 +100,13 @@ def login(request):
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                ID_card=form.cleaned_data['ID_card'])
+                password=form.cleaned_data['password'])
             if user:
                 auth_login(request, user)
                 return redirect(reverse('users:profile'))
+            else:
+                remain_times = remain_times - 1
+                return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times})
 
         else:
             remain_times = remain_times - 1

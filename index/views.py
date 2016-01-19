@@ -40,8 +40,7 @@ def participate(request, id_account=None):
 
         if form.is_valid():
             username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            ID_card = form.cleaned_data['ID_card']
+            password = form.cleaned_data['password']
 
             if formset.is_valid():
                 messages.add_message(request, messages.SUCCESS, 'Photos are uploading...')
@@ -52,7 +51,7 @@ def participate(request, id_account=None):
                     photo.save()
                     uploadPhoto(photo)
 
-                user = authenticate(username=username, email=email, ID_card=ID_card)
+                user = authenticate(username=username, password = password)
                 user.updatePhotosRank()
                 if user:
                     auth_login(request, user)
