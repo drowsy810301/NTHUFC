@@ -11,8 +11,10 @@ from django.contrib import messages
 from photos.models import Photo
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # Create your views here.
+@ensure_csrf_cookie
 def index(request):
     top_five = Photo.objects.all().order_by('-votes')[:5]
     return render(request, "index/index.html", {'photos': top_five})

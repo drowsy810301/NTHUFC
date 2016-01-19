@@ -17,7 +17,9 @@
         <!--
         <li><a href="{% url 'photos:photos' %}">Photos</a></li>
         -->
+        <!--
         <li><a href="{% url 'photos:photo_map' %}">秘境地圖</a></li>
+        -->
         {% if not user.is_authenticated %}
         <li><a href="{% url 'index:participate' %}" id="participate">我要參加</a></li>
         {% endif %}

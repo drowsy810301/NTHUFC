@@ -124,3 +124,7 @@
 .red_border{
     border-color: red;
 }
+
+#image-Modal .modal-dialog{
+    text-align: left;
+}

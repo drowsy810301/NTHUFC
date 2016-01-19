@@ -73,6 +73,7 @@ class Photo(models.Model):
         return tagString;
 
     def delete(self, *args, **kwargs):
+        self.image.delete()
         for tag_text in self.tags.split(' '):
             if tag_text == '':
                 continue

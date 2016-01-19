@@ -294,8 +294,16 @@ def getVotes(photo):
 	return photo.favorites+photo.likes
 
 def getCommentList(facebook_post_id):
+
 	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	response = graph.get_object(id='1528712347441804_1541961836116855', fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
+	res = graph.get_object(id=facebook_post_id, fields='comments')
+	if res.has_key('comments'):
+		response = graph.get_object(id=facebook_post_id, fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
+
+	else:
+		return []
+
+
 	comment_list = []
 	for c in response['comments']['data']:
 		comment_list.append({
@@ -311,6 +319,7 @@ def getCommentList(facebook_post_id):
 	return comment_list
 
 def getPhotoModalDetails(photo):
+
 	obj = {
 		'title': photo.title,
 		'votes': photo.votes,
@@ -323,4 +332,5 @@ def getPhotoModalDetails(photo):
 		'flickr_url': 'https://www.flickr.com/photos/138506275@N05/'+photo.flickr_photo_id,
 		'facebook_post_id': photo.facebook_post_id,
 	}
+	#print obj
 	return obj
