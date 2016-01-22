@@ -77,6 +77,7 @@ def ajax_post_like(request):
 		context['hasLiked_list'] = hasLiked_list
 		return JsonResponse(context)
 
+@ensure_csrf_cookie
 def vote(request):
 	all_account = Account.objects.order_by('-photos_rank')
 	data_list = []

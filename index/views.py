@@ -87,3 +87,7 @@ def participate(request, id_account=None):
 
 def q_a(request):
     return render(request, 'index/q_a.html')
+def poster(request):
+    return render(request, 'index/poster.html')
+def privacypolicy(request):
+    return render(request, 'index/privacypolicy.html')
