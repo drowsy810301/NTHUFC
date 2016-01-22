@@ -1,5 +1,9 @@
 var hasLogin = false
 function postLike_btn(facebook_post_id){
+	if (!hasLogin){
+		alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
+		return;
+	}
 	var method = ''
 	var v = $('.votes_'+facebook_post_id)
 	if ($('#'+facebook_post_id+' .fa-thumbs-up').hasClass('liked')){

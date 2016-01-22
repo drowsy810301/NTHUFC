@@ -18,6 +18,9 @@ initGallery();
 </script>
 
 	<div class='container'>
+		<br>
+		<div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true" scope="publish_actions"></div>
+		<br>
 		{% for account in data_list %}
 		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
 		<div class="row">
