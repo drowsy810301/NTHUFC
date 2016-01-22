@@ -32,13 +32,14 @@ class AccountCreationFrom(forms.ModelForm):
         self.fields['confirm_password'].label = u'確認密碼'
         self.fields['identity'].label = u'身份'
         self.fields['major'].label = u'系所或單位'
-        self.fields['email'].label = u'信箱'
+        self.fields['email'].label = u'電子郵件'
         self.fields['cellphone'].label = u'手機'
         self.fields['is_agree'].label = link
 
-        self.fields['username'].widget = forms.TextInput(attrs={'placeholder': u'姓名將用於登入驗證'})
-        self.fields['nickname'].widget = forms.TextInput(attrs={'placeholder': u'暱稱將顯示於網路投票，表示為您的作品'})
-        self.fields['password'].widget = forms.PasswordInput(attrs={'placeholder': u'密碼必須由6~10個英文或數字組成','maxlength':10})
+        self.fields['username'].widget = forms.TextInput(attrs={'placeholder': u'請填寫真實姓名,將來領獎的時候會用來驗證您的身分'})
+        self.fields['nickname'].widget = forms.TextInput(attrs={'placeholder': u'建議取特別的暱稱，以便與其他參賽者區隔'})
+        self.fields['password'].widget = forms.PasswordInput(attrs={'placeholder': u'密碼必須由6~10個英文或數字組成,忘記請與我們聯繫','maxlength':10})
+        self.fields['email'].widget = forms.PasswordInput(attrs={'placeholder': u'email會作為您的帳號喔'})
 
         self.helper.layout = Layout(
             Fieldset(
@@ -112,7 +113,7 @@ class PhotoCreationForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Fieldset(
-                    u'上傳相片',
+                    u'選擇相片',
                     Field('title'),
                     Field('content'),
                     Field('tags'),
