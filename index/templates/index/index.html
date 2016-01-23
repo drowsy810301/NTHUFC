@@ -12,11 +12,17 @@
 {% block body_block %}
 
 <center>
-  <h1 style="margin-top: 0px;">六十週年校慶攝影比賽</h1>
+  <!--<h1 style="margin-top: 0px;">國立清華大學六十週年校慶攝影比賽</h1>-->
+  <h1 style="margin-top: 0px;">攝影比賽</h1>
   <hr>
   <div class="well" style="padding: 10px; width: 70%">
     <marquee direction="right" scrollamount="5" id="scrolling-text"></marquee>
   </div>
+  
+
+  {% if not photos%}
+  <img src="http://c2.staticflickr.com/2/1532/23866260784_ea9b6f3780_b.jpg"     class="img-responsive" alt="清華大學60週年校慶攝影比賽">
+  {% else %}
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators carousel-indicators-numbers">
@@ -69,8 +75,9 @@
 
 
   </div>
+  {% endif %}
   <br><br>
-  <a href="{% url 'index:participate' %}" class="btn btn-primary">我要參加</a>
+  <!--<a href="{% url 'index:participate' %}" class="btn btn-primary">我要參加</a>-->
 </center>
 
 <script type="text/javascript">

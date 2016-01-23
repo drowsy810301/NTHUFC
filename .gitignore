@@ -24,4 +24,5 @@ photos/authorization_token.py
 #data
 db.sqlite3
 allMarker.json
+*.log
 

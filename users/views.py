@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.views.decorators.csrf import ensure_csrf_cookie
 from users.forms import LoginForm
 from django.core.urlresolvers import reverse
 from photos.models import Photo,Tag
@@ -37,6 +38,7 @@ def get_attemps(request):
     return remain_times
 
 @login_required
+@ensure_csrf_cookie
 def users(request):
     account = request.user
 
@@ -100,11 +102,13 @@ def login(request):
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                ID_card=form.cleaned_data['ID_card'])
+                password=form.cleaned_data['password'])
             if user:
                 auth_login(request, user)
                 return redirect(reverse('users:profile'))
+            else:
+                remain_times = remain_times - 1
+                return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times})
 
         else:
             remain_times = remain_times - 1

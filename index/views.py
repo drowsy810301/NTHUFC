@@ -11,8 +11,10 @@ from django.contrib import messages
 from photos.models import Photo
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # Create your views here.
+@ensure_csrf_cookie
 def index(request):
     top_five = Photo.objects.all().order_by('-votes')[:5]
     return render(request, "index/index.html", {'photos': top_five})
@@ -40,8 +42,7 @@ def participate(request, id_account=None):
 
         if form.is_valid():
             username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            ID_card = form.cleaned_data['ID_card']
+            password = form.cleaned_data['password']
 
             if formset.is_valid():
                 messages.add_message(request, messages.SUCCESS, 'Photos are uploading...')
@@ -52,7 +53,7 @@ def participate(request, id_account=None):
                     photo.save()
                     uploadPhoto(photo)
 
-                user = authenticate(username=username, email=email, ID_card=ID_card)
+                user = authenticate(username=username, password = password)
                 user.updatePhotosRank()
                 if user:
                     auth_login(request, user)
@@ -86,3 +87,7 @@ def participate(request, id_account=None):
 
 def q_a(request):
     return render(request, 'index/q_a.html')
+def poster(request):
+    return render(request, 'index/poster.html')
+def privacypolicy(request):
+    return render(request, 'index/privacypolicy.html')

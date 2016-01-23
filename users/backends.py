@@ -4,6 +4,7 @@ from users.models import Account
 from django.contrib.auth.models import update_last_login
 from django.contrib.auth.signals import user_logged_in
 user_logged_in.disconnect(update_last_login)
+from  django.contrib.auth.hashers import check_password
 class EmailAuthBackend(object):
     """
     Email Authentication Backend
@@ -12,11 +13,14 @@ class EmailAuthBackend(object):
     a username/password pair.
     """
 
-    def authenticate(self, username=None, email=None, ID_card=None):
+    def authenticate(self, username=None, password=None):
         """ Authenticate a user based on email address as the user name. """
         try:
-            user = Account.objects.get(username=username, email=email, ID_card=ID_card)
-            return user
+            user = Account.objects.get(username=username)
+            if check_password(password,user.password):
+                return user
+            else:
+                return None
         except Account.DoesNotExist:
             return None
 

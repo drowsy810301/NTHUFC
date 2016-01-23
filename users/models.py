@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from  django.contrib.auth.hashers import make_password
 # Create your models here.
 
 class UserProfile(models.Model):
@@ -19,7 +20,7 @@ class UserProfile(models.Model):
 
 class Account(models.Model):
     username = models.CharField(max_length=20, default='', unique=True)
-    nickname = models.CharField(max_length=20, default='', unique=True)
+    nickname = models.CharField(max_length=20, default='')
 
     TEACHER = 'TE'
     STUDENT = 'ST'
@@ -45,7 +46,8 @@ class Account(models.Model):
     major = models.CharField(max_length=20, default='', blank=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
     cellphone = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^\d{10}$', message='Invalid number', code='Invalid number')])
-    ID_card = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^([A-Z][12]\d{8})$', message='Invalid id number', code='Invalid id number')])
+    #ID_card = models.CharField(max_length=10, unique=True, validators=[RegexValidator(regex='^([A-Z][12]\d{8})$', message='Invalid id number', code='Invalid id number')])
+    password = models.CharField(max_length=80, blank = False)
     #score of photos description
     photos_rank = models.FloatField(default=0)
     user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
@@ -68,6 +70,11 @@ class Account(models.Model):
             self.photos_rank = 0
 
         self.save(update_fields=['photos_rank'])
+
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password=make_password(self.password)
+        super(Account, self).save(*args, **kwargs)
 
     '''custom authentication resolve 'is_authenticated' problem'''
     def is_authenticated(self):

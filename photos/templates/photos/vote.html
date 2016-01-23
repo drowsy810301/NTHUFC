@@ -20,7 +20,6 @@ initGallery();
 	<div class='container'>
 		{% for account in data_list %}
 		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
-		<hr>
 		<div class="row">
 			{% for photo in account.photo_list %}
 				{% if forloop.counter0 == 0 %}
@@ -52,6 +51,7 @@ initGallery();
 			{% endfor %}
 		</div>
 		<br>
+		<hr>
 		{% endfor %}
 	</div>
 	<br>
