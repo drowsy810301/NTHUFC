@@ -16,7 +16,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 # Create your views here.
 @ensure_csrf_cookie
 def index(request):
-    top_five = Photo.objects.all().order_by('-votes')[:5]
+    top_five = Photo.objects.filter(isReady=True).order_by('-votes')[:5]
     return render(request, "index/index.html", {'photos': top_five})
 
 def participate(request, id_account=None):
@@ -51,7 +51,7 @@ def participate(request, id_account=None):
                 for photo in photoList:
                     photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
                     photo.save()
-                    uploadPhoto(photo)
+                    #uploadPhoto(photo)
 
                 user = authenticate(username=username, password = password)
                 user.updatePhotosRank()
@@ -60,7 +60,7 @@ def participate(request, id_account=None):
                 else:
                     print 'login failed'
 
-                return redirect(reverse('index:index'))
+                return redirect(reverse('users:profile'))
             else:
                 messages.add_message(request, messages.ERROR, 'At least upload one photo!')
 

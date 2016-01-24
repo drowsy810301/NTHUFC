@@ -74,12 +74,12 @@ def getFacebookPostContent(photo, isValid=True, photo_info={}):
 	if isValid:
 		label = ' '+photo.tags;
 		label = label.replace(' ',' #');
-		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
 	else:
 		label = ' '+photo_info['tags'];
 		label = label.replace(' ',' #');
-		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
 
 @run_in_thread
