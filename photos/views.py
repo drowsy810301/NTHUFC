@@ -104,9 +104,6 @@ def ajax_get_votes(request):
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 		return JsonResponse({'votes': getVotes(photo)})
 
-def test(request):
-	return render(request,'photos/photoDetailModal.html')
-
 def photo_map(request):
 	all_tags = Tag.objects.all()
 	hot_tags = Tag.objects.order_by('-tag_count')[:3]
@@ -124,3 +121,4 @@ def ajax_get_photo_details(request):
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 
 		return JsonResponse({'photo': getPhotoModalDetails(photo) })
+

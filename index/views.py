@@ -16,7 +16,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 # Create your views here.
 @ensure_csrf_cookie
 def index(request):
-    top_five = Photo.objects.all().order_by('-votes')[:5]
+    top_five = Photo.objects.filter(isReady=True).order_by('-votes')[:5]
     return render(request, "index/index.html", {'photos': top_five})
 
 def participate(request, id_account=None):
@@ -51,7 +51,7 @@ def participate(request, id_account=None):
                 for photo in photoList:
                     photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
                     photo.save()
-                    uploadPhoto(photo)
+                    #uploadPhoto(photo)
 
                 user = authenticate(email=email, password = password)
                 user.updatePhotosRank()
@@ -60,7 +60,7 @@ def participate(request, id_account=None):
                 else:
                     print 'login failed'
 
-                return redirect(reverse('index:index'))
+                return redirect(reverse('users:profile'))
             else:
                 messages.add_message(request, messages.ERROR, 'At least upload one photo!')
 
@@ -91,3 +91,25 @@ def poster(request):
     return render(request, 'index/poster.html')
 def privacypolicy(request):
     return render(request, 'index/privacypolicy.html')
+
+def map(request):
+    if request.method =="GET":
+        query = request.GET.get('search', '')
+        photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
+        markers = []
+        tmp = []
+        for photo in photos:
+            markers.append(photo.location_marker)
+            tmp2 = photo.tags.split()
+            for tag in tmp2:
+                tmp.append(tag)
+        tags = list(set(tmp))
+
+    return render(request, "index/map.html",
+        {
+            'photos': photos,
+            'query': query,
+            'marker_list':markers,
+            'tags': tags,
+        })
+

@@ -18,6 +18,9 @@ initGallery();
 </script>
 
 	<div class='container'>
+		<br>
+		<div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true" scope="publish_actions" onlogin="checkLoginState();"></div>
+		<br>
 		{% for account in data_list %}
 		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
 		<div class="row">
@@ -28,7 +31,7 @@ initGallery();
 				<div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-3 image_frame small_frame">
 				{% endif %}
 			  	<div class="hovereffect black_border">
-			        <img src="{{photo.img_src}}" alt="" onload="render_image($(this))">
+			        <img class='gallery' src="{{photo.img_src}}" alt="" onload="render_image($(this))">
 		            <div class="overlay">
 		                <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
 		                <p class="icon-links">
@@ -55,5 +58,5 @@ initGallery();
 		{% endfor %}
 	</div>
 	<br>
-	{% include "photos/photoDetailModal.html" %}
+	{% include "photos/modal.html" %}
 {% endblock body_block %}

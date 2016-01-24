@@ -11,7 +11,7 @@ function render_gallery(){
     	$(this).height(small_frame_height)
     });
 
-    $('img').each(function(index){
+    $('.gallery').each(function(index){
     	render_image($(this));
     })
 }
