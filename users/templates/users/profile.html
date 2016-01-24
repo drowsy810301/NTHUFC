@@ -21,6 +21,7 @@
 </script>
 {% endblock import_source %}
 {% block body_block %}
+{% include "photos/modal.html" %}
 <div class="container">
   <div class="page-header" style="display: inline;">
     <h1 style="text-align:left;float:left;">{{ user.username }}</h1>
@@ -68,9 +69,9 @@
         <a style='display:none;'><span class="fa fa-thumbs-up hover-blue"></span></a>
           <div class="hovereffect black_border">
               {% if photo.isReady %}
-              <img src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
+              <img class='gallery' src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
               {% else %}
-              <img src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class="desaturate">
+              <img class='gallery' src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class="desaturate">
               {% endif %}
                   <div class="overlay">
                       {% if photo.isReady %}
@@ -105,5 +106,4 @@
 </div>
 
 {% include "index/upload_modal.html" %}
-{% include "photos/photoDetailModal.html" %}
 {% endblock body_block %}

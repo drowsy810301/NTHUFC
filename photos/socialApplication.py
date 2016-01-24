@@ -307,12 +307,10 @@ def getCommentList(facebook_post_id):
 	comment_list = []
 	for c in response['comments']['data']:
 		comment_list.append({
-			'id': c['id'],
+			'comment_id': c['id'],
 			'message': c['message'],
-			'from':{
-				'name': c['from']['name'],
-				'avatar_url': c['from']['picture']['data']['url'],
-			},
+			'name': c['from']['name'],
+			'avatar_url': c['from']['picture']['data']['url'],
 			'likes_count': c['likes']['summary']['total_count'],
 		})
 

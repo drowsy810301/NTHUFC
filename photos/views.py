@@ -105,7 +105,7 @@ def ajax_get_votes(request):
 		return JsonResponse({'votes': getVotes(photo)})
 
 def test(request):
-	return render(request,'photos/photoDetailModal.html')
+	return render(request,'photos/modal.html')
 
 def photo_map(request):
 	all_tags = Tag.objects.all()
