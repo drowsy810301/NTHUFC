@@ -14,12 +14,9 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
       <ul class="nav navbar-nav">
         <li><a href="{% url 'photos:vote' %}">網路投票</a></li>
-        <!--
-        <li><a href="{% url 'photos:photos' %}">Photos</a></li>
-        -->
-        <li><a href="{% url 'index:map' %}">秘境地圖</a></li>
+        <!--<li><a href="{% url 'index:map' %}">秘境地圖</a></li>-->
         {% if not user.is_authenticated %}
-        <!--<li><a href="{% url 'index:participate' %}" id="participate">我要參加</a></li>-->
+        <li><a href="{% url 'index:participate' %}" id="participate">我要參加</a></li>
         {% endif %}
         <li><a href="{% url 'index:poster' %}">宣傳海報</a></li>
 		<li><a href="{% url 'index:q_a' %}">Q&A</a></li>

@@ -95,7 +95,7 @@ def privacypolicy(request):
 def map(request):
     if request.method =="GET":
         query = request.GET.get('search', '')
-        photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
+        photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
         markers = []
         tmp = []
         for photo in photos:
