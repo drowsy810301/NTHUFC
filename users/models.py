@@ -8,6 +8,8 @@ from  django.contrib.auth.hashers import make_password
 from datetime import date, datetime, timedelta
 # Create your models here.
 
+def get_default_active_time():
+    return datetime.now() + timedelta(minutes=15)
 
 
 class Account(models.Model):
@@ -65,7 +67,11 @@ class Account(models.Model):
 
     def save(self, *args, **kwargs):
         if self.password:
-            self.password=make_password(self.password)
+            self.password = make_password(self.password)
+        super(Account, self).save(*args, **kwargs)
+    
+    def reset_password(self, raw_password, *args, **kwargs):
+        self.password = make_password(raw_password) 
         super(Account, self).save(*args, **kwargs)
 
     '''custom authentication resolve 'is_authenticated' problem'''
@@ -100,7 +106,7 @@ class UserProfile(models.Model):
     account = models.OneToOneField(Account)
     activation_key = models.CharField(max_length=40, blank=True)
     # default active time is 15 minutes
-    active_time = models.DateTimeField(default=lambda: datetime.now() + timedelta(minutes=15))
+    active_time = models.DateTimeField(default=get_default_active_time)
 
     def __unicode__(self):
         return self.account.username

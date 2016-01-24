@@ -1,13 +1,14 @@
-#coding=utf-8
+#-*- encoding=UTF-8 -*-
 import hashlib
 import random
+import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.views.decorators.csrf import ensure_csrf_cookie
-from users.forms import LoginForm, ForgetPasswordForm
+from users.forms import LoginForm, ForgetPasswordForm, ResetPasswordForm
 from django.core.urlresolvers import reverse
 from photos.models import Photo,Tag
 from users.models import Account, UserProfile
@@ -25,6 +26,10 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from threading import Thread
+
+from django.contrib.auth.models import update_last_login
+from django.contrib.auth.signals import user_logged_in
+user_logged_in.disconnect(update_last_login)
 # Create your views here.
 
 
@@ -36,8 +41,8 @@ def send_forget_password_email(request, user):
     activation_key = hashlib.sha1(salt+email).hexdigest()
     
     #Create and save user profile
-    UserProfile.objects.filter(user=user).delete()
-    new_profile = UserProfile(user=user, activation_key=activation_key)
+    UserProfile.objects.filter(account=user).delete()
+    new_profile = UserProfile(account=user, activation_key=activation_key)
     new_profile.save()
 
     # Send email with activation key
@@ -47,7 +52,7 @@ def send_forget_password_email(request, user):
     email_body = render_to_string('index/forget_password_email.html',
                     {'username': username, 'profile_link': profile_link,
                     'active_time': new_profile.active_time})
-    msg = EmailMultiAlternatives(email_subject, email_body, EMAIL_HOST_USER, [email])
+    msg = EmailMultiAlternatives(email_subject, email_body, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(email_body, "text/html")
 
     try:
@@ -75,8 +80,7 @@ def get_attemps(request):
 @login_required
 @ensure_csrf_cookie
 def users(request):
-    account = request.user
-
+    account = request.user    
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
     #print photos.count()
@@ -144,7 +148,6 @@ def login(request):
             else:
                 remain_times = remain_times - 1
                 return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times})
-
         else:
             remain_times = remain_times - 1
             return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
@@ -172,7 +175,7 @@ def forget_password(request):
             return render(request, 'index/forget_password.html', {'form': form})
 
     return render(request, 'index/forget_password.html', {'form': form})
-    
+
 def forget_password_confirm(request, activation_key):
     """check if user is already logged in and if he
     is redirect him to some other url, e.g. home
@@ -188,14 +191,15 @@ def forget_password_confirm(request, activation_key):
 
     user_profile = get_object_or_404(UserProfile, activation_key=activation_key)
     user = user_profile.account
+    print user.email
     user.backend = 'users.backends.EmailAuthBackend'
     #user.is_active = True
     user.save()
     # Let user login, so as to modify password
     auth_login(request, user)
     print ('User %s is ready to reset his/her password' % user.username)
-    return redirect(reverse('users:profile))
-    
+    return redirect(reverse('users:reset_password'))
+
 def logout(request):
     auth_logout(request)
     return redirect(reverse('index:index'))
@@ -224,7 +228,27 @@ def delete_photo(request, delete_id):
 
     return redirect(reverse('users:profile'))
 
+def reset_password(request):   
+    
+    F = ResetPasswordForm
+    if request.method == 'GET':
+        form = F()
+    else:
+        form = F(data=request.POST)
+        if form.is_valid():
+            try:
+                request.user.reset_password(form.cleaned_data['password'])                 
+                messages.add_message(request, messages.SUCCESS, '更改成功')
+                return redirect(reverse('index:index'))
+            except:
+                print 'reset failed'
+                return render(request, 'index/reset_password.html', {'form': form})          
 
+        else:            
+            return render(request, 'index/reset_password.html', {'form': form})
+
+    return render(request, 'index/reset_password.html', {'form': form})
+    
 def locked_out(request):
     """Block login for over 5 wrong tries."""
 
