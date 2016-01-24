@@ -35,13 +35,14 @@ if not config.has_section('client'):
         host=raw_input('Mysql host: '),
         database=raw_input('Mysql database: '),
         user=raw_input('Mysql user: '),
-        password=getpass.getpass('Mysql user password: ')
+        password=getpass.getpass('Mysql user password: '),
+        email_account=raw_input('Email host acount: '),
+        email_password=getpass.getpass('Email host password: '),
     )
 
 # Writing our configuration file
 with open(CONFIG_PATH, 'wb') as configfile:
     config.write(configfile)
-
 
 # Database Migratinos
 
