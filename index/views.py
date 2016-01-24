@@ -41,7 +41,7 @@ def participate(request, id_account=None):
 
 
         if form.is_valid():
-            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
             if formset.is_valid():
@@ -53,7 +53,7 @@ def participate(request, id_account=None):
                     photo.save()
                     uploadPhoto(photo)
 
-                user = authenticate(username=username, password = password)
+                user = authenticate(email=email, password = password)
                 user.updatePhotosRank()
                 if user:
                     auth_login(request, user)

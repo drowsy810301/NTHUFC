@@ -119,7 +119,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 AXES_USE_USER_AGENT = True
 AXES_LOGIN_FAILURE_LIMIT = 5
 #hours
-AXES_COOLOFF_TIME = 24
+AXES_COOLOFF_TIME = 0.001
 AXES_LOCKOUT_URL = '/users/locked'
 
 # django-bower settings

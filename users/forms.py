@@ -9,22 +9,23 @@ from django.core.validators import RegexValidator
 from  django.contrib.auth.hashers import check_password
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
+    #username = forms.CharField()
+    email = forms.EmailField(max_length=250)
     password = forms.CharField(widget=forms.PasswordInput,max_length=10)
-
+    
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         # important!!!!! self.helper.form_tag = False
         self.helper.form_tag = False
 
-        self.fields['username'].label = u'姓名'
+        self.fields['email'].label = u'信箱'
         self.fields['password'].label = u'密碼'
         self.helper.layout = Layout(
             Div(
                 Fieldset(
                     u'登入',
-                    Field('username'),
+                    Field('email'),
                     Field('password'),
                     HTML('<br>')
                 ),
@@ -41,11 +42,11 @@ class LoginForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        username = self.cleaned_data.get("username")
+        email = self.cleaned_data.get("email")
         password = self.cleaned_data.get("password")
 
         try:
-            user = Account.objects.get(username=username)
+            user = Account.objects.get(email=email)
             if not check_password(password, user.password):
                 raise forms.ValidationError("登入失敗")
         except Account.DoesNotExist:
