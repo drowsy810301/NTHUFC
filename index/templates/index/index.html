@@ -18,62 +18,50 @@
   <div class="well" style="padding: 10px; width: 70%">
     <marquee direction="right" scrollamount="5" id="scrolling-text"></marquee>
   </div>
-  
+
 
   {% if not photos%}
   <img src="http://c2.staticflickr.com/2/1532/23866260784_ea9b6f3780_b.jpg"     class="img-responsive" alt="清華大學60週年校慶攝影比賽">
   {% else %}
-  <div id="myCarousel" class="carousel slide" data-ride="carousel">
-    <!-- Indicators -->
-    <ol class="carousel-indicators carousel-indicators-numbers">
-      {% for photo in photos %}
-        {% if forloop.first %}
-          <li data-target="#myCarousel" data-slide-to="0" class="active">1</li>
-        {% else %}
-          <li data-target="#myCarousel" data-slide-to="{{forloop.counter0}}">{{ forloop.counter }}</li>
-        {% endif %}
-      {% endfor %}
-    </ol>
+  <div class='container'>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <!-- Indicators -->
+      <ol class="carousel-indicators carousel-indicators-numbers">
+        {% for photo in photos %}
+          {% if forloop.first %}
+            <li data-target="#myCarousel" data-slide-to="0" class="active">1</li>
+          {% else %}
+            <li data-target="#myCarousel" data-slide-to="{{forloop.counter0}}">{{ forloop.counter }}</li>
+          {% endif %}
+        {% endfor %}
+      </ol>
 
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner" id="carousel-img" role="listbox">
-      {% for photo in photos %}
-        {% if forloop.first %}
-        <div class="item active">
-        {% else %}
-        <div class="item">
-        {% endif %}
-        <img class="index-img" src="{{ photo.flickr_photo_url }}" alt="" style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
-          <div class="carousel-caption">
-            <h3>{{ photo.title }}</h3>
-            <br>
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner" id="carousel-img" role="listbox">
+        {% for photo in photos %}
+          {% if forloop.first %}
+          <div class="item active">
+          {% else %}
+          <div class="item">
+          {% endif %}
+          <img class="index-img" src="{{ photo.flickr_photo_url }}" alt="" style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+            <div class="carousel-caption">
+              <h3>{{ photo.title }}</h3>
+              <br>
+            </div>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
     </div>
-
-    <!-- used for record liked and votes-->
-    <div style='display:none;'>
-      {% for photo in photos %}
-        <div id="{{photo.facebook_post_id}}">
-          <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
-          <a><span class="fa fa-thumbs-up hover-blue"></span></a>
-        </div>
-      {% endfor %}
-    </div>
-    <!-- Left and right controls -->
-    <!--
-    <a class="left carousel-control left-control" href="#myCarousel" role="button" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control right-control" href="#myCarousel" role="button" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-    -->
-
-
+  </div>
+  <!-- used for record liked and votes-->
+  <div style='display:none;'>
+    {% for photo in photos %}
+      <div id="{{photo.facebook_post_id}}">
+        <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
+        <a><span class="fa fa-thumbs-up hover-blue"></span></a>
+      </div>
+    {% endfor %}
   </div>
   {% endif %}
   <br><br>
@@ -101,7 +89,7 @@ function changeText(){
 }
 $(function(){
     $('#myCarousel.slide').carousel({
-        interval: 3000,
+        interval: 5000,
         pause: "hover"
     });
 
@@ -112,5 +100,5 @@ $(function(){
     });
 });
 </script>
-{% include "photos/photoDetailModal.html" %}
+{% include "photos/modal.html" %}
 {% endblock body_block %}

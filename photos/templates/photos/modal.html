@@ -1,0 +1,200 @@
+
+<style type="text/css">
+	.fb_avatar_frame{
+		width:50px;
+		height:50px;
+		display:inline-block;
+		vertical-align: top;
+	}
+	.fb_text_frame{
+		display:inline-block;
+		width:calc(100% - 65px);
+		margin-left:10px;
+	}
+	.fb_name{
+		color:#3B5998;
+		font-weight:bold;
+	}
+
+	.fb_like{
+		float: right;
+		cursor: pointer;
+	}
+	.fb_like:hover{
+		color: #3B5998;
+	}
+
+	.round_radius{
+		border-radius: 4px;
+	}
+
+	#photo_liked,#photo_flickr{
+		color: gray;
+		cursor: pointer;
+	}
+
+	#photo_liked:hover{
+		color: #3B5998;
+	}
+
+	#photo_flickr:hover{
+		color: #ff0066;
+	}
+
+	#btn_close_modal, #btn_add_comment{
+		margin-left: 10px;
+		padding: 3px 10px;
+		float:right;
+	}
+
+	#btn_add_comment{
+		border-color: #3B5998;
+		background-color:#3B5998;
+		color: white;
+	}
+
+	#btn_add_comment:hover{
+		border-color: #2b416e;
+		background-color:#2b416e
+	}
+	#photo_liked{
+		font-weight: bold;
+	}
+	.liked{
+		color: 	#0072E3;
+	}
+</style>
+
+<div id="photoModal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-lg">
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      	<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	        	<h2 class="modal-title" id='modal_title'>Modal Header</h2>
+	      	</div>
+	      	<div class="modal-body">
+	      		<img id='photo' width="100%">
+	      		<hr>
+	      		<div class='row'>
+	      			<div class='col-xs-8'>
+	      				<p id='photo_title'style="font-weight:bold; font-size:20px;"></p>
+			        	<br>
+			        	<p id='content'>Some text in the modal.</p>
+			        	<br>
+	      			</div>
+	      			<div class='col-xs-4'>
+	      				<p>
+	      					票數：&nbsp;<span id='photo_votes'></span>&nbsp;
+	      					<span id='photo_liked'><i class="fa fa-thumbs-o-up"></i></span>&nbsp;
+	      					<a id ='photo_flickr' target='__flickr'><i class="fa fa-flickr"></i></a>
+	      				</p>
+	      				<p><i class="fa fa-user"></i>&nbsp;<span id='photo_owner'></span></p>
+	      				<p><i class="fa fa-map-marker"></i>&nbsp;<span id='photo_location'></span></p>
+	      				<p style='line-height:200%;'><i class="fa fa-tag"></i>&nbsp;標籤：<span id='photo_tags'></span></p>
+	      			</div>
+	      		</div>
+	        	<div id='facebook_comments'>
+	        	</div>
+	        	<hr>
+	        	<div style='overflow : auto;'>
+        			<label for="comment" style='font-size:15px; font-weight:bold; '>留言：</label>
+        			<textarea class="form-control round_radius" name='comment' id='comment'></textarea>
+        			<br>
+        			<button id ='btn_add_comment' type="button" class='btn btn-primary'>發表</button>
+        			<button id ='btn_close_modal' type="button" class='btn btn-default' data-dismiss="modal">關閉</button>
+        		</div>
+	        	<div style='display:none;'>
+	        		<div id='fb_comment_template'>
+	        			<div class='fb_avatar_frame'>
+	        				<img width="100%">
+	        			</div >
+	        			<div class='fb_text_frame'>
+	        				<span class='fb_name'>使用者</span>
+	        				<span class='fb_like'><i class="fa fa-thumbs-o-up">&nbsp;</i><span class='fb_likecount'>333</span>&nbsp;&nbsp;</span>
+	        				<p class='fb_message'>留言</p>
+	        			</div>
+	        		</div>
+	        		</div>
+	      	</div>
+	      	<!--div class="modal-footer">
+
+	      	</div-->
+	    </div>
+
+	</div>
+</div>
+<script type="text/javascript">
+	function loadModal(modal_id,dataObj){
+		if (modal_id[0] != '#')
+			modal_id = '#'+modal_id;
+		$(modal_id).modal('toggle');
+		$(modal_id).on('shown.bs.modal', function (e) {
+		  	$(modal_id+' .modal-title').html(dataObj.title);
+			$(modal_id+' .modal-body #photo').attr('src',dataObj.photo_url);
+			$(modal_id+' .modal-body #photo_title').html(dataObj.title);
+			$(modal_id+' .modal-body #photo_location').html(dataObj.location);
+			$(modal_id+' .modal-body #photo_owner').html(dataObj.owner);
+			$(modal_id+' .modal-body #content').html(dataObj.content.replace(/(\n|\r)+/g,'<br>'));
+			$(modal_id+' .modal-body #photo_votes').html(dataObj.votes);
+			$(modal_id+' .modal-body #photo_flickr').attr('href',dataObj.flickr_url);
+			if (dataObj.hasLiked == 'liked'){
+				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').addClass('liked');
+			}
+			else{
+				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').removeClass('liked');
+			}
+			$(modal_id+' .modal-body #photo_liked').attr('onclick','postLike_btn("'+dataObj.facebook_post_id+'")');
+			$(modal_id+' #btn_add_comment').attr('onclick','post_command("'+modal_id+'","'+dataObj.facebook_post_id+'")');
+			var photo_comments = $('#facebook_comments');
+			photo_comments.empty();
+			for (i in dataObj.comment_list){
+				item = $('#fb_comment_template').clone();
+				item.removeAttr('id');
+				$('.fb_avatar_frame img',item).attr('src',dataObj.comment_list[i].avatar_url);
+				$('.fb_text_frame .fb_name',item).html(dataObj.comment_list[i].name);
+				$('.fb_text_frame .fb_likecount',item).html(dataObj.comment_list[i].likes_count);
+				$('.fb_text_frame .fb_message',item).html(dataObj.comment_list[i].message.replace(/(\n|\r)+/g,'<br>'));
+				var tmp_id = dataObj.comment_list[i].comment_id;
+				$('.fb_text_frame .fb_like',item).attr('onclick','likeComment("'+tmp_id+'",$(this))');
+				/*$('.fb_text_frame .fb_like',item).click(function(){
+					likeComment(tmp_id, $(this));
+				});*/
+				photo_comments.append('<hr>');
+				photo_comments.append(item);
+			}
+			tag_list = dataObj.tags.split(' ');
+			var photo_tags = $('#photo_tags');
+			photo_tags.empty();
+			for (i in tag_list){
+				photo_tags.append('&nbsp;<span class="label round_radius label-default label-xs" >'+tag_list[i]+'</span>');
+				//photo_tags.append('&nbsp;<button type="button" class="btn round_radius btn-default btn-xs" >'+tag_list[i]+'</button>');
+			}
+		})
+	}
+
+	function getPhotoDetails(facebook_post_id){
+		$.ajax({
+			url: "{% url 'photos:ajax_get_photo_details'%}",
+			method: 'POST',
+			data:{
+				'csrfmiddlewaretoken': getCookie('csrftoken'),
+				'facebook_post_id': facebook_post_id,
+			},
+			success: function(response){
+				console.log(response.photo)
+				if ($('#'+facebook_post_id+' h2 font').html())
+					response.photo.votes = $('#'+facebook_post_id+' h2 font').html()
+				if ($('#'+facebook_post_id+' .fa-thumbs-up').hasClass('liked'))
+					response.photo.hasLiked = 'liked'
+				else
+					response.photo.hasLiked = ''
+				loadModal('#photoModal',response.photo)
+			},
+			error: function(response){
+				console.log(response)
+			},
+		})
+	}
+</script>
+

@@ -44,7 +44,6 @@ function init_tag_typeahead(id_input , _all_tags, _hot_tags, _recent_tags){
 			source: substringMatcher(all_tags)
 		}],
 	});
-
 	tag_input.on('itemAdded', function(event) {
 	 	$('#tag_count').html(tag_input.tagsinput('items').length)
 	});
