@@ -26,7 +26,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -148,7 +148,4 @@ EMAIL_HOST_PASSWORD = get_config('client', 'email_password')
 
 EMAIL_PORT = 587
 
-ALLOWED_HOSTS = [
-	'photos.cc.nthu.edu.tw',
-]
 
