@@ -32,8 +32,8 @@ function postLike_btn(facebook_post_id){
 		      	}
 			}
 			else{
-			   	console.log('Please login and grant the permission');
-			   	alert('Please login and grant the permission');
+			   	console.log('Please login and accept the permission');
+			   	alert('Please login and accept the permission');
 			}
 		}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
 	}
@@ -53,7 +53,9 @@ function __facebook_post_like(facebook_post_id,method,element){
 	      			element.html(element.html()-1);
 	      	}
 	      	else{
-	      		hasLiked = false;
+	      		hasLogin = false;
+				alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
+				$('#'+facebook_post_id+' .fa-thumbs-up').toggleClass("liked");
 	      	}
 	    }
 	);
@@ -67,6 +69,11 @@ window.fbAsyncInit = function() {
 		xfbml      : true,  // parse social plugins on this page
 		version    : 'v2.5' // use version 2.2
 	});
+
+
+	FB.getLoginStatus(function(response) {
+    	statusChangeCallback(response);
+  	});
 };
 
 (function(d, s, id) {
@@ -77,3 +84,22 @@ window.fbAsyncInit = function() {
 		fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk')
 );
+
+function statusChangeCallback(response) {
+    if (response.status === 'connected') {
+      	hasLogin = true;
+    } else if (response.status === 'not_authorized') {
+      	//alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
+
+    } else {
+      	//alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
+
+    }
+}
+
+function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+	      statusChangeCallback(response);
+    });
+}
+
