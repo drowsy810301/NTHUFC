@@ -1,12 +1,13 @@
 #coding=utf-8
-
+import hashlib
+import random
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.views.decorators.csrf import ensure_csrf_cookie
-from users.forms import LoginForm
+from users.forms import LoginForm, ForgetPasswordForm
 from django.core.urlresolvers import reverse
 from photos.models import Photo,Tag
 from users.models import Account
@@ -17,8 +18,36 @@ from photos.socialApplication import uploadPhoto, deletePhoto
 from axes.utils import reset
 from axes.decorators import watch_login, get_ip, FAILURE_LIMIT, get_user_attempts
 from axes.models import AccessAttempt
+from django.core.mail import EmailMultiAlternatives
+from func import get_config
 # Create your views here.
 
+EMAIL_HOST_USER = get_config('client', 'email_account')
+
+def send_forget_password_email(request, user):
+    username = user.username
+    email = user.email
+    salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+    activation_key = hashlib.sha1(salt+email).hexdigest()
+    # Create and save user profile
+    UserProfile.objects.filter(user=user).delete()
+    new_profile = UserProfile(user=user, activation_key=activation_key)
+    new_profile.save()
+
+    # Send email with activation key
+    profile_link = request.META['HTTP_HOST'] + \
+        reverse('users:forget_password_confirm', kwargs={'activation_key': activation_key})
+    email_subject = 'Password Reset'
+    email_body = render_to_string('index/forget_password_email.html',
+                    {'username': username, 'profile_link': profile_link,
+                    'active_time': new_profile.active_time})
+    msg = EmailMultiAlternatives(email_subject, email_body, EMAIL_HOST_USER, [email])
+    msg.attach_alternative(email_body, "text/html")
+
+    try:
+        Thread(target=msg.send, args=()).start()
+    except:
+        logger.warning("There is an error when sending email to %s's mailbox" % username)
 
 def get_attemps(request):
     remain_times = 0
@@ -116,7 +145,29 @@ def login(request):
 
     return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
 
+def forget_password(request):    
+    F = ForgetPasswordForm
+    
+    if request.method == 'GET':
+        form = F()
+    else:
+        form = F(data=request.POST)
+        if form.is_valid():
+            user = authenticate(
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password'])
+            if user:
+                auth_login(request, user)
+                return redirect(reverse('users:profile'))
+            else:               
+                return render(request, 'index/forget_password.html', {'form': form})
 
+        else:            
+            return render(request, 'index/forget_password.html', {'form': form})
+
+    return render(request, 'index/forget_password.html', {'form': form})
+
+    
 def logout(request):
     auth_logout(request)
     return redirect(reverse('index:index'))

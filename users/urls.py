@@ -7,5 +7,5 @@ urlpatterns = patterns('',
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^delete_photo/(?P<delete_id>.*)/$', views.delete_photo),
     url(r'^locked/$', views.locked_out, name='locked_out'),
-
+    url(r'^forget_password/$', views.forget_password, name='forget_password'),
 )
