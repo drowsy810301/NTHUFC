@@ -10,7 +10,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from users.forms import LoginForm, ForgetPasswordForm
 from django.core.urlresolvers import reverse
 from photos.models import Photo,Tag
-from users.models import Account
+from users.models import Account, UserProfile
 from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
@@ -19,17 +19,23 @@ from axes.utils import reset
 from axes.decorators import watch_login, get_ip, FAILURE_LIMIT, get_user_attempts
 from axes.models import AccessAttempt
 from django.core.mail import EmailMultiAlternatives
-from func import get_config
+from django.conf import settings
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from threading import Thread
 # Create your views here.
 
-EMAIL_HOST_USER = get_config('client', 'email_account')
+
 
 def send_forget_password_email(request, user):
     username = user.username
     email = user.email
     salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
     activation_key = hashlib.sha1(salt+email).hexdigest()
-    # Create and save user profile
+    
+    #Create and save user profile
     UserProfile.objects.filter(user=user).delete()
     new_profile = UserProfile(user=user, activation_key=activation_key)
     new_profile.save()
@@ -47,7 +53,7 @@ def send_forget_password_email(request, user):
     try:
         Thread(target=msg.send, args=()).start()
     except:
-        logger.warning("There is an error when sending email to %s's mailbox" % username)
+        print ("There is an error when sending email to %s's mailbox" % username)
 
 def get_attemps(request):
     remain_times = 0
@@ -145,20 +151,20 @@ def login(request):
 
     return render(request, 'index/login.html', {'form': form, 'remain_times': remain_times })
 
-def forget_password(request):    
-    F = ForgetPasswordForm
+def forget_password(request):
+    if request.user.is_authenticated():
+        return redirect(reverse('index:index'))
     
+    F = ForgetPasswordForm
     if request.method == 'GET':
         form = F()
     else:
         form = F(data=request.POST)
         if form.is_valid():
-            user = authenticate(
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'])
+            user = Account.objects.get(username=form.cleaned_data['username'], email=form.cleaned_data['email'])           
             if user:
-                auth_login(request, user)
-                return redirect(reverse('users:profile'))
+                send_forget_password_email(request, user)
+                messages.add_message(request, messages.SUCCESS, '信件已寄送')
             else:               
                 return render(request, 'index/forget_password.html', {'form': form})
 
@@ -166,7 +172,29 @@ def forget_password(request):
             return render(request, 'index/forget_password.html', {'form': form})
 
     return render(request, 'index/forget_password.html', {'form': form})
+    
+def forget_password_confirm(request, activation_key):
+    """check if user is already logged in and if he
+    is redirect him to some other url, e.g. home
+    """
+    if request.user.is_authenticated():
+        return redirect(reverse('index:index'))
 
+    '''check if there is UserProfile which matches
+    the activation key (if not then display 404)
+    '''
+    # clear expired activation_key
+    UserProfile.objects.filter(active_time__lte=datetime.datetime.now()).delete()
+
+    user_profile = get_object_or_404(UserProfile, activation_key=activation_key)
+    user = user_profile.account
+    user.backend = 'users.backends.EmailAuthBackend'
+    #user.is_active = True
+    user.save()
+    # Let user login, so as to modify password
+    auth_login(request, user)
+    print ('User %s is ready to reset his/her password' % user.username)
+    return redirect(reverse('users:profile))
     
 def logout(request):
     auth_logout(request)
