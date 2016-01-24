@@ -80,7 +80,7 @@ def get_attemps(request):
 @login_required
 @ensure_csrf_cookie
 def users(request):
-    account = request.user    
+    account = request.user
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
     #print photos.count()
@@ -191,7 +191,7 @@ def forget_password_confirm(request, activation_key):
 
     user_profile = get_object_or_404(UserProfile, activation_key=activation_key)
     user = user_profile.account
-    print user.email
+
     user.backend = 'users.backends.EmailAuthBackend'
     #user.is_active = True
     user.save()

@@ -63,7 +63,7 @@ class ForgetPasswordForm(forms.Form):
         self.helper.form_tag = False
         self.fields['username'].label = u'姓名'
         self.fields['email'].label = u'信箱'
-    
+
         self.helper.layout = Layout(
             Div(
                 Fieldset(
@@ -78,8 +78,8 @@ class ForgetPasswordForm(forms.Form):
                 ),
                 css_class="forget-password-form",
             ),
-        )        
-        
+        )
+
     def clean(self):
         cleaned_data = self.cleaned_data
         email = self.cleaned_data.get("email")
@@ -148,4 +148,3 @@ class ResetPasswordForm(forms.Form):
             raise forms.ValidationError("密碼不一致")
 
         return cleaned_data
-        
