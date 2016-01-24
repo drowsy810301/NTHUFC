@@ -7,12 +7,14 @@ function postLike_btn(facebook_post_id){
 		method = 'DELETE'
 		foo = function(){
 			v.html(Number(v.html())-1);
+			$('#photo_votes').html(Number($('#photo_votes').html())-1);
 		};
 	}
 	else{
 		method = 'POST'
 		foo = function(){
 			v.html(Number(v.html())+1);
+			$('#photo_votes').html(Number($('#photo_votes').html())+1);
 		};
 	}
 
@@ -129,7 +131,7 @@ function post_command(modal_id, facebook_post_id){
 								$('.fb_avatar_frame img',item).attr('src',avatar_url);
 								$('.fb_text_frame .fb_name',item).html(name);
 								$('.fb_text_frame .fb_likecount',item).html(0);
-								$('.fb_text_frame .fb_message',item).html($(modal_id+' #comment').val());
+								$('.fb_text_frame .fb_message',item).html($(modal_id+' #comment').val().replace(/(\n|\r)+/g,'<br>'));
 								$('.fb_text_frame .fb_like',item).click(function(){
 									likeComment(response.id, $(this));
 								});

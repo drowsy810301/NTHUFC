@@ -12,5 +12,5 @@ urlpatterns = patterns('',
     url(r'^ajax_get_votes/', views.ajax_get_votes, name='ajax_get_votes'),
     url(r'^ajax_get_photo_details/', views.ajax_get_photo_details, name='ajax_get_photo_details'),
     url(r'^vote/', views.vote, name='vote'),
-    url(r'^test/', views.test, name='test'),
 )
+

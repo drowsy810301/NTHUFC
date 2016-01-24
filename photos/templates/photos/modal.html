@@ -60,6 +60,9 @@
 	#photo_liked{
 		font-weight: bold;
 	}
+	.liked{
+		color: 	#0072E3;
+	}
 </style>
 
 <div id="photoModal" class="modal fade" role="dialog">
@@ -84,7 +87,7 @@
 	      				<p>
 	      					票數：&nbsp;<span id='photo_votes'></span>&nbsp;
 	      					<span id='photo_liked'><i class="fa fa-thumbs-o-up"></i></span>&nbsp;
-	      					<a id ='photo_flickr' target='__flickr'><i class="fa fa-flickr"></i></a>
+	      					<a id ='photo_flickr' target='_flickr'><i class="fa fa-flickr"></i></a>
 	      				</p>
 	      				<p><i class="fa fa-user"></i>&nbsp;<span id='photo_owner'></span></p>
 	      				<p><i class="fa fa-map-marker"></i>&nbsp;<span id='photo_location'></span></p>
@@ -135,17 +138,14 @@
 			$(modal_id+' .modal-body #content').html(dataObj.content.replace(/(\n|\r)+/g,'<br>'));
 			$(modal_id+' .modal-body #photo_votes').html(dataObj.votes);
 			$(modal_id+' .modal-body #photo_flickr').attr('href',dataObj.flickr_url);
-			if (dataObj.hasLiked){
-				$(modal_id+' .modal-body #photo_liked').addClass('liked');
+			if (dataObj.hasLiked == 'liked'){
+				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').addClass('liked');
 			}
-			$(modal_id+' .modal-body #photo_liked').off('click');
-			$(modal_id+' .modal-body #photo_liked').click(function(){
-				postLike_btn(dataObj.facebook_post_id);
-			});
-			$(modal_id+' #btn_add_comment').off('click');
-			$(modal_id+' #btn_add_comment').click(function(){
-				post_command(modal_id,dataObj.facebook_post_id);
-			});
+			else{
+				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').removeClass('liked');
+			}
+			$(modal_id+' .modal-body #photo_liked').attr('onclick','postLike_btn("'+dataObj.facebook_post_id+'")');
+			$(modal_id+' #btn_add_comment').attr('onclick','post_command("'+modal_id+'","'+dataObj.facebook_post_id+'")');
 			var photo_comments = $('#facebook_comments');
 			photo_comments.empty();
 			for (i in dataObj.comment_list){
@@ -154,11 +154,12 @@
 				$('.fb_avatar_frame img',item).attr('src',dataObj.comment_list[i].avatar_url);
 				$('.fb_text_frame .fb_name',item).html(dataObj.comment_list[i].name);
 				$('.fb_text_frame .fb_likecount',item).html(dataObj.comment_list[i].likes_count);
-				$('.fb_text_frame .fb_message',item).html(dataObj.comment_list[i].message);
+				$('.fb_text_frame .fb_message',item).html(dataObj.comment_list[i].message.replace(/(\n|\r)+/g,'<br>'));
 				var tmp_id = dataObj.comment_list[i].comment_id;
-				$('.fb_text_frame .fb_like',item).click(function(){
+				$('.fb_text_frame .fb_like',item).attr('onclick','likeComment("'+tmp_id+'",$(this))');
+				/*$('.fb_text_frame .fb_like',item).click(function(){
 					likeComment(tmp_id, $(this));
-				});
+				});*/
 				photo_comments.append('<hr>');
 				photo_comments.append(item);
 			}
@@ -196,3 +197,4 @@
 		})
 	}
 </script>
+

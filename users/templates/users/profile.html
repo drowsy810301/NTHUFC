@@ -71,7 +71,7 @@
               {% if photo.isReady %}
               <img class='gallery' src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
               {% else %}
-              <img class='gallery' src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))" class="desaturate">
+              <img class='gallery desaturate' src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))">
               {% endif %}
                   <div class="overlay">
                       {% if photo.isReady %}
