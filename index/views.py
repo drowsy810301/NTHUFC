@@ -94,8 +94,7 @@ def privacypolicy(request):
 
 def map(request):
     if request.method =="GET":
-        query = request.GET.get('search', False)
-        q = request.GET.get('search')
+        query = request.GET.get('search', '')
         photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
         markers = []
         tmp = []
@@ -109,7 +108,7 @@ def map(request):
     return render(request, "index/map.html",
         {
             'photos': photos,
-            'query': q,
+            'query': query,
             'marker_list':markers,
             'tags': tags,
         })

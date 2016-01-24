@@ -9,10 +9,11 @@
 {% block import_source %}
 	<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
 	<script src="{% static 'js/gallery.js' %}" ></script>
+	<script src="{% static 'js/fb_post_like.js' %}" ></script>
 {% endblock import_source %}
 
 {% block body_block %}
-	
+
 	<style>
 		#google_map{
 		    width:100%;
@@ -23,172 +24,56 @@
 	</style>
 
 	<script>
-		var hasLogin = false
 		initGallery();
-
-		function postLike_btn(button,facebook_post_id){
-			var method = ''
-			if ($('span',button).hasClass('liked')){
-				method = 'DELETE'
-			}
-			else{
-				method = 'POST'
-			}
-			$('span',button).toggleClass("liked");
-
-			if (hasLogin){
-				FB.api(
-				    "/"+facebook_post_id+"/likes",
-				    method,
-				    function (response) {
-				    	console.log(response)
-				      	if (response && !response.error) {
-				      		var v = $('#'+facebook_post_id+' h2 font')
-				      		if (method == 'POST')
-				      			v.html(Number(v.html())+1);
-				      		else
-				      			v.html(v.html()-1);
-				      		console.log(v.html())
-				        	//getVotes(facebook_post_id);
-				      	}
-				    }
-				);
-			}
-			else{
-				FB.login(function(response) {
-					if (response.status === 'connected') {
-						var __facebook_user_id = response.authResponse.userID;
-						hasLogin = true
-				      	if (response && !response.error) {
-			        		FB.api(
-							    "/"+facebook_post_id+"/likes",
-							    method,
-							    function (response) {
-							    	console.log(response)
-							      	if (response && !response.error) {
-							      		var v = $('#'+facebook_post_id+' h2 font')
-							      		if (method == 'POST')
-							      			v.html(Number(v.html())+1);
-							      		else
-							      			v.html(v.html()-1);
-							      		console.log(v.html())
-							        	//getVotes(facebook_post_id);
-							      	}
-							    }
-							);
-				      	}
-				      	else{
-				      		console.log('login failed');
-				      		console.log(response);
-				      	}
-					}
-					else{
-					   	console.log('Please login and grant the permission');
-					   	alert('Please login and grant the permission');
-					}
-				}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
-			}
-
-		}
-
-		function getVotes(facebook_post_id){
-			$.ajax({
-				url: "{% url 'photos:ajax_get_votes' %}",
-				method: 'POST',
-				data:{
-					'csrfmiddlewaretoken': getCookie('csrftoken'),
-					'facebook_post_id': facebook_post_id,
-				},
-				success: function(response){
-					console.log(response)
-					$('#'+facebook_post_id+' h2').html(response.votes+'票');
-				},
-				error: function(response){
-					console.log(response)
-				},
-			});
-		}
-
-		function getCookie(name) {
-		    var cookieValue = null;
-		    if (document.cookie && document.cookie != '') {
-		        var cookies = document.cookie.split(';');
-		        for (var i = 0; i < cookies.length; i++) {
-		            var cookie = jQuery.trim(cookies[i]);
-		            // Does this cookie string begin with the name we want?
-		            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-		                break;
-		            }
-		        }
-		    }
-		    return cookieValue;
-		}
-
-		window.fbAsyncInit = function() {
-			FB.init({
-				appId      : '1645068735761448',
-				cookie     : true,  // enable cookies to allow the server to access
-			                        // the session
-				xfbml      : true,  // parse social plugins on this page
-				version    : 'v2.5' // use version 2.2
-			});
-		};
-
-		(function(d, s, id) {
-				var js, fjs = d.getElementsByTagName(s)[0];
-				if (d.getElementById(id)) return;
-				js = d.createElement(s); js.id = id;
-				js.src = "//connect.facebook.net/en_US/sdk.js";
-				fjs.parentNode.insertBefore(js, fjs);
-			}(document, 'script', 'facebook-jssdk')
-		);
 	</script>
 
 
-    <center>
-      <h1>搜尋內容: {{ query }}</h1>
-  		{% if photos.count == 0 %}
-        <h1>查無資料</h1>
-      {% endif %}
-    </center>
-    <div>
-    	{% for tag in tags %}
-    		<a onclick="filter_photos('{{tag}}');">{{ tag }}</a>
-    	{% endfor %}
-    </div>
+    <div class='container'>
+	    <center>
+	      <h1>搜尋內容: {{ query }}</h1>
+	  		{% if photos.count == 0 %}
+	        	<h1>查無資料</h1>
+	      	{% endif %}
+	    </center>
+	    <div class="row">
+	    	<span>標籤：</span><span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos('');">&nbsp;全部</span>
+	    	{% for tag in tags %}
+	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos('{{tag}}');">&nbsp;{{ tag }}</span>
+	    	{% endfor %}
+	    </div>
 
-    <div class="row" style="margin-left: 50px;">
-      <div class="col-md-7">
-      {% for photo in photos %}
-        <div id="{{ photo.facebook_post_id }}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-6 image_frame">
-	        <div class="hovereffect">
-	            <img src="{{photo.flickr_photo_url}}" alt="" onload="render_image($(this))">
-	            <div class="overlay">
-	              	<h2><font>{{ photo.votes }}</font>票</h2>
-	              	<p class="icon-links">
-	                <a href="#">
-	                  <span class="fa fa-info-circle hover-green"></span>
-	                </a>
-	                <a href="https://www.flickr.com/photos/138506275@N05/{{photo.flickr_photo_id}}/in/dateposted-public/"  target="_flickr">
-	                  <span class="fa fa-flickr hover-pink"></span>
-	                </a>
-	                <a style="cursor:pointer;" onclick="postLike_btn($(this),'"{{photo.facebook_post_id}}"')">
-	                  <span class="fa fa-thumbs-up hover-blue"></span>
-	                </a>
-	                </p>
-	            </div>
-            </div>
-        </div>
-      {% endfor %}
-      </div>
-      <div class="col-md-5">
-        <div id="google_map">
-        </div>
-      </div>
+	    <div class="row">
+	      	<div class="col-md-7">
+	      	{% for photo in photos %}
+		        <div id="{{ photo.facebook_post_id }}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-6 image_frame">
+			        <div class="hovereffect">
+			            <img class='gallery' src="{{photo.flickr_photo_url}}" alt="" onload="render_image($(this))">
+			            <div class="overlay">
+			              	<h2><font>{{ photo.votes }}</font>票</h2>
+			              	<p class="icon-links">
+			                <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+			                  	<span class="fa fa-info-circle hover-green"></span>
+			                </a>
+			                <a href="https://www.flickr.com/photos/138506275@N05/{{photo.flickr_photo_id}}/in/dateposted-public/"  target="_flickr">
+			                  	<span class="fa fa-flickr hover-pink"></span>
+			                </a>
+			                <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
+			                  	<span class="fa fa-thumbs-up hover-blue"></span>
+			                </a>
+			                </p>
+			            </div>
+		            </div>
+		        </div>
+		      {% endfor %}
+		      </div>
+		      <div class="col-md-5">
+	        	<div id="google_map">
+	        	</div>
+	      	</div>
+		</div>
 	</div>
 
-	<script async defer 
+	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl62RoU1i9n0MzNAmw8fcKGTVPryxNJLM&callback=initMap_1">
 	</script>
 
@@ -206,8 +91,6 @@
 		    google_map = new google.maps.Map(document.getElementById('google_map'),mapOptions);
 		    for ( i in markerList ) {
 		        addMarker_1(google_map, markerList[i].title, {lat: markerList[i].lat, lng: markerList[i].lng})
-		        if (markerList[i].title == $('#img-location').val())
-		        	google_map.setCenter({lat: markerList[i].lat, lng: markerList[i].lng})
 		    }
 		    console.log('google map loading finish')
 		}
@@ -221,19 +104,7 @@
 		    });
 
 		    marker.addListener('click', function() {
-		        $('#img-location').val(marker.title);
-		        google_map.setCenter(marker.getPosition());
-		        var filt_title = marker.title;
-		        filter_photos(filt_title);
-		        /*for( i in photo_list) {
-
-		        	if( photo_list[i].title.match(filt_title)==null && photo_list[i].content.match(filt_title)==null && photo_list[i].tags.match(filt_title)==null ){
-		        		document.getElementById(photo_list[i].fbID).style.display = 'none';
-		        	}
-		        	else {
-		        		document.getElementById(photo_list[i].fbID).style.display = 'block';
-		        	}
-		        }*/
+		        filter_photos(marker.title);
 		    });
 		}
 
@@ -243,7 +114,7 @@
 
 		function filter_photos(filt_key){
 			for( i in photo_list) {
-	        	if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null ){
+	        	if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
 	        		document.getElementById(photo_list[i].fbID).style.display = 'none';
 	        	}
 	        	else {
@@ -251,7 +122,6 @@
 	        	}
 	        }
 		}
-
 	</script>
 
 	<script type="text/javascript">
@@ -263,9 +133,9 @@
 
 		var photo_list = []
 		{% for photo in photos %}
-			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}'})
+			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}'})
 		{% endfor %}
-
 	</script>
 
+	{% include "photos/modal.html" %}
 {% endblock body_block %}
