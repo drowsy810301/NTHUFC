@@ -75,7 +75,7 @@ function initMap() {
         center: myLatLng,
     };
     google_map = new google.maps.Map(document.getElementById('google_map'),mapOptions);
-    for ( i in markerList){
+    for ( i in markerList ) {
         addMarker(google_map, markerList[i].title, {lat: markerList[i].lat, lng: markerList[i].lng})
         if (markerList[i].title == $('#img-location').val())
         	google_map.setCenter({lat: markerList[i].lat, lng: markerList[i].lng})
@@ -92,11 +92,12 @@ function addMarker(map, title, location){
     });
 
     marker.addListener('click', function() {
-        $('#img-location').val(marker.title)
-        google_map.setCenter(marker.getPosition())
+        $('#img-location').val(marker.title);
+        google_map.setCenter(marker.getPosition());
     });
 }
 
 function initMarker(markers){
     markerList = markers
 }
+

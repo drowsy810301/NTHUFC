@@ -91,3 +91,25 @@ def poster(request):
     return render(request, 'index/poster.html')
 def privacypolicy(request):
     return render(request, 'index/privacypolicy.html')
+
+def map(request):
+    if request.method =="GET":
+        query = request.GET.get('search', '')
+        photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
+        markers = []
+        tmp = []
+        for photo in photos:
+            markers.append(photo.location_marker)
+            tmp2 = photo.tags.split()
+            for tag in tmp2:
+                tmp.append(tag)
+        tags = list(set(tmp))
+
+    return render(request, "index/map.html",
+        {
+            'photos': photos,
+            'query': query,
+            'marker_list':markers,
+            'tags': tags,
+        })
+
