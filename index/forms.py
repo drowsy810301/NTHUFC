@@ -39,7 +39,7 @@ class AccountCreationFrom(forms.ModelForm):
         self.fields['username'].widget = forms.TextInput(attrs={'placeholder': u'請填寫真實姓名,將來領獎的時候會用來驗證您的身分'})
         self.fields['nickname'].widget = forms.TextInput(attrs={'placeholder': u'建議取特別的暱稱，以便與其他參賽者區隔'})
         self.fields['password'].widget = forms.PasswordInput(attrs={'placeholder': u'密碼必須由6~10個英文或數字組成,忘記請與我們聯繫','maxlength':10})
-        self.fields['email'].widget = forms.PasswordInput(attrs={'placeholder': u'email會作為您的帳號喔'})
+        self.fields['email'].widget = forms.TextInput(attrs={'placeholder': u'email會作為您的帳號喔'})
 
         self.helper.layout = Layout(
             Fieldset(
