@@ -22,7 +22,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."),)
 SECRET_KEY = '6(22##hs25803n-k!cx!$^l@16-$_ke-8s9h=bkw+ytcx%mc8e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
@@ -90,6 +90,7 @@ DATABASES = {
     }
 }
 '''
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -139,9 +140,15 @@ STATICFILES_FINDERS = (
     'djangobower.finders.BowerFinder',
 )
 
+
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = get_config('client', 'email_account')
 EMAIL_HOST_PASSWORD = get_config('client', 'email_password')
 
 EMAIL_PORT = 587
+
+ALLOWED_HOSTS = [
+	'photos.cc.nthu.edu.tw',
+]
+

@@ -103,7 +103,7 @@ def users(request):
             for photo in photoList:
                 photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
                 photo.save()
-                uploadPhoto(photo)
+                #uploadPhoto(photo)
             account.updatePhotosRank()
             return redirect(reverse('users:profile'))
         else:
