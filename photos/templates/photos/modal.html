@@ -138,6 +138,7 @@
 			$(modal_id+' .modal-body #content').html(dataObj.content.replace(/(\n|\r)+/g,'<br>'));
 			$(modal_id+' .modal-body #photo_votes').html(dataObj.votes);
 			$(modal_id+' .modal-body #photo_flickr').attr('href',dataObj.flickr_url);
+			$(modal_id+' #comment').val('');
 			if (dataObj.hasLiked == 'liked'){
 				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').addClass('liked');
 			}
