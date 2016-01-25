@@ -88,23 +88,32 @@ def q_a(request):
     return render(request, 'index/q_a.html')
 
 def map(request):
-    if request.method =="GET":
+    flag = 0
+    if request.method == "GET":
         query = request.GET.get('search', False)
         q = request.GET.get('search')
-        photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
-        markers = []
-        tmp = []
-        for photo in photos:
-            markers.append(photo.location_marker)
-            tmp2 = photo.tags.split()
-            for tag in tmp2:
-                tmp.append(tag)
-        tags = list(set(tmp))
-
-    return render(request, "index/map.html",
-        {
-            'photos': photos,
-            'query': q,
-            'marker_list':markers,
-            'tags': tags,
-        })
+        if q==None or q=='':
+            return render(request, "index/map.html",
+            {
+                'marker_list': Marker.objects.all(),
+                'flag': flag,
+            })
+        else:
+            flag = 1
+            photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
+            markers = []
+            tmp = []
+            for photo in photos:
+                markers.append(photo.location_marker)
+                tmp2 = photo.tags.split()
+                for tag in tmp2:
+                    tmp.append(tag)
+            tags = list(set(tmp))
+            return render(request, "index/map.html",
+                {
+                    'photos': photos,
+                    'query': q,
+                    'marker_list': markers,
+                    'tags': tags,
+                    'flag': flag,
+                })
