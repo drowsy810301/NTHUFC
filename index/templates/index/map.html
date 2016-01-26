@@ -10,13 +10,22 @@
 	<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
 	<script src="{% static 'js/gallery.js' %}" ></script>
 	<script src="{% static 'js/fb_post_like.js' %}" ></script>
+	<script src="{% static 'js/map.js' %}" ></script>
 {% endblock import_source %}
 
 {% block body_block %}
 
 	<style>
+		#map-container {
+		    width: 40%;
+		    height: 100%;
+		    position: fixed;
+		    margin-left:650px;
+		}
+
 		#google_map{
-		    width:100%;
+			position:fixed;
+		    width:60%;
 		    height:500px;
 		    display: block;
 		    margin-top:5px;
@@ -34,12 +43,15 @@
 	  		{% if photos.count == 0 %}
 	        	<h1>查無資料</h1>
 	      	{% endif %}
+	      <h3 id="show_tag">目前Tag:</h3>
+	      <h3 id="show_marker">目前Map Marker: </h3>
 	    </center>
 	    <div class="row">
 	    	<span>標籤：</span><span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos('');">&nbsp;全部</span>
 	    	{% for tag in tags %}
-	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos('{{tag}}');">&nbsp;{{ tag }}</span>
+	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos2('{{tag}}');">&nbsp;{{ tag }}</span>
 	    	{% endfor %}
+	    	<button onclick="cancel_filter();">Cancel Filter</button>
 	    </div>
 
 	    <div class="row">
@@ -66,62 +78,15 @@
 		        </div>
 		      {% endfor %}
 		      </div>
-		      <div class="col-md-5">
+		      <div class="col-md-5" id="map-container">
 	        	<div id="google_map">
 	        	</div>
-	      	</div>
+	      	  </div>
 		</div>
 	</div>
 
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl62RoU1i9n0MzNAmw8fcKGTVPryxNJLM&callback=initMap_1">
-	</script>
-
-	<script>
-		var markerList = [];
-		var google_map;
-
-		function initMap_1() {
-		    var myLatLng = {lat: 24.7945436, lng: 120.9932738};
-
-		    var mapOptions = {
-		        zoom: 16,
-		        center: myLatLng,
-		    };
-		    google_map = new google.maps.Map(document.getElementById('google_map'),mapOptions);
-		    for ( i in markerList ) {
-		        addMarker_1(google_map, markerList[i].title, {lat: markerList[i].lat, lng: markerList[i].lng})
-		    }
-		    console.log('google map loading finish')
-		}
-
-		function addMarker_1(map, title, location){
-		    var marker = new google.maps.Marker({
-		        position: location,
-		        map: map,
-		        label: title,
-		        title: title,
-		    });
-
-		    marker.addListener('click', function() {
-		        filter_photos(marker.title);
-		    });
-		}
-
-		function initMarker(markers){
-		    markerList = markers
-		}
-
-		function filter_photos(filt_key){
-			for( i in photo_list) {
-	        	if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
-	        		document.getElementById(photo_list[i].fbID).style.display = 'none';
-	        	}
-	        	else {
-	        		document.getElementById(photo_list[i].fbID).style.display = 'block';
-	        	}
-	        }
-		}
 	</script>
 
 	<script type="text/javascript">
