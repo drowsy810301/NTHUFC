@@ -96,6 +96,7 @@ def map(request):
     if request.method =="GET":
         query = request.GET.get('search', '')
         photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
+        photos = photos.order_by('rank').reverse()
         markers = []
         tmp = []
         for photo in photos:
