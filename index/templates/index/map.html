@@ -47,9 +47,9 @@
 	      <h3 id="show_marker">目前Map Marker: </h3>
 	    </center>
 	    <div class="row">
-	    	<span>標籤：</span><span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos('');">&nbsp;全部</span>
-	    	{% for tag in tags %}
-	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="filter_photos2('{{tag}}');">&nbsp;{{ tag }}</span>
+	    	<span>標籤：</span><span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="cancel_filter();">&nbsp;全部</span>
+	    	{% for key, value in tagdic.items %}
+	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" title="一共有{{value}}張照片" onclick="filter_photos2('{{key}}');">&nbsp;{{ key }}</span>
 	    	{% endfor %}
 	    	<button onclick="cancel_filter();">Cancel Filter</button>
 	    </div>
@@ -96,10 +96,17 @@
 		{% endfor %}
 		initMarker(marker_list)
 
+		var marker_count = []
+		{% for key, value in markerdic.items %}
+			marker_count.push({'title': '{{key}}', 'count': {{value}} })
+		{% endfor %}
+		initMarkerCount(marker_count)
+
 		var photo_list = []
 		{% for photo in photos %}
 			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}'})
 		{% endfor %}
+
 	</script>
 
 	{% include "photos/modal.html" %}

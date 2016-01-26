@@ -1,4 +1,5 @@
 var markerList = [];
+var markerCount = [];
 var google_map;
 var flag = 0;
 
@@ -45,10 +46,31 @@ function addMarker_1(map, title, location){
     marker.addListener('click', function() {
         filter_photos(marker.title);
     });
+
+    for ( i in markerCount ) {
+        if( markerCount[i].title.match(marker.title) != null ){
+            var infowindow = new google.maps.InfoWindow({
+                content: '一共有' + markerCount[i].count + '張照片',
+            });
+            break;
+        }
+    }
+
+    /*var infowindow = new google.maps.InfoWindow({
+        //content: 'Hello World',
+    });*/
+
+    marker.addListener('mouseover', function() {
+        infowindow.open(map, marker);
+    });
 }
 
 function initMarker(markers){
     markerList = markers
+}
+
+function initMarkerCount(markers){
+    markerCount = markers
 }
 
 function filter_photos(filt_key){

@@ -98,19 +98,28 @@ def map(request):
         photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
         photos = photos.order_by('rank').reverse()
         markers = []
-        tmp = []
+        tagdic = dict()
+        markerdic = dict()
         for photo in photos:
             markers.append(photo.location_marker)
+            if photo.location_marker.title in markerdic:
+                markerdic[photo.location_marker.title] = markerdic[photo.location_marker.title] + 1
+            else:
+                markerdic[photo.location_marker.title] = 1
+
             tmp2 = photo.tags.split()
             for tag in tmp2:
-                tmp.append(tag)
-        tags = list(set(tmp))
+                if tag in tagdic:
+                    tagdic[tag] = tagdic[tag] + 1
+                else:
+                    tagdic[tag] = 1;
 
     return render(request, "index/map.html",
         {
             'photos': photos,
             'query': query,
             'marker_list':markers,
-            'tags': tags,
+            'tagdic': tagdic,
+            'markerdic': markerdic,
         })
 
