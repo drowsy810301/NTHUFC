@@ -7,7 +7,7 @@ import threading
 from django.utils import timezone
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.core.urlresolvers import reverse
 from .authorization_token import __facebook_page_token, __flickr_api_key, __flickr_api_secret
 from .models import Photo,Tag
 
@@ -127,6 +127,7 @@ def uploadUsingThread(photo):
 	print 'uploadPhotoresult' + str(result)
 
 	photo.isReady = True
+	photo.image.delete()
 	photo.save()
 	return result
 
@@ -332,3 +333,21 @@ def getPhotoModalDetails(photo):
 	}
 	#print obj
 	return obj
+
+def addFlickrFavorite(request_token_key, request_token_secret,oauth_verifier,photo_id):
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	a = flickr_api.auth.AuthHandler(request_token_key=request_token_key , request_token_secret=request_token_secret)
+	a.set_verifier(oauth_verifier)
+	flickr_api.set_auth_handler(a)
+	photo = flickr_api.Photo(id=photo_id)
+	photo.addToFavorites();
+	dd = a.todict()
+	return (dd['access_token_key'],dd['access_token_secret'])
+
+def getFlickrAuthorizationUrl(photo_id):
+	__DOMAIN_NAME = 'http://www.localhost:8000'
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	a = flickr_api.auth.AuthHandler(callback=__DOMAIN_NAME+reverse('photos:flickr_authorization_redirect', args=(photo_id,)))
+	#a = flickr_api.auth.AuthHandler()
+	dd = a.todict()
+	return (a.get_authorization_url('write'), dd['request_token_key'],dd['request_token_secret'])

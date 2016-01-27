@@ -73,15 +73,26 @@ class Photo(models.Model):
         return tagString;
 
     def delete(self, *args, **kwargs):
-        self.image.delete()
-        for tag_text in self.tags.split(' '):
-            if tag_text == '':
-                continue
-            try:
-                tag = Tag.objects.get(tag_name = tag_text)
-                tag.tag_count -= 1
-                tag.save()
-            except ObjectDoesNotExist:
-                pass
+
+        if self.isReady:
+            for tag_text in self.tags.split(' '):
+                if tag_text == '':
+                    continue
+                try:
+                    tag = Tag.objects.get(tag_name = tag_text)
+                    tag.tag_count -= 1
+                    tag.save()
+                except ObjectDoesNotExist:
+                    pass
+        else:
+            self.image.delete()
 
         super(Photo,self).delete(*args, **kwargs)
+
+    def admin_thumbnail(self):
+        if self.isReady:
+            return u'<img src="%s" height="150px"/>' % (self.flickr_photo_url)
+        else:
+            return u'<img src="%s" height="150px"/>' % (self.image.url)
+    admin_thumbnail.short_description = 'Thumbnail'
+    admin_thumbnail.allow_tags = True

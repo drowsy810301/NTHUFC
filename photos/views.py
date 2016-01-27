@@ -1,15 +1,15 @@
 # coding=utf-8
 
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
-from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails
+from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails, getFlickrAuthorizationUrl,addFlickrFavorite
 from .models import Photo, Tag
 from locationMarker.models import Marker
 from users.models import Account
-
+import time
 # Create your views here.
 def photos(request):
     return render(request, "photos/photos.html", {})
@@ -122,3 +122,31 @@ def ajax_get_photo_details(request):
 
 		return JsonResponse({'photo': getPhotoModalDetails(photo) })
 
+def test(request):
+	photo_id = '24325657360'
+	[url,request_token_key,request_token_secret] = getFlickrAuthorizationUrl(photo_id);
+
+	access_key = '@'+request.session.get('access_key','x')
+	access_secret = '@'+request.session.get('access_secret','x')
+
+	request.session['request_token_key'] = request_token_key
+	request.session['request_token_secret'] = request_token_secret
+
+	return render(request,'photos/testSession.html',{
+		'url': url,
+		'access_key':access_key,
+		'access_secret':access_secret,
+	})
+
+def flickr_authorization_redirect(request, photo_id):
+	if (request.method == 'GET'):
+		if ( 'oauth_verifier' in request.GET and \
+			'request_token_key' in request.session and \
+			'request_token_secret' in request.session):
+			oauth_verifier = request.GET['oauth_verifier']
+			[access_key,access_secret] = addFlickrFavorite(str(request.session['request_token_key']),str(request.session['request_token_secret']), str(oauth_verifier),str(photo_id))
+			request.session['access_key'] = access_key
+			request.session['access_secret'] = access_secret
+
+
+	return redirect('photos:vote');

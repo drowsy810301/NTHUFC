@@ -12,5 +12,7 @@ urlpatterns = patterns('',
     url(r'^ajax_get_votes/', views.ajax_get_votes, name='ajax_get_votes'),
     url(r'^ajax_get_photo_details/', views.ajax_get_photo_details, name='ajax_get_photo_details'),
     url(r'^vote/', views.vote, name='vote'),
+    url(r'^test/', views.test, name='test'),
+    url(r'^flickr_authorization_redirect/(?P<photo_id>[0-9]+)/', views.flickr_authorization_redirect, name='flickr_authorization_redirect'),
 )
 
