@@ -34,24 +34,27 @@
 
 	<script>
 		initGallery();
+		if('{{query}}' != ''){
+			document.getElementById("search_input").placeholder = '{{query}}';
+		}
 	</script>
 
 
     <div class='container'>
 	    <center>
-	      <h1>搜尋內容: {{ query }}</h1>
 	  		{% if photos.count == 0 %}
 	        	<h1>查無資料</h1>
+	        {% else %}
+	        	<h3 id="show_tag">目前Tag:</h3>
+	      		<h3 id="show_marker">目前Map Marker: </h3>
 	      	{% endif %}
-	      <h3 id="show_tag">目前Tag:</h3>
-	      <h3 id="show_marker">目前Map Marker: </h3>
 	    </center>
 	    <div class="row">
-	    	<span>標籤：</span><span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" onclick="cancel_filter();">&nbsp;全部</span>
+	    	<span>標籤：</span>
 	    	{% for key, value in tagdic.items %}
-	    		<span class = 'btn btn-default btn-xs' style="cursor:pointer; border-radius:4px;" title="一共有{{value}}張照片" onclick="filter_photos_ForTag('{{key}}');">&nbsp;{{ key }}</span>
+	    		<span class = 'btn btn-default btn-xs' id="{{key}}" style="cursor:pointer; border-radius:4px;" onclick="filter_photos_ForTag('{{key}}');">&nbsp;{{ key }} <span class="badge">{{value}}張</span></span>
 	    	{% endfor %}
-	    	<button onclick="cancel_filter();">Cancel Filter</button>
+	    	<span class = 'btn btn-default btn-xs' style="color: red; cursor:pointer; border-radius:4px;" onclick="cancel_filter();">取消過濾</span>
 	    </div>
 
 	    <div class="row">
@@ -76,12 +79,11 @@
 			            </div>
 		            </div>
 		        </div>
-		      {% endfor %}
-		      </div>
-		      <div class="col-md-5" id="map-container">
-	        	<div id="google_map">
-	        	</div>
-	      	  </div>
+		    {% endfor %}
+		    </div>
+		    <div class="col-md-5" id="map-container">
+	        	<div id="google_map"></div>
+	      	</div>
 		</div>
 	</div>
 
@@ -102,9 +104,15 @@
 		{% endfor %}
 		initMarkerCount(marker_count)
 
+		var tag_list = []
+		{% for tag in tag_list %}
+			tag_list.push({'title': '{{tag}}'})
+		{% endfor %}
+		initTag(tag_list)
+
 		var photo_list = []
 		{% for photo in photos %}
-			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}'})
+			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}', 'isReady': '{{photo.isReady}}'})
 		{% endfor %}
 
 	</script>

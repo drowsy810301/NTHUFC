@@ -97,6 +97,7 @@ def map(request):
         query = request.GET.get('search', '')
         photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
         photos = photos.order_by('rank').reverse()
+        tags = []
         markers = []
         tagdic = dict()
         markerdic = dict()
@@ -114,6 +115,8 @@ def map(request):
                     tagdic[tag] = tagdic[tag] + 1
                 else:
                     tagdic[tag] = 1;
+            for key in tagdic:
+                tags.append(key)
 
     return render(request, "index/map.html",
         {
@@ -122,5 +125,6 @@ def map(request):
             'marker_list':markers,
             'tagdic': tagdic,
             'markerdic': markerdic,
+            'tag_list': tags,
         })
 
