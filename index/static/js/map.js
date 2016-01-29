@@ -3,7 +3,7 @@ var markerCount = [];
 var google_map;
 var flag = 0;
 
-function initMap_1() {
+function initMap() {
 	var customMapType = new google.maps.StyledMapType([
 		  {
 		    stylers: [
@@ -30,12 +30,12 @@ function initMap_1() {
     google_map.mapTypes.set(customMapTypeId, customMapType);
 		google_map.setMapTypeId(customMapTypeId);
     for ( i in markerList ) {
-        addMarker_1(google_map, markerList[i].title, {lat: markerList[i].lat, lng: markerList[i].lng})
+        addMarker(google_map, markerList[i].title, {lat: markerList[i].lat, lng: markerList[i].lng})
     }
     console.log('google map loading finish')
 }
 
-function addMarker_1(map, title, location){
+function addMarker(map, title, location){
     var marker = new google.maps.Marker({
         position: location,
         map: map,
@@ -44,7 +44,7 @@ function addMarker_1(map, title, location){
     });
 
     marker.addListener('click', function() {
-        filter_photos(marker.title);
+        filter_photos_ForMarker(marker.title);
     });
 
     for ( i in markerCount ) {
@@ -73,7 +73,7 @@ function initMarkerCount(markers){
     markerCount = markers
 }
 
-function filter_photos(filt_key){
+function filter_photos_ForMarker(filt_key){
 	for( i in photo_list) {
     	if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
     		document.getElementById(photo_list[i].fbID).style.display = 'none';
@@ -85,7 +85,7 @@ function filter_photos(filt_key){
     document.getElementById("show_marker").innerHTML = "目前Map Marker: " + filt_key;
 }
 
-function filter_photos2(filt_key){
+function filter_photos_ForTag(filt_key){
 	for( i in photo_list) {
 		if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
     		if(flag == 0){

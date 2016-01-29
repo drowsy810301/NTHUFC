@@ -101,6 +101,7 @@ def map(request):
         tagdic = dict()
         markerdic = dict()
         for photo in photos:
+            photo.content = photo.content.replace("\r\n","")
             markers.append(photo.location_marker)
             if photo.location_marker.title in markerdic:
                 markerdic[photo.location_marker.title] = markerdic[photo.location_marker.title] + 1
