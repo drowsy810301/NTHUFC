@@ -1,15 +1,22 @@
 var hasLogin = false
 function postLike_btn(facebook_post_id){
-	if (!hasLogin){
-		alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
+	if ($('#'+facebook_post_id+' .facebook_btn').attr('disable') == 'true' ){
 		return;
 	}
+
+	$('#'+facebook_post_id+' .facebook_btn').toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+	$('#photoModal #photo_liked .facebook_btn').toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+	$('#'+facebook_post_id+' .facebook_btn').attr('disable',true);
+	$('#photoModal #photo_liked .facebook_btn').attr('disable',true);
+
 	var method = ''
 	var v = $('.votes_'+facebook_post_id)
 	var foo;
-	if ($('#'+facebook_post_id+' .fa-thumbs-up').hasClass('liked')){
+	if ($('#'+facebook_post_id+' .facebook_btn').hasClass('liked')){
 		method = 'DELETE'
 		foo = function(){
+			$('#'+facebook_post_id+' .facebook_btn').toggleClass("liked");
+			$('#photoModal #photo_liked .facebook_btn').toggleClass("liked");
 			v.html(Number(v.html())-1);
 			$('#photo_votes').html(Number($('#photo_votes').html())-1);
 		};
@@ -17,15 +24,22 @@ function postLike_btn(facebook_post_id){
 	else{
 		method = 'POST'
 		foo = function(){
+			$('#'+facebook_post_id+' .facebook_btn').toggleClass("liked");
+			$('#photoModal #photo_liked .facebook_btn').toggleClass("liked");
 			v.html(Number(v.html())+1);
 			$('#photo_votes').html(Number($('#photo_votes').html())+1);
 		};
 	}
 
+	var default_func = function(){
+		$('#'+facebook_post_id+' .facebook_btn').toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+		$('#photoModal #photo_liked .facebook_btn').toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+		$('#'+facebook_post_id+' .facebook_btn').attr('disable',false);
+		$('#photoModal #photo_liked .facebook_btn').attr('disable',false);
+	}
+
 	if (hasLogin){
-		$('#'+facebook_post_id+' .fa-thumbs-up').toggleClass("liked");
-		$('#photoModal #photo_liked .fa-thumbs-o-up').toggleClass("liked");
-		__facebook_post_like(facebook_post_id,method,foo);
+		__facebook_post_like(facebook_post_id,method,foo,default_func);
 	}
 	else{
 		FB.login(function(response) {
@@ -33,9 +47,7 @@ function postLike_btn(facebook_post_id){
 				var __facebook_user_id = response.authResponse.userID;
 				hasLogin = true
 		      	if (response && !response.error) {
-		      		$('#'+facebook_post_id+' .fa-thumbs-up').toggleClass("liked");
-					$('#photoModal #photo_liked .fa-thumbs-o-up').toggleClass("liked");
-	        		__facebook_post_like(facebook_post_id,method,foo);
+	        		__facebook_post_like(facebook_post_id,method,foo,default_func);
 		      	}
 		      	else{
 		      		console.log('login failed');
@@ -43,6 +55,7 @@ function postLike_btn(facebook_post_id){
 		      	}
 			}
 			else{
+				default_func();
 			   	console.log('Please login and accept the permission');
 			   	alert('Please login and accept the permission');
 			}
@@ -51,49 +64,58 @@ function postLike_btn(facebook_post_id){
 
 }
 
-function __facebook_post_like(facebook_post_id,method,foo){
+function __facebook_post_like(facebook_post_id,method,sucess_func, default_func){
 	FB.api(
 	    "/"+facebook_post_id+"/likes",
 	    method,
 	    function (response) {
+	    	default_func();
 	    	console.log(response)
 	      	if (response && !response.error) {
-	      		foo();
+	      		sucess_func();
 	      	}
 	      	else{
 	      		hasLogin = false;
 				alert('Please login to FB and accept the "publish_action" permission so we can post your like to the photo');
-				$('#'+facebook_post_id+' .fa-thumbs-up').toggleClass("liked");
 	      	}
 	    }
 	);
 }
 
 function likeComment(comment_id,element){
-	if (!hasLogin){
-		alert('Please login to FB and accept the "publish_action" permission so we can post your like to the comments');
+
+	if($('.facebook_btn',element).attr('disable') == 'true' ){
 		return;
 	}
+
+	$('.facebook_btn',element).toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+	$('.facebook_btn',element).attr('disable',true);
 
 	var method ='';
 	var votes = $('.fb_likecount',element);
 	var foo;
-	if (element.hasClass('liked')){
+	if ( element.hasClass('liked') ){
 		method = 'DELETE';
 		foo = function(){
+			element.toggleClass('liked');
 			votes.html(Number(votes.html())-1);
 		};
 	}
 	else{
 		method = 'POST';
 		foo = function(){
+			element.toggleClass('liked');
 			votes.html(Number(votes.html())+1);
 		};
 	}
 
+	var default_func = function(){
+		$('.facebook_btn',element).toggleClass("fa-pulse fa-spinner fa-thumbs-up");
+		$('.facebook_btn',element).attr('disable',false);
+	}
+
 	if (hasLogin){
-		element.toggleClass('liked');
-		__facebook_post_like(comment_id,method,foo);
+		__facebook_post_like(comment_id,method,foo,default_func);
 	}
 	else{
 		FB.login(function(response) {
@@ -101,8 +123,7 @@ function likeComment(comment_id,element){
 				var __facebook_user_id = response.authResponse.userID;
 				hasLogin = true
 		      	if (response && !response.error) {
-		      		element.toggleClass('liked');
-	        		__facebook_post_like(comment_id,method,foo);
+	        		__facebook_post_like(comment_id,method,foo,default_func);
 		      	}
 		      	else{
 		      		console.log('login failed');
@@ -110,6 +131,7 @@ function likeComment(comment_id,element){
 		      	}
 			}
 			else{
+				default_func();
 			   	console.log('Please login and grant the permission');
 			   	alert('請登入FB，並給予應用程式授權');
 			}
@@ -207,9 +229,9 @@ window.fbAsyncInit = function() {
 	});
 
 
-	FB.getLoginStatus(function(response) {
+	/*FB.getLoginStatus(function(response) {
     	statusChangeCallback(response);
-  	});
+  	});*/
 };
 
 (function(d, s, id) {
@@ -221,7 +243,7 @@ window.fbAsyncInit = function() {
 	}(document, 'script', 'facebook-jssdk')
 );
 
-function statusChangeCallback(response) {
+/*function statusChangeCallback(response) {
     if (response.status === 'connected') {
       	hasLogin = true;
     } else if (response.status === 'not_authorized') {
@@ -237,5 +259,6 @@ function checkLoginState() {
     FB.getLoginStatus(function(response) {
 	      statusChangeCallback(response);
     });
-}
+}*/
+
 

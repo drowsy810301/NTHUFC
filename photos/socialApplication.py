@@ -328,19 +328,27 @@ def getPhotoModalDetails(photo):
 		'tags': photo.tags,
 		'owner': photo.owner.nickname,
 		'photo_url': photo.flickr_photo_url,
+		'flickr_photo_id': photo.flickr_photo_id,
 		'flickr_url': 'https://www.flickr.com/photos/138506275@N05/'+photo.flickr_photo_id,
 		'facebook_post_id': photo.facebook_post_id,
 	}
 	#print obj
 	return obj
 
-def addFlickrFavorite(request_token_key, request_token_secret,oauth_verifier,photo_id):
+def changeFlickrFavorite(access_token_key, access_token_secret,flickr_photo_id , method = 'ADD'):
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	a = flickr_api.auth.AuthHandler(access_token_key=access_token_key , access_token_secret=access_token_secret)
+	flickr_api.set_auth_handler(a)
+	photo = flickr_api.Photo(id=flickr_photo_id)
+	if method == 'DELETE':
+		return photo.removeFromFavorites()
+	else:
+		return photo.addToFavorites()
+
+def getFlickrAccessToken(request_token_key, request_token_secret,oauth_verifier):
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
 	a = flickr_api.auth.AuthHandler(request_token_key=request_token_key , request_token_secret=request_token_secret)
 	a.set_verifier(oauth_verifier)
-	flickr_api.set_auth_handler(a)
-	photo = flickr_api.Photo(id=photo_id)
-	photo.addToFavorites();
 	dd = a.todict()
 	return (dd['access_token_key'],dd['access_token_secret'])
 

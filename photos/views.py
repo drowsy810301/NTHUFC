@@ -5,11 +5,13 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import get_object_or_404
-from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails, getFlickrAuthorizationUrl,addFlickrFavorite
+from .socialApplication import uploadPhoto, getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails, getFlickrAuthorizationUrl,changeFlickrFavorite, getFlickrAccessToken
 from .models import Photo, Tag
 from locationMarker.models import Marker
 from users.models import Account
 import time
+from flickr_api.flickrerrors import FlickrAPIError
+
 # Create your views here.
 def photos(request):
     return render(request, "photos/photos.html", {})
@@ -92,7 +94,7 @@ def vote(request):
 			account_data['photo_list'].append({
 				'votes': photo.likes+photo.favorites,
 				'facebook_post_id':photo.facebook_post_id,
-				'flickr_link':'https://www.flickr.com/photos/138506275@N05/'+photo.flickr_photo_id,
+				'flickr_photo_id':photo.flickr_photo_id,
 				'img_src':photo.flickr_photo_url,
 			})
 		data_list.append(account_data)
@@ -122,31 +124,50 @@ def ajax_get_photo_details(request):
 
 		return JsonResponse({'photo': getPhotoModalDetails(photo) })
 
-def test(request):
-	photo_id = '24325657360'
-	[url,request_token_key,request_token_secret] = getFlickrAuthorizationUrl(photo_id);
-
-	access_key = '@'+request.session.get('access_key','x')
-	access_secret = '@'+request.session.get('access_secret','x')
-
-	request.session['request_token_key'] = request_token_key
-	request.session['request_token_secret'] = request_token_secret
-
-	return render(request,'photos/testSession.html',{
-		'url': url,
-		'access_key':access_key,
-		'access_secret':access_secret,
-	})
-
-def flickr_authorization_redirect(request, photo_id):
+def flickr_authorization_redirect(request, flickr_photo_id):
 	if (request.method == 'GET'):
-		if ( 'oauth_verifier' in request.GET and \
-			'request_token_key' in request.session and \
-			'request_token_secret' in request.session):
-			oauth_verifier = request.GET['oauth_verifier']
-			[access_key,access_secret] = addFlickrFavorite(str(request.session['request_token_key']),str(request.session['request_token_secret']), str(oauth_verifier),str(photo_id))
+		if ( 'access_key' in request.session and 'access_secret' in request.session ):
+			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id })
+		elif ( 'oauth_verifier' in request.GET and  'request_key' in request.session and  'request_secret' in request.session):
+			[access_key,access_secret] = getFlickrAccessToken(str(request.session['request_key']),str(request.session['request_secret']), str(request.GET['oauth_verifier']) )
+			del request.session['request_key']
+			del request.session['request_secret']
 			request.session['access_key'] = access_key
 			request.session['access_secret'] = access_secret
 
+			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id })
+		else:
+			return render(request,'photos/flickr_authorization_redirect.html')
 
 	return redirect('photos:vote');
+
+def ajax_post_flickr_favorite(request):
+	if (request.method == 'POST' and 'flickr_photo_id' in request.POST ):
+		method = request.POST.get('method', 'ADD')
+		if ( 'access_key' in request.session and 'access_secret' in request.session ):
+			try:
+				changeFlickrFavorite(str(request.session['access_key']), str(request.session['access_secret']), str(request.POST['flickr_photo_id']) , method)
+				return JsonResponse( { 'status':'ok', 'method':method } )
+			except FlickrAPIError as e:
+				if (method == 'ADD' and e.code == 3) or (method == 'DELETE' and e.code == 1):
+					return JsonResponse( { 'status':'ok', 'method':method ,'message':e.message } )
+				else:
+					return JsonResponse( { 'status':'error' , 'code': e.code , 'message':e.message } )
+		else:
+			[url,request_key,request_secret] = getFlickrAuthorizationUrl( request.POST['flickr_photo_id'] )
+			request.session['request_key'] = request_key
+			request.session['request_secret'] = request_secret
+			return JsonResponse( { 'status': 'notLogin', 'auth_url': url} );
+	else:
+		return JsonResponse( { 'status':'error' })
+
+
+	def ajax_report_comment(request):
+		if ( request.method == 'POST' and 'user_id' in request.POST and 'facebook_post_id' in request.POST and 'user_id' in request.POST and 'name' in request.POST and 'message' in request.POST):
+			try:
+				comment = ReportedComment.objects.get(facebook_post_id=request.POST['facebook_post_id'])
+				comment.report_count += 1
+				comment.report_list += ','+request.POST['user_id']
+				comment.save(update_fields=['report_count', 'report_list'])
+			except ObjectDoesNotExist as  e:
+				comment = ReportedComment.objects.create(facebook_post_id=request.POST['facebook_post_id'], name=request.POST['name'], message=request.POST['message'], report_count=1, report_list=request.POST['user_id'] )

@@ -19,8 +19,6 @@ initGallery();
 
 	<div class='container'>
 		<br>
-		<div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true" scope="publish_actions" onlogin="checkLoginState();"></div>
-		<br>
 		{% for account in data_list %}
 		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
 		<div class="row">
@@ -38,11 +36,11 @@ initGallery();
 		                    <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
 		                        <span class="fa fa-info-circle hover-green"></span>
 		                    </a>
-		                    <a href="{{photo.flickr_link}}" target='_flickr'>
-		                       <span class="fa fa-flickr hover-pink"></span>
+		                    <a style="cursor:pointer;" onclick="postFavorite_btn('{{photo.flickr_photo_id}}','{{photo.facebook_post_id}}')">
+		                       <span class="fa fa-flickr flickr_btn hover-pink"></span>
 		                    </a>
 		                    <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
-		                    	<span class="fa fa-thumbs-up hover-blue">
+		                    	<span class="fa fa-thumbs-up facebook_btn hover-blue">
 
 							   	</span>
 		                    </a>

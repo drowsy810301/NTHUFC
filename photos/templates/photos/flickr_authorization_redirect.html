@@ -1,0 +1,18 @@
+{% extends 'index/base.html' %}
+
+{% block body_block %}
+
+{% if flickr_photo_id %}
+<p> 登入Flickr成功 </p>
+<script type="text/javascript">
+	console.log({{ flickr_photo_id }})
+	opener.postFavorite_btn({{flickr_photo_id}})
+	self.window.close()
+</script>
+{% else %}
+<script type="text/javascript">
+	self.window.close()
+</script>
+{% endif %}
+
+{% endblock body_block %}

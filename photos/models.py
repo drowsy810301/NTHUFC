@@ -96,3 +96,12 @@ class Photo(models.Model):
             return u'<img src="%s" height="150px"/>' % (self.image.url)
     admin_thumbnail.short_description = 'Thumbnail'
     admin_thumbnail.allow_tags = True
+
+
+class ReportedComment(models.Model):
+    facebook_post_id = models.CharField(max_length=50)
+    name = models.CharField(max_length=20)
+    message = models.CharField(max_length=200)
+    report_count = models.IntegerField(default=0)
+    report_list = models.CharField(max_length=200)
+    last_report_time = models.DateTimeField(auto_now=True)
