@@ -14,3 +14,17 @@ urlpatterns = patterns('',
     url(r'^users/', include('users.urls', namespace='users')),
     url(r'^marker/', include('locationMarker.urls', namespace='locationMarker')),
 )+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG == False:
+    urlpatterns += patterns('',
+        url(r'^media/uploads/mages/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT+'uploads/images/',
+        }),
+		url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.STATIC_ROOT,
+        }),
+)
+

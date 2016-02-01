@@ -65,12 +65,14 @@ class Photo(models.Model):
 
     def __unicode__(self):
         return self.title
-
-    def getTagString(self):
-        tagString = ''
-        for tag in self.tags:
-            tagString += tag.tag_name;
-        return tagString;
+	
+    def admin_thumbnail(self):
+        if self.isReady:
+            return u'<img src="{}" height="150px"/>'.format(self.flickr_photo_url)
+        else:
+            return u'<img src="{}" height="150px"/>'.format(self.image.url)
+    admin_thumbnail.short_description = '相片預覽'
+    admin_thumbnail.allow_tags = True
 
     def delete(self, *args, **kwargs):
         self.image.delete()
@@ -85,3 +87,4 @@ class Photo(models.Model):
                 pass
 
         super(Photo,self).delete(*args, **kwargs)
+	

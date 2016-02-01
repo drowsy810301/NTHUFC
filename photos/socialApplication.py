@@ -127,6 +127,7 @@ def uploadUsingThread(photo):
 	print 'uploadPhotoresult' + str(result)
 
 	photo.isReady = True
+	photo.image.delete()
 	photo.save()
 	return result
 
