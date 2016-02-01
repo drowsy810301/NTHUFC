@@ -2,7 +2,7 @@ var small_frame_height = 0;
 
 function render_gallery(){
     $('.image_frame').each(function(index){
-    	$(this).height(Math.floor($(this).width()*3/4))
+    	$(this).height( Math.floor($(this).width()*3/4) )
     });
 
     $('.small_frame').each(function(index){

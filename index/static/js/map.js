@@ -1,6 +1,8 @@
 var markerList = [];
 var markerCount = [];
+var tagList = [];
 var google_map;
+var nowMarker = '';
 var flag = 0;
 
 function initMap() {
@@ -55,56 +57,83 @@ function addMarker(map, title, location){
             break;
         }
     }
-
-    /*var infowindow = new google.maps.InfoWindow({
-        //content: 'Hello World',
-    });*/
-
     marker.addListener('mouseover', function() {
         infowindow.open(map, marker);
+    });
+    marker.addListener('mouseout', function(){
+        infowindow.close();
     });
 }
 
 function initMarker(markers){
-    markerList = markers
+    markerList = markers;
 }
 
 function initMarkerCount(markers){
-    markerCount = markers
+    markerCount = markers;
+}
+
+function initTag(tags){
+    tagList = tags;
 }
 
 function filter_photos_ForMarker(filt_key){
-	for( i in photo_list) {
-    	if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
-    		document.getElementById(photo_list[i].fbID).style.display = 'none';
-    	}
-    	else {
-    		document.getElementById(photo_list[i].fbID).style.display = 'block';
-    	}
+    for( i in photo_list ) {
+        if( photo_list[i].isReady == 'True' ) {
+            if( photo_list[i].location.match(filt_key)==null ){
+                document.getElementById(photo_list[i].fbID).style.display = 'none';
+            }
+            else {
+                document.getElementById(photo_list[i].fbID).style.display = 'block';
+            }
+        }
     }
+    nowMarker = filt_key;
     document.getElementById("show_marker").innerHTML = "目前Map Marker: " + filt_key;
 }
 
 function filter_photos_ForTag(filt_key){
-	for( i in photo_list) {
-		if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null && photo_list[i].location.match(filt_key)==null){
-    		if(flag == 0){
-    			document.getElementById(photo_list[i].fbID).style.display = 'none';
-    		}
-    	}
-    	else {
-    		document.getElementById(photo_list[i].fbID).style.display = 'block';
-    	}
-	}
-    document.getElementById("show_tag").innerHTML += " " + filt_key; 
-	flag = 1;
+    var nowTags = document.getElementById("show_tag").innerHTML;
+    if( nowTags.match(filt_key) == null ){
+        document.getElementById(filt_key).style.background = 'red';
+        for( i in photo_list) {
+            if ( photo_list[i].location.match(nowMarker) != null ){
+                if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null ){
+                    if(flag == 0){
+                        document.getElementById(photo_list[i].fbID).style.display = 'none';
+                        photo_list[i].isReady = 'False';
+                    }
+                }
+                else {
+                    document.getElementById(photo_list[i].fbID).style.display = 'block';
+                    photo_list[i].isReady = 'True';
+                }
+            }
+            else {
+                if( !(photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null /*&& photo_list[i].location.match(filt_key)==null*/) ){
+                    photo_list[i].isReady = 'True';
+                }
+                else {
+                    photo_list[i].isReady = 'False';
+                }
+            }
+        }
+        document.getElementById("show_tag").innerHTML += " " + filt_key;
+    } 
+    flag = 1;
 }
 
 function cancel_filter(){
 	for( i in photo_list) {
 		document.getElementById(photo_list[i].fbID).style.display = 'block';
+        photo_list[i].isReady = 'True';
 	}
+    for ( i in tagList){
+        document.getElementById(tagList[i].title).style.background = '#e7e7e7';
+    }
+        
     document.getElementById("show_tag").innerHTML = "目前Tag:";
     document.getElementById("show_marker").innerHTML = "目前Map Marker: ";
 	flag = 0;
+    nowMarker = '';
 }
