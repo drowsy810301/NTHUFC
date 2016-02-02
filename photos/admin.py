@@ -15,7 +15,7 @@ def deletePhoto(modeladmin, request, queryset):
 deletePhoto.short_description = "Delete photos (customed)"
 
 class PhotoAdmin(admin.ModelAdmin):
-	list_display = ('id','title','content','tags','admin_thumbnail');
+	list_display = ('id','title','content','tags','admin_thumbnail','isReady');
 	ordering = ['isReady']
 	actions = [make_uploaded,deletePhoto]
 

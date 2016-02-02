@@ -41,7 +41,7 @@ def participate(request, id_account=None):
 
 
         if form.is_valid():
-            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
             if formset.is_valid():
@@ -53,7 +53,7 @@ def participate(request, id_account=None):
                     photo.save()
                     #uploadPhoto(photo)
 
-                user = authenticate(username=username, password = password)
+                user = authenticate(email=email, password = password)
                 user.updatePhotosRank()
                 if user:
                     auth_login(request, user)
@@ -95,7 +95,7 @@ def privacypolicy(request):
 def map(request):
     if request.method =="GET":
         query = request.GET.get('search', '')
-        photos = Photo.objects.filter(tags__contains=query) | Photo.objects.filter(title__contains=query) | Photo.objects.filter(content__contains=query)
+        photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
         markers = []
         tmp = []
         for photo in photos:
