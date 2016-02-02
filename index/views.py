@@ -114,7 +114,7 @@ def map(request):
                 if tag in tagdic:
                     tagdic[tag] = tagdic[tag] + 1
                 else:
-                    tagdic[tag] = 1;
+                    tagdic[tag] = 1
             for key in tagdic:
                 tags.append(key)
 

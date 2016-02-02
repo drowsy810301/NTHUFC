@@ -97,8 +97,24 @@ function filter_photos_ForTag(filt_key){
     if( nowTags.match(filt_key) == null ){
         document.getElementById(filt_key).style.background = 'red';
         for( i in photo_list) {
-            if ( photo_list[i].location.match(nowMarker) != null ){
-                if( photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null ){
+            if( photo_list[i].location.match(nowMarker) != null ) {
+                var tags_atLocation = photo_list[i].tags.split(' ');
+                var tmp_atLocation = 0;
+                for( j in tags_atLocation ) {
+                    if( tags_atLocation[j] == filt_key ) {
+                        document.getElementById(photo_list[i].fbID).style.display = 'block';
+                        photo_list[i].isReady = 'True';
+                        tmp_atLocation = 1;
+                        break;
+                    }
+                }
+                if( tmp_atLocation == 0 ) {
+                    if( flag == 0 ) {
+                        document.getElementById(photo_list[i].fbID).style.display = 'none';
+                        photo_list[i].isReady = 'False';
+                    }
+                }
+                /*if( photo_list[i].tags.match(filt_key)==null ){
                     if(flag == 0){
                         document.getElementById(photo_list[i].fbID).style.display = 'none';
                         photo_list[i].isReady = 'False';
@@ -107,19 +123,31 @@ function filter_photos_ForTag(filt_key){
                 else {
                     document.getElementById(photo_list[i].fbID).style.display = 'block';
                     photo_list[i].isReady = 'True';
-                }
+                }*/
             }
             else {
-                if( !(photo_list[i].title.match(filt_key)==null && photo_list[i].content.match(filt_key)==null && photo_list[i].tags.match(filt_key)==null /*&& photo_list[i].location.match(filt_key)==null*/) ){
-                    photo_list[i].isReady = 'True';
+                var tags_not_atLocation = photo_list[i].tags.split(' ');
+                var tmp_not_atLocation = 0;
+                for( j in tags_not_atLocation ) {
+                    if( tags_not_atLocation[j] == filt_key ) {
+                        photo_list[i].isReady = 'True';
+                        tmp_not_atLocation = 1;
+                        break;
+                    }
                 }
-                else {
+                if( tmp_not_atLocation == 0 ) {
                     photo_list[i].isReady = 'False';
                 }
+                /*if( photo_list[i].tags.match(filt_key)==null ){
+                    photo_list[i].isReady = 'False';
+                }
+                else {
+                    photo_list[i].isReady = 'True';
+                }*/
             }
         }
         document.getElementById("show_tag").innerHTML += " " + filt_key;
-    } 
+    }
     flag = 1;
 }
 
