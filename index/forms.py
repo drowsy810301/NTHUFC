@@ -109,7 +109,6 @@ class PhotoCreationForm(forms.ModelForm):
         self.fields['content'].widget.attrs['rows'] = 4
         self.fields['content'].widget.attrs['columns'] = 15
         self.fields['image'].widget.attrs['accept'] = "image/*"
-
         self.helper.layout = Layout(
             Div(
                 Fieldset(
