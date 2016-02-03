@@ -79,11 +79,11 @@ def get_attemps(request):
 @login_required
 @ensure_csrf_cookie
 def users(request):
+    
     account = request.user
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
     #print photos.count()
-
     form_number = 5 - photos.count();
     PhotoInlineFormSet = inlineformset_factory(Account, Photo,
     form=PhotoCreationForm, max_num=5, validate_max=True,
@@ -106,6 +106,7 @@ def users(request):
             account.updatePhotosRank()
             return redirect(reverse('users:profile'))
         else:
+            print formset.errors
             formset = PhotoInlineFormSet(instance=account, prefix="nested")
             return render(request, "users/profile.html", {
                 "photos": photos,
