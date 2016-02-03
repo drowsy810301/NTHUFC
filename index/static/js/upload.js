@@ -3,6 +3,13 @@ var currentImgID = 0;
 var nameset = '';
 var fileName = '';
 var firstfile = true;
+var page;
+
+function init(number, page_name){
+    imgNumber = number;
+    currentImgID = number;
+    page = page_name;
+}
 //check img number whether exceed 5
 function checkImgNumber(action) {
     if(action == 'upload'){
@@ -10,15 +17,8 @@ function checkImgNumber(action) {
             $('#image-Modal').modal('toggle');
         }
         else{
-            showMsgModal('Max photo number is five!');
+            return false
         }
-    }
-    else if(action == 'submit'){
-        if(imgNumber == 0){
-            showMsgModal('At least submit one photo!');
-            return false;
-        }
-        showMsgModal('Photos are uploading...');
     }
 }
 
@@ -59,19 +59,33 @@ function setImgInfo() {
         $('#image-Modal').modal('toggle');
         var title = $('#img-title').val();
         var content = $('#img-content').val();
+        var tags_text = $('#img-tags').val().replace(/ /g,'_').replace(/,/g,' ')
+        var location_text = $('#img-location').val();
+
         $('#id_nested-'+currentImgID+'-title').val(title);
         $('#id_nested-'+currentImgID+'-content').val(content);
-
+        $('#id_nested-'+currentImgID+'-tags').val(tags_text);
+        $('#id_nested-'+currentImgID+'-location_marker').children().each(function(){
+            if ($(this).text() == location_text){
+                $(this).attr("selected", true);
+            }
+        });
         //clean after close modal
         $('#img-title').val('');
         $('#img-content').val('');
+        $('#img-tags').tagsinput('removeAll');
+        $('#img-location').val('');
         $('#select-txt').val('');
+        $('#tag_count').html(0);
+
         //clean the preview img
         document.getElementById("preview_img").src = "#";
         document.getElementById("preview_img").style.display = "none";
 
         changeValidationError('title', 'correct');
-        changeValidationError('content', 'correct');
+        //changeValidationError('content', 'correct');
+        changeValidationError('tags', 'correct');
+        changeValidationError('location', 'correct');
         changeValidationError('txt', 'correct');
 
 
@@ -90,16 +104,22 @@ function setImgInfo() {
             firstfile = !firstfile;
         }
 
-        //set upload-img-btn name
-        if(imgNumber >= 1)
-            $('#upload-btn').val('Upload another image');
+        //profile page
+        if(page == 'profile'){
+            document.getElementById('profile_update').click();
+        }
+
+        if(imgNumber == 5){
+            document.getElementById('upload-btn').style.display = "none";
+        }
     }
 }
 
 function resetModalForm(){
     //clean img modal
     document.getElementById("popup-img-form").reset();
-
+    $('#img-tags').tagsinput('removeAll');
+    $('#tag_count').html(0)
     //clean the preview img
     document.getElementById("preview_img").src = "#";
     document.getElementById("preview_img").style.display = "none";
@@ -116,8 +136,8 @@ function resetParticipateForm(){
     document.getElementById("img-nameset").rows = 1;
 
     //reset upload-img-btn name
-    $('#upload-btn').val('Upload image');
-
+    $('#upload-btn').val('上傳');
+    document.getElementById('upload-btn').style.display = "";
     firstfile = true;
 }
 
@@ -131,13 +151,36 @@ function validationError(){
     else
         changeValidationError('title', 'correct');
 
-
+    /*
     if($('#img-content').val() == ''){
         changeValidationError('content', 'wrong');
         valid = false;
     }
     else
         changeValidationError('content', 'correct');
+    */
+    if(/^[^,]{1,6}(,[^,]{1,6}){0,2}$/.test($('#img-tags').val())){
+        changeValidationError('tags', 'correct');
+    }
+    else{
+        changeValidationError('tags', 'wrong');
+        valid = false;
+    }
+
+    var isLocationValid = false;
+    for (i in markerList){
+        if (markerList[i].title == $('#img-location').val() ){
+            isLocationValid = true;
+            break;
+        }
+    }
+
+    if(isLocationValid == false){
+        changeValidationError('location', 'wrong');
+        valid = false;
+    }
+    else
+        changeValidationError('location', 'correct');
 
     if($('#select-txt').val() == ''){
         changeValidationError('txt', 'wrong');
@@ -160,6 +203,7 @@ function changeValidationError(field, status){
             $('#popup-img-form .asteriskField:eq(0)').css("color","#222222");
         }
     }
+    /*
     else if(field == 'content'){
         if(status == 'wrong'){
             $('#popup-img-form .form-group:eq(1)').addClass('has-error');
@@ -170,15 +214,37 @@ function changeValidationError(field, status){
             $('#popup-img-form .asteriskField:eq(1)').css("color","#222222");
         }
     }
-    else if(field == 'txt'){
+    */
+    else if(field == 'tags'){
         if(status == 'wrong'){
-            $('#popup-img-form .form-group:eq(2)').addClass('has-error');
-            $('#popup-img-form .asteriskField:eq(2)').css("color","#f04124");
+            $('#img-tags').parent().children(':eq(0)').addClass('red_border');
+             $('#popup-img-form .form-group:eq(2)').addClass('has-error');
+            $('#popup-img-form .asteriskField:eq(2)').html('*').css("color","#f04124");
         }
         else{
-            $('#popup-img-form .form-group:eq(2)').removeClass('has-error');
-            $('#popup-img-form .asteriskField:eq(2)').css("color","#222222");
+            $('#img-tags').parent().children(':eq(0)').removeClass('red_border');
+             $('#popup-img-form .form-group:eq(2)').removeClass('has-error');
+            $('#popup-img-form .asteriskField:eq(2)').html('*').css("color","#222222");
+        }
+    }
+    else if(field == 'location'){
+        if(status == 'wrong'){
+            $('#popup-img-form .form-group:eq(3)').addClass('has-error');
+            $('#popup-img-form .asteriskField:eq(3)').css("color","#f04124");
+        }
+        else{
+            $('#popup-img-form .form-group:eq(3)').removeClass('has-error');
+            $('#popup-img-form .asteriskField:eq(3)').css("color","#222222");
+        }
+    }
+    else if(field == 'txt'){
+        if(status == 'wrong'){
+            $('#popup-img-form .form-group:eq(4)').addClass('has-error');
+            $('#popup-img-form .asteriskField:eq(4)').css("color","#f04124");
+        }
+        else{
+            $('#popup-img-form .form-group:eq(4)').removeClass('has-error');
+            $('#popup-img-form .asteriskField:eq(4)').css("color","#222222");
         }
     }
 }
-

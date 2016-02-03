@@ -17,21 +17,12 @@ legend {
   text-align: right;
   position: relative;
   left: 40px;
+  top: -50px;
 }
 
 #image-title {
   width: 50%;
   margin-top: 5px;
-}
-
-#select-btn {
-  position: relative;
-  top: -33px;
-  left: -10px;
-}
-
-.modal-body {
-  padding-bottom: 0px;
 }
 
 .image-form {
@@ -54,7 +45,22 @@ legend {
   resize: none;
 }
 
-#preview_img{
-  max-width: 100%;
-  display: none;
+.form-horizontal .control-label {
+  text-align: left
+}
+.checkbox label, .radio-inline {
+  font-size: 16px;
+}
+
+.modal.modal-wide .modal-dialog {
+  width: 60%;
+}
+.modal-wide .modal-body {
+  overflow-y: auto;
+}
+
+.form-group pre {
+  margin: 0px;
+  color:black;
+  font-size: 18px;
 }

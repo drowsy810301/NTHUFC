@@ -10,7 +10,7 @@ def getAllMarker():
 
 class LocationForm(forms.Form):
 	choices = [(1,'one'), (2,'two')]
-	location = forms.ChoiceField(label='Location Marker',help_text='click the map or select a label\n',choices=getAllMarker)
+	location = forms.ChoiceField(label='Location Marker',help_text='click the map or select a label\n',choices=getAllMarker())
 
 class PhotoModelForm(forms.ModelForm):
 	class Meta:

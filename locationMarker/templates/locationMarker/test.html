@@ -4,7 +4,7 @@
 
 {% block title_name %}
   <title>Location Marker</title>
-  
+
 {% endblock title_name %}
 
 {% block import_source %}
@@ -29,9 +29,9 @@
 		var previousTagInput = null;
 		var selected_tag_list=[]
 		function initMap() {
-			
+
 			var myLatLng = {lat: 24.7913341, lng: 120.994148};
-			
+
 			var mapOptions = {
 				zoom: 16,
 				center: myLatLng,
@@ -69,6 +69,7 @@
     		$('#'+location_select_id).children().each(function(){
 			    if ($(this).text()== marker.title){
 			        $(this).attr("selected", true);
+			        $('#initial-nested-0-id_nested-0-location_marker').val($(this).val())
 			    }
 			});
 			map.setCenter(marker.getPosition())
@@ -89,7 +90,7 @@
 		    return cookieValue;
 		}
       	function getTagHint(element){
-      		
+
       		if (element.value == previousTagInput)
       			return
       		else
@@ -151,7 +152,7 @@
 			else{
 				showMsgModal('最多只能選3個標籤');
 			}
-			
+
 		}
 
 		function addCross(element, bool){

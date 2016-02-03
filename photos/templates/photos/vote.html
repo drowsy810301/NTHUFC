@@ -1,0 +1,62 @@
+{% extends "index/base.html" %}
+{% load static %}
+{% block title_name %}
+  <title>投票</title>
+{% endblock title_name %}
+
+{% block import_source %}
+<link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
+<script src="{% static "js/gallery.js" %}" ></script>
+<script src="{% static 'js/fb_post_like.js' %}" ></script>
+{% endblock import_source %}
+
+{% block body_block %}
+<script>
+
+initGallery();
+
+</script>
+
+	<div class='container'>
+		<br>
+		<div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true" scope="publish_actions" onlogin="checkLoginState();"></div>
+		<br>
+		{% for account in data_list %}
+		<h3><i class="fa fa-user"></i>&nbsp;&nbsp;{{account.nickname}}</h3>
+		<div class="row">
+			{% for photo in account.photo_list %}
+				{% if forloop.counter0 == 0 %}
+			  	<div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-6 image_frame">
+			  	{% else %}
+				<div id="{{photo.facebook_post_id}}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-3 image_frame small_frame">
+				{% endif %}
+			  	<div class="hovereffect black_border">
+			        <img class='gallery' src="{{photo.img_src}}" alt="" onload="render_image($(this))">
+		            <div class="overlay">
+		                <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
+		                <p class="icon-links">
+		                    <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+		                        <span class="fa fa-info-circle hover-green"></span>
+		                    </a>
+		                    <a href="{{photo.flickr_link}}" target='_flickr'>
+		                       <span class="fa fa-flickr hover-pink"></span>
+		                    </a>
+		                    <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
+		                    	<span class="fa fa-thumbs-up hover-blue">
+
+							   	</span>
+		                    </a>
+		                </p>
+		            </div>
+			    </div>
+				</div>
+
+			{% endfor %}
+		</div>
+		<br>
+		<hr>
+		{% endfor %}
+	</div>
+	<br>
+	{% include "photos/modal.html" %}
+{% endblock body_block %}

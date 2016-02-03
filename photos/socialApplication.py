@@ -2,8 +2,22 @@
 import flickr_api
 import facebook
 import json
+import time
+import threading
+from django.utils import timezone
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+
 from .authorization_token import __facebook_page_token, __flickr_api_key, __flickr_api_secret
-from .models import Photo
+from .models import Photo,Tag
+
+def run_in_thread(func):
+	'''
+		used for decorator
+	'''
+	def thread_func(*args, **kwargs):
+		threading.Thread(target=func, args=args, kwargs=kwargs).start()
+	return thread_func
 
 class Comment(object):
 	'''
@@ -22,8 +36,8 @@ class Comment(object):
 
 	def toDict(self):
 		return {
-			'user_name':self.user_name, 
-			'user_photo_url':self.user_photo_url, 
+			'user_name':self.user_name,
+			'user_photo_url':self.user_photo_url,
 			'comment_text': self.comment_text,
 			'comment_facebook_id': self.comment_facebook_id,
 		}
@@ -34,29 +48,74 @@ def uploadPhoto(photo):
 		Flickr驗證會用到 oauth_verifier.txt ，要放在 NTHUFC 根目錄中
 		authorization_token.py 存放 Facebook 和 Flickr 驗證會用到的資訊，不要放到 github 上
 	'''
+
+	if not photo.isReady:
+		for tag_text in photo.tags.split(' '):
+			if tag_text == '':
+				continue
+			try:
+				tag = Tag.objects.get(tag_name = tag_text)
+				tag.update_time = timezone.now()
+				tag.tag_count += 1
+				tag.save()
+			except ObjectDoesNotExist:
+				Tag.objects.create(tag_name=tag_text)
+
+		uploadUsingThread(photo)
+
+
+
+def getFacebookPostContent(photo, isValid=True, photo_info={}):
+	'''
+		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
+	'''
+
+
+	if isValid:
+		label = ' '+photo.tags;
+		label = label.replace(' ',' #');
+		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
+	else:
+		label = ' '+photo_info['tags'];
+		label = label.replace(' ',' #');
+		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
+			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
+
+@run_in_thread
+def uploadUsingThread(photo):
 	photo_file_path = photo.image.path
 	result = {}
 
 	if photo.flickr_photo_id=='':
+		try_count = 3
 		flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
 		flickr_api.set_auth_handler('oauth_verifier.txt')
-		flickr_response = flickr_api.upload(\
-			photo_file = photo_file_path, 
-			title =photo.title,
-			description = u'地點: '+photo.location_marker.title+u'\n拍攝者: '+photo.owner.nickname+'\n\n'+photo.content,
-			tags = photo.tags + ' ' + photo.owner.nickname,
-			is_public = 1,
-			is_family = 1,
-			is_friend = 1,
-			safety_level =1,
-			content_type  =1,
-			hidden = 1,
-		)
-		photo.flickr_photo_id = flickr_response.id
-		photo_info = flickr_response.getInfo()
-		photo.flickr_photo_url = 'https://farm{}.staticflickr.com/{}/{}_{}.jpg'.format(photo_info['farm'], photo_info['server'], flickr_response.id, photo_info['secret'])
-		photo.save()
-		result['flickr_response'] = flickr_response
+
+		while try_count > 0 :
+			try :
+				flickr_response = flickr_api.upload(
+					photo_file = photo_file_path,
+					title =photo.title,
+					description = u'地點: '+photo.location_marker.title+u'\n拍攝者: '+photo.owner.nickname+'\n\n'+photo.content,
+					tags = photo.tags,
+					is_public = 1,
+					is_family = 1,
+					is_friend = 1,
+					safety_level =1,
+					content_type  =1,
+					hidden = 1,
+				)
+				photo.flickr_photo_id = flickr_response.id
+				photo_info = flickr_response.getInfo()
+				photo.flickr_photo_url = 'https://farm{}.staticflickr.com/{}/{}_{}_b.jpg'.format(photo_info['farm'], photo_info['server'], flickr_response.id, photo_info['secret'])
+				photo.save()
+				result['flickr_response'] = flickr_response
+				break;
+			except Exception as e:
+				print str(e)
+				try_count -= 1
+			time.sleep(10)
 	else:
 		result['flickr_response'] = 'already upload to flickr'
 
@@ -65,26 +124,22 @@ def uploadPhoto(photo):
 	else:
 		result['facebook_response'] = updateFlickrPhotoURL(photo)
 
-	return result
+	print 'uploadPhotoresult' + str(result)
 
-def getFacebookPostContent(photo):
-	'''
-		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
-	'''
-	label = ' '+photo.tags;
-	label = label.replace(' ',' #');
-	return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n \n{}\n \n原始圖片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
-			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
+	photo.isReady = True
+	photo.image.delete()
+	photo.save()
+	return result
 
 def uploadToFacebook(photo):
 	'''
 		將新的照片張貼到Facebook，並把貼文ID存起來
 	'''
 	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	
+
 	photo_file_path = photo.image.path
 	facebook_response = graph.put_photo(
-		image= open(photo_file_path,'rb'), 
+		image= open(photo_file_path,'rb'),
 		message= getFacebookPostContent(photo)
 	)
 	photo.facebook_post_id = facebook_response['post_id']
@@ -96,7 +151,7 @@ def updateFlickrPhotoURL(photo):
 		如果該篇照片已經有Facebook貼文的ID，那就更新貼文內容而不要重新張貼
 	'''
 	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	
+
 	facebook_response = graph.update_photo(
 		facebook_post_id=photo.facebook_post_id,
 		message= getFacebookPostContent(photo)
@@ -112,14 +167,14 @@ def getPhotoDetails(photo, user_access_token):
 	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
 	response = graph.get_object(id=photo.facebook_post_id, fields=__facebook_query_field)
 	comment_list = []
-	
+
 	if 'comments' in response:
 		for item in response['comments']['data']:
 			comment_list.append(
 				Comment(
-					user_name=item['from']['name'], 
+					user_name=item['from']['name'],
 					user_photo_url=item['from']['picture']['data']['url'],
-					comment_text=item['message'], 
+					comment_text=item['message'],
 					comment_facebook_id=item['id'],
 				)
 			)
@@ -129,8 +184,8 @@ def getPhotoDetails(photo, user_access_token):
 	flickr_api.set_auth_handler('oauth_verifier.txt')
 	favorites = flickr_api.Photo(id = photo.flickr_photo_id).getFavorites()
 
-	return { 
-		'facebook_likes': facebook_likes, 
+	return {
+		'facebook_likes': facebook_likes,
 		'facebook_post_id': photo.facebook_post_id,
 		'comment_list': [ x.toDict() for x in comment_list],
 		'flickr_favorites': len(favorites),
@@ -156,9 +211,9 @@ def postComment(access_token, photo_facebook_id, comment_text):
 		for item in response['comments']['data']:
 			comment_list.append(
 				Comment(
-					user_name=item['from']['name'], 
+					user_name=item['from']['name'],
 					user_photo_url=item['from']['picture']['data']['url'],
-					comment_text=item['message'], 
+					comment_text=item['message'],
 					comment_facebook_id=item['id'],
 				)
 			)
@@ -193,3 +248,88 @@ def getHasLiked(photo_facebook_id, user_access_token):
 	except Exception, e:
 		print str(e)
 		return False
+
+@run_in_thread
+def deletePhoto(photo_info):
+	result = {}
+	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
+	facebook_response = graph.update_photo(
+		facebook_post_id=photo_info['facebook_post_id'],
+		message= getFacebookPostContent(None, isValid=False, photo_info=photo_info)
+	)
+
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	flickr_api.set_auth_handler('oauth_verifier.txt')
+	uni_title = u'[無效] '+ photo_info['title']
+	uni_title = uni_title.encode('utf-8')
+	uni_description = u'[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n'+ photo_info['content']
+	uni_description = uni_description.encode('utf-8')
+
+	flick_response = flickr_api.objects.Photo(
+        id=photo_info['flickr_photo_id'],
+        editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo_info['flickr_photo_id']
+    ).setMeta(
+    	title=uni_title,
+		description=uni_description,
+	)
+
+	result['facebook_response'] = facebook_response
+	result['flick_response'] = flick_response
+	#photo.image.delete()
+	print 'deletePhoto result:'+str(result)
+	return result
+
+def getVotes(photo):
+	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
+	flickr_api.set_auth_handler('oauth_verifier.txt')
+	favorites = flickr_api.Photo(id = photo.flickr_photo_id).getFavorites()
+
+	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
+	response = graph.get_object(id=photo.facebook_post_id, fields='likes.summary(true)')
+	likes =  response['likes']['summary']['total_count']
+	photo.favorites = len(favorites)
+	photo.likes = likes
+	photo.votes = photo.likes + photo.favorites
+	photo.last_modified_time = timezone.now()
+	photo.save(update_fields=['favorites','likes','votes','last_modified_time'])
+	return photo.favorites+photo.likes
+
+def getCommentList(facebook_post_id):
+
+	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
+	res = graph.get_object(id=facebook_post_id, fields='comments')
+	if res.has_key('comments'):
+		response = graph.get_object(id=facebook_post_id, fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
+
+	else:
+		return []
+
+
+	comment_list = []
+	for c in response['comments']['data']:
+		comment_list.append({
+			'comment_id': c['id'],
+			'message': c['message'],
+			'name': c['from']['name'],
+			'avatar_url': c['from']['picture']['data']['url'],
+			'likes_count': c['likes']['summary']['total_count'],
+		})
+
+	return comment_list
+
+def getPhotoModalDetails(photo):
+
+	obj = {
+		'title': photo.title,
+		'votes': photo.votes,
+		'content': photo.content,
+		'comment_list': getCommentList(photo.facebook_post_id),
+		'location': photo.location_marker.title,
+		'tags': photo.tags,
+		'owner': photo.owner.nickname,
+		'photo_url': photo.flickr_photo_url,
+		'flickr_url': 'https://www.flickr.com/photos/138506275@N05/'+photo.flickr_photo_id,
+		'facebook_post_id': photo.facebook_post_id,
+	}
+	#print obj
+	return obj

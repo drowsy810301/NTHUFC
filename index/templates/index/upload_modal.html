@@ -1,0 +1,95 @@
+<!-- Modal -->
+{% load static %}
+
+<link rel="stylesheet" href={% static "css/bootstrap-tagsinput.css" %} media="screen">
+<link rel="stylesheet" href={% static "css/upload_modal.css" %} media="screen">
+<script src={% static "typeahead.js/dist/typeahead.bundle.js" %}></script>
+<script src={% static "bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"%}></script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl62RoU1i9n0MzNAmw8fcKGTVPryxNJLM&callback=">
+</script>
+
+<div class="modal fade" id="image-Modal" tabindex="-1" role="dialog" aria-labelledby="image-ModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="image-ModalLabel">上傳照片</h3>
+      </div>
+      <div class="modal-body">
+        <form id="popup-img-form">
+          <div class="form-group">
+            <label for="img-title" class="control-label" requiredField>標題:</label>
+            <span class="asteriskField">*</span>
+            <input type="text" class="form-control input_field" id="img-title">
+          </div>
+          <div class="form-group">
+            <label for="image-content" class="control-label" requiredField>描述:</label>
+
+            <textarea class="form-control round_radius" id="img-content" placeholder="告訴大家這張照片的故事"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="image-tags" class="control-label" requiredField>標籤&nbsp;(<span id='tag_count'>0</span>/3)&nbsp;:</label>
+            <span class="asteriskField">*&nbsp;用於搜尋的關鍵字，可以按Enter新增</span>
+            <div style='width:90%; display:inline-block;'><input type='text' class="form-control" id="img-tags" data-role="tagsinput"></div>
+            <div onclick='addTag($("#img-tags").tagsinput("input").val())' id ='add_tag_button' class='btn btn-primary btn-xs round_radius' >增加</div>
+            <div class='recommand_tags_bar'>熱門:
+              {% for tag in hot_tags%}
+                <button type="button" class="btn btn-danger lables round_radius" onclick='addTag("{{tag}}")'>{{tag}}</button>
+              {% endfor %}
+            </div>
+            <div class='recommand_tags_bar'>最新:
+              {% for tag in recent_tags%}
+                <button type="button" class="btn btn-info lables round_radius" onclick='addTag("{{tag}}")'>{{tag}}</button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="image-location" class="control-label" requiredField>拍攝地點:</label>
+            <span class="asteriskField">*</span>
+            <div style='width:90%; display:inline-block;'><input class="form-control input_field" id="img-location" placeholder='點選地圖標記來指定地點' disabled></div>
+            <div onclick='toggelMap()' id ='toggle_map_button' class='btn btn-primary btn-xs round_radius' >展開</div>
+            <div id='google_map'></div>
+          </div>
+
+          <div class="form-group">
+            <label for="img-name" class="control-label" requiredField>照片:</label>
+            <span class="asteriskField">*</span>
+            <div style='width:90%; display:inline-block;'><input type="text" class="form-control input_field" id="select-txt" disabled></div>
+            <div class="btn btn-primary btn-xs round_radius" id="select-btn" onclick="selectImg()">選擇</div>
+            <div style="text-align: left; margin-top:10px;">
+              <img id="preview_img" src="#" alt="your image"/>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="resetModalForm();">清空</button>
+        <button type="button" class="btn btn-success" onclick="return setImgInfo();">確認</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src={% static "js/upload_modal.js"%}></script>
+<script type="text/javascript">
+  var all_tags=[] , hot_tags=[], recent_tags=[]
+  {% for tag in all_tags %}
+    all_tags.push("{{tag}}")
+  {% endfor %}
+  {% for tag in hot_tags %}
+    hot_tags.push("{{tag}}")
+  {% endfor %}
+  {% for tag in recent_tags %}
+    recent_tags.push("{{tag}}")
+  {% endfor %}
+  init_tag_typeahead('img-tags' , all_tags, hot_tags, recent_tags)
+  var marker_list = []
+  {% for marker in marker_list %}
+    marker_list.push({'title': '{{marker.title}}', 'lat':{{marker.latitude}}, 'lng': {{marker.longitude}} })
+  {% endfor %}
+  initMarker(marker_list)
+</script>
