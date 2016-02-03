@@ -1,0 +1,9 @@
+<b style='color:blue;'>{{ comment.name }}</b> 在粉絲專頁的留言被多個人檢舉，請確認該留言是否適當<br>
+<br>
+留言內容 ：<br>
+<pre style='color: #333333; background-color: #f5f5f5; border: 1px solid #cccccc; padding:5px;'>
+{{ comment.message }}
+</pre>
+<br>
+Facebook 貼文 : <a href="{{ comment.facebook_post_url }}" >連結</a><br>
+清大攝影競賽資料庫 ： <a href="{{ domain_name }}{% url 'admin:photos_reportedcomment_changelist' %}" >連結</a><br>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% extends "index/base.html" %}
+{% load static %}
+
+{% block title_name %}
+  <title>登入</title>
+{% endblock title_name %}
+{% block import_source %}
+<style type="text/css">
+.login-form, .alert-block{
+  width: 40%;
+  margin-left: 25%;
+}
+.submit-btn {
+  text-align: right;
+}
+.control-label, .alert-block {
+  font-size: 20px;
+}
+legend {
+  font-size: 34px;
+}
+</style>
+
+{% endblock import_source %}
+{% block body_block %}
+{% load crispy_forms_tags %}
+
+<form method="POST">
+  {% csrf_token %}
+  {% crispy form %}
+  <br>
+  <div class="login-form" style="text-align: right">
+  剩餘嘗試登入次數: {{ remain_times }}
+  <hr>
+  <a href="{% url 'users:forget_password' %}">忘記密碼按此</a>
+  </div>
+</form>
+{% endblock body_block %}

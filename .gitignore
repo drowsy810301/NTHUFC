@@ -4,6 +4,9 @@ media/
 # Configs
 config/
 
+# Bower
+components/
+
 # Migrations
 migrations/
 
@@ -14,8 +17,12 @@ __pycache__/
 #3rd party library
 3rd_party_library/
 
-db.sqlite3
-
 #authorization data
 oauth_verifier.txt
 photos/authorization_token.py
+
+#data
+db.sqlite3
+allMarker.json
+*.log
+

@@ -8,77 +8,81 @@
     {% endblock title_name %}
     <link rel="stylesheet" href={% static "css/bootstrap.min.css" %} media="screen">
     <link rel="stylesheet" href={% static "css/base.css" %} media="screen">
-    <script src={% static "js/jquery-2.1.4.min.js" %}></script>
+    <link rel="stylesheet" href={% static "font-awesome/css/font-awesome.min.css" %} media="screen">
+    <script src={% static "jquery/dist/jquery.min.js" %}></script>
     <script src={% static "js/bootstrap.min.js" %}></script>
+
+
     <script type="text/javascript">
+        //get Cookie
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
         //show msg modal
-        function showMsgModal(msg){
+
+        function showMsgModal(msg, classType){
             $('#msg-Modal').modal('show');
             $('#msg-txt').text(msg);
+            if(classType == 'primary'){
+                $('#modal-body').css('background-color', '#008cba');
+                $('#modal-body').css('border-bottom', '1px solid #0079a1');
+            }
+            else if(classType == 'success'){
+                $('#modal-body').css('background-color', '#43ac6a');
+                $('#modal-body').css('border-bottom', '1px solid #3c9a5f');
+            }
+            else if(classType == 'info'){
+                $('#modal-body').css('background-color', '#5bc0de');
+                $('#modal-body').css('border-bottom', '1px solid #46b8da');
+            }
+            else if(classType == 'warning'){
+                $('#modal-body').css('background-color', '#e99002');
+                $('#modal-body').css('border-bottom', '1px solid #d08002');
+            }
+            else if(classType == 'danger'){
+                $('#modal-body').css('background-color', '#f04124');
+                $('#modal-body').css('border-bottom', '1px solid #ea2f10');
+            }
         }
     </script>
+
     {% block import_source %}
     {% endblock import_source %}
   </head>
-  <body>
-    <!-- navbar -->
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'index:index' %}">Fun攝清華 嬉遊秘境</a>
-        </div>
-
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-          <ul class="nav navbar-nav">
-            <li><a href="#">網路投票</a></li>
-            <!--
-            <li><a href="{% url 'photos:photos' %}">Photos</a></li>
-            -->
-            <li><a href="{% url 'photos:photos' %}">秘境地圖</a></li>
-            <li><a href="#" onclick="checkLogin()" id="participate">我要參加</a></li>
-            <li><a href="#">Q&A</a></li>
-          </ul>
-          <form class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <button type="submit" class="btn btn-default">搜尋</button>
-          </form>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">登入</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <body style='margin-top:50px;'>
+    {% include "index/navbar.html" %}
+    {% if messages %}
     <center>
-      <!-- Modal -->
-      <div class="modal fade" id="msg-Modal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header" id="alert-modal">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title"><strong id="msg-txt"></strong></h4>
-            </div>
-          </div>
+      <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{message.tags}}{% endif %} fade in">
+          {{message}}
         </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                setInterval(function(){
+                    $(".alert").alert('close')
+                }, 2000);
+            });
+        </script>
+      {% endfor %}
       </div>
     </center>
-    <script>
-      function checkLogin(){
-        //if not login
-        //$('#msg-Modal').modal('show');
-        //$('#msg-txt').text('You should login first!');
-        //else
-        $("#participate").attr("href", "{% url 'index:participate' %}");
-      }
-    </script>
+    {% endif %}
+
+    {% include "index/sidebar.html" %}
 
     <!-- wrap all page elements to div -->
     <div class="wrap-body container-fluid">
@@ -86,10 +90,6 @@
       {% endblock body_block %}
     </div>
     <br><br>
-    <footer class="footer">
-      <div class="container">
-        <p class="text-muted" >© 2015 NTHUFC, KEJP .Templates are from Bootswatch Project.</p>
-      </div>
-    </footer>
+    {% include "index/footer.html" %}
   </body>
 </html>

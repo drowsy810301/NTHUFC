@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+{% extends "index/base.html" %}
+{% load static %}
+
+{% block title_name %}
+	<title>秘境地圖</title>
+{% endblock title_name %}
+
+{% block import_source %}
+	<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+	<script src="{% static 'js/gallery.js' %}" ></script>
+	<script src="{% static 'js/fb_post_like.js' %}" ></script>
+	<script src="{% static 'js/map.js' %}" ></script>
+{% endblock import_source %}
+
+{% block body_block %}
+
+	<style>
+		#google_map{
+		    width: 100%;
+		    height: 50%;
+		    display: block;
+		    margin-top: 5%;
+		}
+
+		#content {
+			width: 80%;
+			height: 100%;
+			float: left;
+			margin-left: 10%;
+		}
+
+		#side {
+			position: fixed;
+			width: 30%;
+			height: 100%;
+			float: right;
+			margin-top: 1%;
+			margin-left: 68%;
+			
+		}
+
+	</style>
+
+	<script>
+		initGallery();
+		if('{{query}}' != ''){
+			document.getElementById("search_input").placeholder = '{{query}}';
+		}
+	</script>
+
+    <div id="content">
+    
+  		{% if photos.count == 0 %}
+        	<h1>查無資料</h1>
+        {% else %}
+        	<h3 id="show_tag">目前Tag:</h3>
+      		<h3 id="show_marker">目前Map Marker: </h3>
+      	{% endif %}	    
+
+      	<div class="col-md-7">
+      	{% for photo in photos %}
+	        <div id="{{ photo.facebook_post_id }}" class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 col-md-6 image_frame">
+		        <div class="hovereffect">
+		            <img class='gallery' src="{{photo.flickr_photo_url}}" alt="" onload="render_image($(this))">
+		            <div class="overlay">
+		              	<h2><font>{{ photo.votes }}</font>票</h2>
+		              	<p class="icon-links">
+		                <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+		                  	<span class="fa fa-info-circle hover-green"></span>
+		                </a>
+		                <a href="https://www.flickr.com/photos/138506275@N05/{{photo.flickr_photo_id}}/in/dateposted-public/"  target="_flickr">
+		                  	<span class="fa fa-flickr hover-pink"></span>
+		                </a>
+		                <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
+		                  	<span class="fa fa-thumbs-up hover-blue"></span>
+		                </a>
+		                </p>
+		            </div>
+	            </div>
+	        </div>
+	    {% endfor %}
+	    </div>
+	</div>
+	<div id="side">
+		<div class="row">
+	    	<span>標籤：</span>
+	    	{% for key, value in tagdic.items %}
+	    		<span class = 'btn btn-default btn-xs' id="{{key}}" style="cursor:pointer; border-radius:4px;" onclick="filter_photos_ForTag('{{key}}');">&nbsp;{{ key }} <span class="badge">{{value}}張</span></span>
+	    	{% endfor %}
+	    	<span class = 'btn btn-default btn-xs' style="color: red; cursor:pointer; border-radius:4px;" onclick="cancel_filter();">取消過濾</span>
+	    </div>
+	    <div id="google_map"></div>
+	</div>
+
+	<script async defer
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl62RoU1i9n0MzNAmw8fcKGTVPryxNJLM&callback=initMap">
+	</script>
+
+	<script type="text/javascript">
+		var marker_list = []
+		{% for marker in marker_list %}
+			marker_list.push({'title': '{{marker.title}}', 'lat': {{marker.latitude}}, 'lng': {{marker.longitude}} })
+		{% endfor %}
+		initMarker(marker_list)
+
+		var marker_count = []
+		{% for key, value in markerdic.items %}
+			marker_count.push({'title': '{{key}}', 'count': {{value}} })
+		{% endfor %}
+		initMarkerCount(marker_count)
+
+		var tag_list = []
+		{% for tag in tag_list %}
+			tag_list.push({'title': '{{tag}}'})
+		{% endfor %}
+		initTag(tag_list)
+
+		var photo_list = []
+		{% for photo in photos %}
+			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}', 'isReady': '{{photo.isReady}}'})
+		{% endfor %}
+
+	</script>
+
+	{% include "photos/modal.html" %}
+{% endblock body_block %}
