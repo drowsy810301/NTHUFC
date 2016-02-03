@@ -79,7 +79,7 @@ def get_attemps(request):
 @login_required
 @ensure_csrf_cookie
 def users(request):
-    
+
     account = request.user
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
@@ -100,13 +100,13 @@ def users(request):
         if formset.is_valid():
             photoList = formset.save(commit=False)
             for photo in photoList:
-                photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
-                photo.save()
-                #uploadPhoto(photo)
+                if not photo.isReady:
+                    photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
+                    photo.save()
+                    #uploadPhoto(photo)
             account.updatePhotosRank()
             return redirect(reverse('users:profile'))
         else:
-            print formset.errors
             formset = PhotoInlineFormSet(instance=account, prefix="nested")
             return render(request, "users/profile.html", {
                 "photos": photos,
