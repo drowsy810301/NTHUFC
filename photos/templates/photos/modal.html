@@ -28,7 +28,7 @@
 		border-radius: 4px;
 	}
 
-	#photo_liked,#photo_flickr{
+	#photo_liked,#photo_flickr, #photo_share{
 		color: gray;
 		cursor: pointer;
 	}
@@ -39,6 +39,10 @@
 
 	#photo_flickr:hover{
 		color: #ff0066;
+	}
+
+	#photo_share:hover{
+		color: #009100;
 	}
 
 	#btn_close_modal, #btn_add_comment{
@@ -77,6 +81,13 @@
 	.fb_report:hover{
 		color: red;
 	}
+
+	.my_tag{
+		display: inline-block;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		margin: 0px 3px;
+	}
 </style>
 
 <div id="photoModal" class="modal fade" role="dialog">
@@ -100,8 +111,9 @@
 	      			<div class='col-xs-4'>
 	      				<p>
 	      					票數：&nbsp;<span id='photo_votes'></span>&nbsp;
-	      					<span id='photo_liked' style='font-size:20px; '><i class="fa fa-thumbs-up facebook_btn"></i></span>&nbsp;
-	      					<span id ='photo_flickr' style='font-size:20px; '><i class="fa fa-flickr flickr_btn"></i></span>
+	      					<span id='photo_liked' style='font-size:20px; ' data-toggle='tooltip' title='Facebook投票'><i class="fa fa-thumbs-up facebook_btn"></i></span>&nbsp;
+	      					<span id ='photo_flickr' style='font-size:20px; ' data-toggle='tooltip' title='Flickr投票'><i class="fa fa-flickr flickr_btn"></i></span>&nbsp;
+	      					<span id ='photo_share' style='font-size:20px; ' data-toggle='tooltip' title='分享'><i class="fa fa-share-alt"></i></span>
 	      				</p>
 	      				<p><i class="fa fa-user"></i>&nbsp;<span id='photo_owner'></span></p>
 	      				<p><i class="fa fa-map-marker"></i>&nbsp;<span id='photo_location'></span></p>
@@ -120,17 +132,19 @@
         		</div>
 	        	<div style='display:none;'>
 	        		<div id='fb_comment_template'>
+	        			<hr>
 	        			<div class='fb_avatar_frame'>
 	        				<img width="100%">
 	        			</div >
 	        			<div class='fb_text_frame'>
 	        				<span class='fb_name'>使用者</span>
-	        				<span class='fb_report' ><i class="fa fa-times">&nbsp;</i>&nbsp;</span>
-	        				<span class='fb_like' style='font-size:20px; '><i class="fa fa-thumbs-up facebook_btn">&nbsp;</i><span class='fb_likecount'>333</span>&nbsp;&nbsp;</span>
+	        				<span class='fb_report' data-toggle='tooltip' title='檢舉'><i class="fa fa-times">&nbsp;</i>&nbsp;</span>
+	        				<span class='fb_like' style='font-size:20px; ' data-toggle='tooltip' title='按讚'><i class="fa fa-thumbs-up facebook_btn">&nbsp;</i><span class='fb_likecount'>333</span>&nbsp;&nbsp;</span>
 	        				<p class='fb_message'>留言</p>
 	        			</div>
+
 	        		</div>
-	        		</div>
+	        	</div>
 	      	</div>
 	      	<!--div class="modal-footer">
 
@@ -140,10 +154,19 @@
 	</div>
 </div>
 <script type="text/javascript">
+	var modal_facebook_post_id;
+	var modal_facebook_comment_list = [];
+
+	$(document).ready(function(){
+    	$('[data-toggle="tooltip"]').tooltip();
+	});
 
 	function loadModal(modal_id,dataObj){
 		if (modal_id[0] != '#')
 			modal_id = '#'+modal_id;
+		modal_facebook_post_id = dataObj.facebook_post_id;
+		modal_facebook_comment_list = []
+
 		$(modal_id).modal('toggle');
 		$(modal_id).on('shown.bs.modal', function (e) {
 		  	$(modal_id+' .modal-title').html(dataObj.title);
@@ -163,32 +186,41 @@
 			}
 			$(modal_id+' .modal-body #photo_liked').attr('onclick','postLike_btn("'+dataObj.facebook_post_id+'")');
 			$(modal_id+' .modal-body #photo_flickr').attr('onclick','postFavorite_btn("'+dataObj.flickr_photo_id+'","'+dataObj.facebook_post_id+'")');
+			$(modal_id+' .modal-body #photo_share').attr('onclick','sharePhoto('+dataObj.photo_id+')');
 
 			$(modal_id+' #btn_add_comment').attr('onclick','post_command("'+modal_id+'","'+dataObj.facebook_post_id+'")');
 			var photo_comments = $('#facebook_comments');
 			photo_comments.empty();
 			for (i in dataObj.comment_list){
+				var comment_id = dataObj.comment_list[i].comment_id;
+				modal_facebook_comment_list.push({
+					facebook_comment_id:comment_id,
+					name: dataObj.comment_list[i].name,
+					message: dataObj.comment_list[i].message,
+				})
+
 				item = $('#fb_comment_template').clone();
-				item.removeAttr('id');
+				item.attr('id','comment_'+comment_id);
 				$('.fb_avatar_frame img',item).attr('src',dataObj.comment_list[i].avatar_url);
 				$('.fb_text_frame .fb_name',item).html(dataObj.comment_list[i].name);
 				$('.fb_text_frame .fb_likecount',item).html(dataObj.comment_list[i].likes_count);
 				$('.fb_text_frame .fb_message',item).html(dataObj.comment_list[i].message.replace(/(\n|\r)+/g,'<br>'));
-				var tmp_id = dataObj.comment_list[i].comment_id;
-				$('.fb_text_frame .fb_like',item).attr('onclick','likeComment("'+tmp_id+'",$(this))');
+				$('.fb_text_frame .fb_like',item).attr('onclick','likeComment("'+comment_id+'",$(this))');
+				$('.fb_text_frame .fb_report',item).attr('onclick','reportComment('+i+')');
 				/*$('.fb_text_frame .fb_like',item).click(function(){
-					likeComment(tmp_id, $(this));
+					likeComment(comment_id, $(this));
 				});*/
-				photo_comments.append('<hr>');
+				//photo_comments.append('<hr>');
 				photo_comments.append(item);
 			}
 			tag_list = dataObj.tags.split(' ');
 			var photo_tags = $('#photo_tags');
 			photo_tags.empty();
 			for (i in tag_list){
-				photo_tags.append('&nbsp;<span class="label round_radius label-default label-xs" >'+tag_list[i]+'</span>');
-				//photo_tags.append('&nbsp;<button type="button" class="btn round_radius btn-default btn-xs" >'+tag_list[i]+'</button>');
+				photo_tags.append('<span class="my_tag label round_radius label-default label-xs" >'+tag_list[i]+'</span>');
 			}
+
+			$(modal_id+' [data-toggle="tooltip"]').tooltip();
 		})
 	}
 
@@ -201,7 +233,6 @@
 				'facebook_post_id': facebook_post_id,
 			},
 			success: function(response){
-				console.log(response.photo)
 				if ($('#'+facebook_post_id+' h2 font').html())
 					response.photo.votes = $('#'+facebook_post_id+' h2 font').html()
 				if ($('#'+facebook_post_id+' .fa-thumbs-up').hasClass('liked'))
@@ -278,8 +309,9 @@
 		})
 	}
 
-	function reportComment(facebook_post_id){
+	function reportComment(comment_index){
 		var __facebook_user_id;
+		var comment_element = $('#comment_'+modal_facebook_comment_list[comment_index].facebook_comment_id);
 
 		var getUserID = function(){
 			FB.api(
@@ -287,25 +319,42 @@
 				'GET',
 				{"fields":"id"},
 				function(response) {
-				  __facebook_user_id = response.id;
+					if (response && ! response.error){
+						__facebook_user_id = response.id;
+						post_ajax();
+					}
+					else{
+						console.log('Please login and grant the permission');
+						alert('請登入FB，並給予應用程式授權');
+						hasLogin = false;
+					}
 				}
 			);
 		}
 
 		var post_ajax = function(){
+			$('.fb_like', comment_element).remove()
+			$('.fb_report', comment_element).remove()
+			$('.tooltip', comment_element).remove()
+			$('.fb_avatar_frame img', comment_element).css({'filter':'grayscale(100%)','-webkit-filter':'grayscale(100%)'})
+			$('.fb_name', comment_element).css('color','gray')
+			$('.fb_message', comment_element).html('已經收到您的檢舉，管理員確認之後會刪除不適當的留言')
 			$.ajax({
 				url: "{% url 'photos:ajax_report_comment'%}",
 				method: 'POST',
 				data:{
 					'csrfmiddlewaretoken': getCookie('csrftoken'),
-					'facebook_post_id': facebook_post_id,
+					'facebook_post_id': modal_facebook_post_id,
+					'facebook_comment_id': modal_facebook_comment_list[comment_index].facebook_comment_id,
 					'user_id': __facebook_user_id,
+					'name': modal_facebook_comment_list[comment_index].name,
+					'message': modal_facebook_comment_list[comment_index].message,
 				},
 				success: function(response){
-
+					console.log(response)
 				},
 				error: function(response){
-
+					console.log(response)
 				},
 			})
 		}
@@ -314,7 +363,6 @@
 
 		if (hasLogin){
 			getUserID();
-			post_ajax();
 		}
 		else{
 			FB.login(function(response) {
@@ -335,6 +383,13 @@
 				}
 			}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
 		}
+	}
+
+	function sharePhoto (photo_id) {
+		FB.ui({
+			method: 'share',
+			href: window.location.host+'{% url "photos:vote" %}?photo_id='+photo_id,
+		}, function(response){});
 	}
 </script>
 

@@ -5,11 +5,12 @@ import json
 import time
 import threading
 from django.utils import timezone
-from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from .authorization_token import __facebook_page_token, __flickr_api_key, __flickr_api_secret
-from .models import Photo,Tag
+from django.conf import settings
+
+from .authorization_token import fb_fanpage_graph, __flickr_api_key, __flickr_api_secret
+from .models import Tag, Photo
 
 def run_in_thread(func):
 	'''
@@ -135,10 +136,8 @@ def uploadToFacebook(photo):
 	'''
 		將新的照片張貼到Facebook，並把貼文ID存起來
 	'''
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-
 	photo_file_path = photo.image.path
-	facebook_response = graph.put_photo(
+	facebook_response = fb_fanpage_graph.put_photo(
 		image= open(photo_file_path,'rb'),
 		message= getFacebookPostContent(photo)
 	)
@@ -150,12 +149,7 @@ def updateFlickrPhotoURL(photo):
 	'''
 		如果該篇照片已經有Facebook貼文的ID，那就更新貼文內容而不要重新張貼
 	'''
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-
-	facebook_response = graph.update_photo(
-		facebook_post_id=photo.facebook_post_id,
-		message= getFacebookPostContent(photo)
-	)
+	facebook_response = fb_fanpage_graph.put_object(photo.facebook_post_id, '', message=getFacebookPostContent(photo))
 	return facebook_response
 
 def getPhotoDetails(photo, user_access_token):
@@ -164,8 +158,7 @@ def getPhotoDetails(photo, user_access_token):
 		如果使用者有登入的話，確認使用者是否有按過讚了
 	'''
 	__facebook_query_field = 'likes.summary(true), comments{from{name, picture{url}}, message}'
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	response = graph.get_object(id=photo.facebook_post_id, fields=__facebook_query_field)
+	response = fb_fanpage_graph.get_object(id=photo.facebook_post_id, fields=__facebook_query_field)
 	comment_list = []
 
 	if 'comments' in response:
@@ -204,8 +197,7 @@ def postComment(access_token, photo_facebook_id, comment_text):
 	except Exception, e:
 		print(e)
 
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	response = graph.get_object(id=photo_facebook_id, fields='comments{from{name, picture{url}}, message}')
+	response = fb_fanpage_graph.get_object(id=photo_facebook_id, fields='comments{from{name, picture{url}}, message}')
 	comment_list = []
 	if 'comments' in response:
 		for item in response['comments']['data']:
@@ -229,8 +221,7 @@ def postLike(user_access_token, photo_facebook_id):
 	except Exception, e:
 		print str(e)
 
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	response = graph.get_object(id=photo_facebook_id, fields='likes.summary(true)')
+	response = fb_fanpage_graph.get_object(id=photo_facebook_id, fields='likes.summary(true)')
 	return response['likes']['summary']['total_count']
 
 def getHasLiked(photo_facebook_id, user_access_token):
@@ -252,12 +243,7 @@ def getHasLiked(photo_facebook_id, user_access_token):
 @run_in_thread
 def deletePhoto(photo_info):
 	result = {}
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	facebook_response = graph.update_photo(
-		facebook_post_id=photo_info['facebook_post_id'],
-		message= getFacebookPostContent(None, isValid=False, photo_info=photo_info)
-	)
-
+	facebook_response = fb_fanpage_graph.put_object(photo_info['facebook_post_id'], '', message= getFacebookPostContent(None, isValid=False, photo_info=photo_info))
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
 	flickr_api.set_auth_handler('oauth_verifier.txt')
 	uni_title = u'[無效] '+ photo_info['title']
@@ -266,10 +252,10 @@ def deletePhoto(photo_info):
 	uni_description = uni_description.encode('utf-8')
 
 	flick_response = flickr_api.objects.Photo(
-        id=photo_info['flickr_photo_id'],
-        editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo_info['flickr_photo_id']
-    ).setMeta(
-    	title=uni_title,
+		id=photo_info['flickr_photo_id'],
+		editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo_info['flickr_photo_id']
+	).setMeta(
+		title=uni_title,
 		description=uni_description,
 	)
 
@@ -284,8 +270,7 @@ def getVotes(photo):
 	flickr_api.set_auth_handler('oauth_verifier.txt')
 	favorites = flickr_api.Photo(id = photo.flickr_photo_id).getFavorites()
 
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	response = graph.get_object(id=photo.facebook_post_id, fields='likes.summary(true)')
+	response = fb_fanpage_graph.get_object(id=photo.facebook_post_id, fields='likes.summary(true)')
 	likes =  response['likes']['summary']['total_count']
 	photo.favorites = len(favorites)
 	photo.likes = likes
@@ -295,11 +280,9 @@ def getVotes(photo):
 	return photo.favorites+photo.likes
 
 def getCommentList(facebook_post_id):
-
-	graph = facebook.GraphAPI(access_token=__facebook_page_token, version='2.5')
-	res = graph.get_object(id=facebook_post_id, fields='comments')
+	res = fb_fanpage_graph.get_object(id=facebook_post_id, fields='comments')
 	if res.has_key('comments'):
-		response = graph.get_object(id=facebook_post_id, fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
+		response = fb_fanpage_graph.get_object(id=facebook_post_id, fields='comments{likes.summary(total_count),from{name, picture{url}}, message}')
 
 	else:
 		return []
@@ -317,13 +300,16 @@ def getCommentList(facebook_post_id):
 
 	return comment_list
 
-def getPhotoModalDetails(photo):
+def getPhotoModalDetails(photo, report_comment_list):
+
+	comment_list = [ c for c in getCommentList(photo.facebook_post_id) if c['comment_id'] not in report_comment_list]
 
 	obj = {
+		'photo_id': photo.id,
 		'title': photo.title,
 		'votes': photo.votes,
 		'content': photo.content,
-		'comment_list': getCommentList(photo.facebook_post_id),
+		'comment_list': comment_list,
 		'location': photo.location_marker.title,
 		'tags': photo.tags,
 		'owner': photo.owner.nickname,
@@ -353,9 +339,8 @@ def getFlickrAccessToken(request_token_key, request_token_secret,oauth_verifier)
 	return (dd['access_token_key'],dd['access_token_secret'])
 
 def getFlickrAuthorizationUrl(photo_id):
-	__DOMAIN_NAME = 'http://www.localhost:8000'
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
-	a = flickr_api.auth.AuthHandler(callback=__DOMAIN_NAME+reverse('photos:flickr_authorization_redirect', args=(photo_id,)))
+	a = flickr_api.auth.AuthHandler(callback=settings.DOMAIN_NAME+reverse('photos:flickr_authorization_redirect', args=(photo_id,)))
 	#a = flickr_api.auth.AuthHandler()
 	dd = a.todict()
 	return (a.get_authorization_url('write'), dd['request_token_key'],dd['request_token_secret'])

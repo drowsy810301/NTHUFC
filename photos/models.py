@@ -3,10 +3,12 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
-from users.models import Account
 from locationMarker.models import Marker
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
+
+from users.models import Account
+from .authorization_token import fb_fanpage_graph
 import os, re
 
 # Create your models here.
@@ -34,13 +36,13 @@ class Tag(models.Model):
         return score
 
 def getDefaultMarker():
-	if len(Marker.objects.all()) == 0 :
-		Marker.objects.create(title='清華大學', latitude=24.7913341, longitude=120.994148)
-	return Marker.objects.all()[0].id;
+    if len(Marker.objects.all()) == 0 :
+        Marker.objects.create(title='清華大學', latitude=24.7913341, longitude=120.994148)
+    return Marker.objects.all()[0].id;
 
 def getFilePath(instance, filname):
-	timeStr = str(timezone.now())
-	return os.path.join('uploads','images',re.sub('\W','_',timeStr))
+    timeStr = str(timezone.now())
+    return os.path.join('uploads','images',re.sub('\W','_',timeStr))
 
 class Photo(models.Model):
 
@@ -65,7 +67,7 @@ class Photo(models.Model):
 
     def __unicode__(self):
         return self.title
-	
+
     def admin_thumbnail(self):
         if self.isReady:
             return u'<img src="{}" height="150px"/>'.format(self.flickr_photo_url)
@@ -92,10 +94,15 @@ class Photo(models.Model):
         super(Photo,self).delete(*args, **kwargs)
 
 class ReportedComment(models.Model):
-    facebook_post_id = models.CharField(max_length=50)
+    facebook_comment_id = models.CharField(max_length=50)
+    facebook_post_url = models.CharField(max_length=100)
     name = models.CharField(max_length=20)
     message = models.CharField(max_length=200)
     report_count = models.IntegerField(default=0)
     report_list = models.CharField(max_length=200)
-    last_report_time = models.DateTimeField(auto_now=True)
-	
+    last_report_time = models.DateTimeField(default=timezone.now)
+
+    def delete(self, *args, **kwargs):
+        fb_fanpage_graph.delete_object(id=self.facebook_comment_id)
+        super(ReportedComment,self).delete(*args, **kwargs)
+

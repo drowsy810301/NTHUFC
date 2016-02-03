@@ -143,10 +143,6 @@ function post_command(modal_id, facebook_post_id){
 	if($(modal_id+' #comment').val()==''){
 		return;
 	}
-	if (!hasLogin){
-		alert('Please login to FB and accept the "publish_action" permission so we can post your comment to the photo');
-		return;
-	}
 
 	var foo = function(){
 		FB.api(

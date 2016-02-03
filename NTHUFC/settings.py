@@ -149,4 +149,8 @@ EMAIL_HOST_PASSWORD = get_config('client', 'email_password')
 
 EMAIL_PORT = 587
 
+SERVER_EMAIL = get_config('client', 'email_account')
+EMAIL_SUBJECT_PREFIX = '[NTHUFC]'
+ADMINS = ( ('Eelai Wind', 'tony333ts@gmail.com'), )
 
+DOMAIN_NAME = 'http://photos.cc.nthu.edu.tw'

@@ -14,7 +14,11 @@
 <script>
 
 initGallery();
-
+{% if  shared_photo_facebook_post_id %}
+	$( document ).ready(function() {
+	    getPhotoDetails('{{shared_photo_facebook_post_id}}');
+	})
+{% endif %}
 </script>
 
 	<div class='container'>
