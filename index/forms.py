@@ -123,11 +123,3 @@ class PhotoCreationForm(forms.ModelForm):
                 css_class="image-form"
             ),
         )
-
-    def clean(self):
-        cleaned_data = super(PhotoCreationForm,self).clean()
-        isReady = cleaned_data.get('isReady')
-        image = cleaned_data.get('image')
-
-        if not isReady and not image:
-            self.add_error('image', 'image field is requierd')
