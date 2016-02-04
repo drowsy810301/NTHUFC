@@ -114,16 +114,6 @@ function filter_photos_ForTag(filt_key){
                         photo_list[i].isReady = 'False';
                     }
                 }
-                /*if( photo_list[i].tags.match(filt_key)==null ){
-                    if(flag == 0){
-                        document.getElementById(photo_list[i].fbID).style.display = 'none';
-                        photo_list[i].isReady = 'False';
-                    }
-                }
-                else {
-                    document.getElementById(photo_list[i].fbID).style.display = 'block';
-                    photo_list[i].isReady = 'True';
-                }*/
             }
             else {
                 var tags_not_atLocation = photo_list[i].tags.split(' ');
@@ -138,12 +128,6 @@ function filter_photos_ForTag(filt_key){
                 if( tmp_not_atLocation == 0 ) {
                     photo_list[i].isReady = 'False';
                 }
-                /*if( photo_list[i].tags.match(filt_key)==null ){
-                    photo_list[i].isReady = 'False';
-                }
-                else {
-                    photo_list[i].isReady = 'True';
-                }*/
             }
         }
         document.getElementById("show_tag").innerHTML += " " + filt_key;

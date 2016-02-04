@@ -108,7 +108,7 @@ def uploadUsingThread(photo):
 				)
 				photo.flickr_photo_id = flickr_response.id
 				photo_info = flickr_response.getInfo()
-				photo.flickr_photo_url = 'https://farm{}.staticflickr.com/{}/{}_{}.jpg'.format(photo_info['farm'], photo_info['server'], flickr_response.id, photo_info['secret'])
+				photo.flickr_photo_url = 'https://farm{}.staticflickr.com/{}/{}_{}_b.jpg'.format(photo_info['farm'], photo_info['server'], flickr_response.id, photo_info['secret'])
 				photo.save()
 				result['flickr_response'] = flickr_response
 				break;
