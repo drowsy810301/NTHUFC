@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from authorization_token import __flickr_api_key, __flickr_api_secret, __facebook_page_token
+from authorization_token import __flickr_api_key, __flickr_api_secret, fb_fanpage_graph
 import flickr_api
 import facebook
 
@@ -21,6 +21,5 @@ except Exception as e:
 	print str(e)
 
 print 'Testing Facebook API...'
-graph = facebook.GraphAPI(access_token= __facebook_page_token, version='2.5')
-page = graph.get_object(id='492779200909805')
+page = fb_fanpage_graph.get_object(id='1528712347441804')
 print '{} (id = {})'.format(page['name'].encode('utf-8'), page['id'])
