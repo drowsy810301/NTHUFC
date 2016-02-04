@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from locationMarker.models import Marker
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import RegexValidator
 
 from users.models import Account
@@ -92,6 +92,26 @@ class Photo(models.Model):
             self.image.delete()
 
         super(Photo,self).delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        try:
+            self.clean()
+            super(Photo,self).save(*args, **kwargs)
+        except ValidationError as e :
+            print str(e)
+
+    def clean(self):
+        if self.isReady:
+            if not self.facebook_post_id or not self.flickr_photo_id or not self.flickr_photo_url:
+                raise ValidationError({
+                    'facebook_post_id': 'facebook_post_id is required',
+                    'flickr_photo_id': 'flickr_photo_id is required',
+                    'flickr_photo_url': 'flickr_photo_url is required',
+                })
+        else:
+            if not self.image:
+                raise ValidationError({'image': 'image file is required'})
+
 
 class ReportedComment(models.Model):
     facebook_comment_id = models.CharField(max_length=50)
