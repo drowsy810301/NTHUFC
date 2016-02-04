@@ -199,7 +199,7 @@ function post_command(modal_id, facebook_post_id){
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '1645068735761448',
+		appId      : '1683882248550115',
 		cookie     : true,  // enable cookies to allow the server to access
 	                        // the session
 		xfbml      : true,  // parse social plugins on this page
