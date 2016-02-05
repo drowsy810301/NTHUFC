@@ -15,13 +15,12 @@ from users.models import Account, UserProfile
 from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
-from photos.socialApplication import uploadPhoto, deletePhoto
+from photos.socialApplication import deletePhoto
 from axes.utils import reset
 from axes.decorators import watch_login, get_ip, FAILURE_LIMIT, get_user_attempts
 from axes.models import AccessAttempt
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.core.mail import send_mail
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -39,7 +38,7 @@ def send_forget_password_email(request, user):
     email = user.email
     salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
     activation_key = hashlib.sha1(salt+email).hexdigest()
-    
+
     #Create and save user profile
     UserProfile.objects.filter(account=user).delete()
     new_profile = UserProfile(account=user, activation_key=activation_key)
@@ -80,7 +79,7 @@ def get_attemps(request):
 @login_required
 @ensure_csrf_cookie
 def users(request):
-    
+
     account = request.user
     photos = account.photos.order_by('-votes')
     #sorted(photos,key=lambda x : x['favorites']+x['likes'],reverse=True)
@@ -101,13 +100,13 @@ def users(request):
         if formset.is_valid():
             photoList = formset.save(commit=False)
             for photo in photoList:
-                photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
-                photo.save()
-                #uploadPhoto(photo)
+                if not photo.isReady:
+                    photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
+                    photo.save()
+                    #uploadPhoto(photo)
             account.updatePhotosRank()
             return redirect(reverse('users:profile'))
         else:
-            print formset.errors
             formset = PhotoInlineFormSet(instance=account, prefix="nested")
             return render(request, "users/profile.html", {
                 "photos": photos,
@@ -158,21 +157,21 @@ def login(request):
 def forget_password(request):
     if request.user.is_authenticated():
         return redirect(reverse('index:index'))
-    
+
     F = ForgetPasswordForm
     if request.method == 'GET':
         form = F()
     else:
         form = F(data=request.POST)
         if form.is_valid():
-            user = Account.objects.get(username=form.cleaned_data['username'], email=form.cleaned_data['email'])           
+            user = Account.objects.get(username=form.cleaned_data['username'], email=form.cleaned_data['email'])
             if user:
                 send_forget_password_email(request, user)
                 messages.add_message(request, messages.SUCCESS, '信件已寄送')
-            else:               
+            else:
                 return render(request, 'index/forget_password.html', {'form': form})
 
-        else:            
+        else:
             return render(request, 'index/forget_password.html', {'form': form})
 
     return render(request, 'index/forget_password.html', {'form': form})
@@ -229,8 +228,8 @@ def delete_photo(request, delete_id):
 
     return redirect(reverse('users:profile'))
 
-def reset_password(request):   
-    
+def reset_password(request):
+
     F = ResetPasswordForm
     if request.method == 'GET':
         form = F()
@@ -238,18 +237,18 @@ def reset_password(request):
         form = F(data=request.POST)
         if form.is_valid():
             try:
-                request.user.reset_password(form.cleaned_data['password'])                 
+                request.user.reset_password(form.cleaned_data['password'])
                 messages.add_message(request, messages.SUCCESS, '更改成功')
                 return redirect(reverse('index:index'))
             except:
                 print 'reset failed'
-                return render(request, 'index/reset_password.html', {'form': form})          
+                return render(request, 'index/reset_password.html', {'form': form})
 
-        else:            
+        else:
             return render(request, 'index/reset_password.html', {'form': form})
 
     return render(request, 'index/reset_password.html', {'form': form})
-    
+
 def locked_out(request):
     """Block login for over 5 wrong tries."""
 

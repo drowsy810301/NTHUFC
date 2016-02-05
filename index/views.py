@@ -6,9 +6,7 @@ from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
-from photos.socialApplication import uploadPhoto
 from django.contrib import messages
-from photos.models import Photo
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.views.decorators.csrf import ensure_csrf_cookie
