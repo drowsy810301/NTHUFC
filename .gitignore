@@ -14,9 +14,6 @@ migrations/
 __pycache__/
 *.py[cod]
 
-#3rd party library
-3rd_party_library/
-
 #authorization data
 oauth_verifier.txt
 photos/authorization_token.py
@@ -26,3 +23,5 @@ db.sqlite3
 allMarker.json
 *.log
 
+#static files
+static/

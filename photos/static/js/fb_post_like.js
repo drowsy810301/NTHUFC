@@ -168,7 +168,6 @@ function post_command(modal_id, facebook_post_id){
 								$('.fb_text_frame .fb_like',item).click(function(){
 									likeComment(response.id, $(this));
 								});
-								$('#photoModal #facebook_comments').append('<hr>');
 								$('#photoModal #facebook_comments').append(item);
 								$(modal_id+' #comment').val('');
 					  		}
