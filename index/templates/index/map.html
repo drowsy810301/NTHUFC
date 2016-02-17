@@ -37,7 +37,7 @@
 			float: right;
 			margin-top: 1%;
 			margin-left: 68%;
-			
+
 		}
 
 	</style>
@@ -50,13 +50,13 @@
 	</script>
 
     <div id="content">
-    
+
   		{% if photos.count == 0 %}
         	<h1>查無資料</h1>
         {% else %}
         	<h3 id="show_tag">目前Tag:</h3>
       		<h3 id="show_marker">目前Map Marker: </h3>
-      	{% endif %}	    
+      	{% endif %}
 
       	<div class="col-md-7">
       	{% for photo in photos %}
@@ -64,17 +64,17 @@
 		        <div class="hovereffect">
 		            <img class='gallery' src="{{photo.flickr_photo_url}}" alt="" onload="render_image($(this))">
 		            <div class="overlay">
-		              	<h2><font>{{ photo.votes }}</font>票</h2>
+		              	<h2><font class='votes_{{ photo.facebook_post_id}}' >{{ photo.votes }}</font>票</h2>
 		              	<p class="icon-links">
-		                <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
-		                  	<span class="fa fa-info-circle hover-green"></span>
-		                </a>
-		                <a href="https://www.flickr.com/photos/138506275@N05/{{photo.flickr_photo_id}}/in/dateposted-public/"  target="_flickr">
-		                  	<span class="fa fa-flickr hover-pink"></span>
-		                </a>
-		                <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
-		                  	<span class="fa fa-thumbs-up hover-blue"></span>
-		                </a>
+			                <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+			                  	<span class="fa fa-info-circle hover-green"></span>
+			                </a>
+			                <a style="cursor:pointer;" onclick="postFavorite_btn('{{photo.flickr_photo_id}}','{{photo.facebook_post_id}}')">
+		                       <span class="fa fa-flickr flickr_btn hover-pink"></span>
+		                    </a>
+			                <a style="cursor:pointer;" onclick="postLike_btn('{{photo.facebook_post_id}}')">
+			                    <span class="fa fa-thumbs-up facebook_btn hover-blue"></span>
+			                </a>
 		                </p>
 		            </div>
 	            </div>
@@ -92,7 +92,14 @@
 	    </div>
 	    <div id="google_map"></div>
 	</div>
-
+	<div style='display:none;'>
+	    {% for photo in photos %}
+	      	<div id="{{photo.facebook_post_id}}">
+	        	<h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
+	        	<a><span class="fa fa-thumbs-up hover-blue facebook_btn"></span></a>
+	      	</div>
+	    {% endfor %}
+	 </div>
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAl62RoU1i9n0MzNAmw8fcKGTVPryxNJLM&callback=initMap">
 	</script>

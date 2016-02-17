@@ -59,7 +59,7 @@
     {% for photo in photos %}
       <div id="{{photo.facebook_post_id}}">
         <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
-        <a><span class="fa fa-thumbs-up hover-blue"></span></a>
+        <a><span class="fa fa-thumbs-up hover-blue facebook_btn"></span></a>
       </div>
     {% endfor %}
   </div>
