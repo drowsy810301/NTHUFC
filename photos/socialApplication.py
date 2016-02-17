@@ -51,17 +51,6 @@ def uploadPhoto(photo):
 	'''
 
 	if not photo.isReady:
-		for tag_text in photo.tags.split(' '):
-			if tag_text == '':
-				continue
-			try:
-				tag = Tag.objects.get(tag_name = tag_text)
-				tag.update_time = timezone.now()
-				tag.tag_count += 1
-				tag.save()
-			except ObjectDoesNotExist:
-				Tag.objects.create(tag_name=tag_text)
-
 		uploadUsingThread(photo)
 
 
@@ -85,6 +74,10 @@ def getFacebookPostContent(photo, isValid=True, photo_info={}):
 
 @run_in_thread
 def uploadUsingThread(photo):
+
+	if photo.isReady:
+		return
+
 	photo_file_path = photo.image.path
 	result = {}
 
@@ -130,6 +123,18 @@ def uploadUsingThread(photo):
 	photo.isReady = True
 	photo.image.delete()
 	photo.save()
+
+	for tag_text in photo.tags.split(' '):
+		if tag_text == '':
+			continue
+		try:
+			tag = Tag.objects.get(tag_name = tag_text)
+			tag.update_time = timezone.now()
+			tag.tag_count += 1
+			tag.save()
+		except ObjectDoesNotExist:
+			Tag.objects.create(tag_name=tag_text)
+
 	return result
 
 def uploadToFacebook(photo):

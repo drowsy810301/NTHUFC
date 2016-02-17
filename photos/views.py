@@ -85,7 +85,7 @@ def vote(request):
 			if shared_photo.isReady:
 				shared_photo_id = shared_photo.id
 				shared_photo_owner_id = shared_photo.owner.id
-		except ObjectDoesNotExist as e:
+		except ( ValueError, ObjectDoesNotExist) as e:
 			pass
 
 	if shared_photo_owner_id:
@@ -137,10 +137,14 @@ def photo_map(request):
 def ajax_get_photo_details(request):
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:
 		facebook_post_id = request.POST['facebook_post_id']
-		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
-
-		report_list = request.session.get('report_comment_list',[])
-		return JsonResponse({'photo': getPhotoModalDetails(photo, report_list) })
+		try:
+			photo = Photo.objects.get(facebook_post_id=facebook_post_id)
+			report_list = request.session.get('report_comment_list',[])
+			return JsonResponse({'photo': getPhotoModalDetails(photo, report_list) })
+		except ObjectDoesNotExist:
+			return redirect('index:index')
+	else:
+		return redirect('index:index')	
 
 def flickr_authorization_redirect(request, flickr_photo_id):
 	if (request.method == 'GET'):
