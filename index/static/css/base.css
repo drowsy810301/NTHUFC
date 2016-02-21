@@ -83,9 +83,9 @@ ul {
 #sticky-social a[class*="flickr"]:hover,
 #sticky-social a[class*="flickr"] span { background: #ff0084; }
 
-#sticky-social a[class*="graduation"],
-#sticky-social a[class*="graduation"]:hover,
-#sticky-social a[class*="graduation"] span { background: #333; }
+#sticky-social a[class*="feedback"],
+#sticky-social a[class*="feedback"]:hover,
+#sticky-social a[class*="feedback"] span { background: #660099; }
 
 #sticky-social a[class*="info"],
 #sticky-social a[class*="info"]:hover,

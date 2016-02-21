@@ -7,7 +7,6 @@
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
 <script src="{% static "js/gallery.js" %}" ></script>
-<script src="{% static 'js/fb_post_like.js' %}" ></script>
 {% endblock import_source %}
 
 {% block body_block %}
@@ -93,5 +92,5 @@
 			})
 		{% endif %}
 	</script>
-	{% include "photos/modal.html" %}
+	{% include "photos/photo_detail_modal.html" %}
 {% endblock body_block %}

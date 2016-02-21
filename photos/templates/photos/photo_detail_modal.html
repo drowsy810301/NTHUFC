@@ -153,38 +153,14 @@
 
 	</div>
 </div>
+
+
+{% load static %}
+<script src="{% static 'js/photo_detail_modal.js' %}" ></script>
+
 <script type="text/javascript">
 	var modal_facebook_post_id;
 	var modal_facebook_comment_list = [];
-
-	$(document).ready(function(){
-    	$('[data-toggle="tooltip"]').tooltip();
-    	//Used for recording user's like and favorite
-    	var tmp = Cookies.getJSON('vote_record')
-    	if ( tmp ){
-    		vote_record = tmp
-    		for ( facebook_post_id in vote_record ){
-    			if ( vote_record.hasOwnProperty(facebook_post_id) ){
-    				if ( vote_record[facebook_post_id].fb ){
-    					$('#'+facebook_post_id+' .facebook_btn').toggleClass("liked");
-    				}
-
-    				if ( vote_record[facebook_post_id].flickr ){
-    					$('#'+facebook_post_id+' .flickr_btn').toggleClass("favorited");
-    				}
-
-    				if ( vote_record[facebook_post_id].vote > Number($('.votes_'+facebook_post_id).html()) ){
-    					$('.votes_'+facebook_post_id).html( vote_record[facebook_post_id].vote )
-    				}
-    			}
-    		}
-    	}
-
-    	var tmp = Cookies.getJSON('reported_comments_record')
-    	if (tmp){
-    		reported_comments_record = tmp
-    	}
-	});
 
 	function loadModal(modal_id,dataObj){
 		if (modal_id[0] != '#')
@@ -419,8 +395,6 @@
 				},
 			})
 		}
-
-
 
 		if (hasLogin){
 			getUserID();

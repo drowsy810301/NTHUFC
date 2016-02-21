@@ -20,29 +20,6 @@ from locationMarker.models import Marker
 from users.models import Account
 from flickr_api.flickrerrors import FlickrAPIError
 
-# Create your views here.
-def photos(request):
-    return render(request, "photos/photos.html", {})
-
-#ajax需要csrf_token來驗證
-@ensure_csrf_cookie
-def show(request):
-	if request.method == 'POST':
-		photo_list = []
-		for id in request.POST.getlist('photo_id_list[]'):
-			try:
-				photo_list.append(Photo.objects.get(pk=id))
-			except ObjectDoesNotExist:
-				pass
-			except Exception , e:
-				return JsonResponse({'status':'error', 'message':str(e)})
-
-		user_access_token = request.POST.get('user_access_token','')
-		return JsonResponse({'photo_list':[getPhotoDetails(x,user_access_token) for x in photo_list]})
-	else:
-		photo_id_list = [ x.id for x in Photo.objects.all() ]
-		return render(request,"photos/show.html",{'photo_id_list':photo_id_list})
-
 def ajax_post_comment(request):
 	access_token = request.POST.get('access_token','')
 	photo_facebook_id = request.POST.get('photo_facebook_id','')
@@ -142,17 +119,6 @@ def ajax_get_votes(request):
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 		return JsonResponse({'votes': getVotes(photo)})
-
-def photo_map(request):
-	all_tags = Tag.objects.all()
-	hot_tags = Tag.objects.order_by('-tag_count')[:3]
-	recent_tags = Tag.objects.order_by('-update_time')[:3]
-	return render(request,'photos/photo_map.html',{
-		"marker_list": Marker.objects.all(),
-        "all_tags":[ x.tag_name for x in all_tags],
-        "hot_tags":[ x.tag_name for x in hot_tags],
-        "recent_tags":[ x.tag_name for x in recent_tags],
-	})
 
 def ajax_get_photo_details(request):
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:

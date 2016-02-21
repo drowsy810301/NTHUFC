@@ -14,14 +14,12 @@
 <script src={% static "js/upload.js" %}></script>
 <script src={% static "js/jquery.popconfirm.js" %}></script>
 <script src={% static "js/gallery.js" %}></script>
-<script src="{% static 'js/fb_post_like.js' %}" ></script>
 <script type="text/javascript">
   init({{ photos.count }}, 'profile');
   initGallery();
 </script>
 {% endblock import_source %}
 {% block body_block %}
-{% include "photos/modal.html" %}
 <div class="container">
   <div class="page-header" style="display: inline;">
     <h1 style="text-align:left;float:left;">{{ user.username }}</h1>
@@ -80,6 +78,6 @@
     </form>
   </div>
 </div>
-
+{% include "photos/photo_detail_modal.html" %}
 {% include "index/upload_modal.html" %}
 {% endblock body_block %}

@@ -9,7 +9,6 @@
 {% block import_source %}
 	<link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
 	<script src="{% static 'js/gallery.js' %}" ></script>
-	<script src="{% static 'js/fb_post_like.js' %}" ></script>
 	<script src="{% static 'js/map.js' %}" ></script>
 {% endblock import_source %}
 
@@ -130,5 +129,5 @@
 
 	</script>
 
-	{% include "photos/modal.html" %}
+	{% include "photos/photo_detail_modal.html" %}
 {% endblock body_block %}
