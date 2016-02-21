@@ -8,6 +8,11 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.mail import mail_admins
 from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
+from django.db.models import Count
+
+import threading
+import math
 
 from .socialApplication import getPhotoDetails, postComment, postLike, getHasLiked, getVotes,getPhotoModalDetails, getFlickrAuthorizationUrl,changeFlickrFavorite, getFlickrAccessToken
 from .models import Photo, Tag, ReportedComment
@@ -75,23 +80,37 @@ def ajax_post_like(request):
 		return JsonResponse(context)
 
 @ensure_csrf_cookie
-def vote(request):
+def vote(request, page=1):
 	shared_photo = None
 	shared_photo_id = None
 	shared_photo_owner_id = None
+
+	valid_accounts =  Account.objects.annotate(n_photo = Count('photos')).filter(n_photo__gt=0)
+	all_page = int( math.ceil(1.0* valid_accounts.count() /5) )
+	if request.method == 'GET':
+		try:
+			page = int(page)
+			if page <= 0 or page > all_page:
+				raise Exception
+		except:
+			page = 1
+
 	if ( request.method == 'GET' and 'photo_id' in request.GET ):
 		try:
 			shared_photo = Photo.objects.get(pk=request.GET['photo_id'])
 			if shared_photo.isReady:
 				shared_photo_id = shared_photo.id
 				shared_photo_owner_id = shared_photo.owner.id
+				page = 1
 		except ( ValueError, ObjectDoesNotExist) as e:
 			pass
 
 	if shared_photo_owner_id:
-		all_account = list(Account.objects.filter(pk=shared_photo_owner_id)) + list(Account.objects.exclude(pk=shared_photo_owner_id).order_by('-photos_rank'))
+		all_account = list(Account.objects.filter(pk=shared_photo_owner_id)) + list(valid_accounts.exclude(pk=shared_photo_owner_id).order_by('-photos_rank'))
 	else:
-		all_account = list(Account.objects.order_by('-photos_rank'))
+		all_account = list(valid_accounts.order_by('-photos_rank'))
+
+	all_account = all_account[5*(page-1):5*page]
 
 	data_list = []
 	for account in all_account:
@@ -112,10 +131,11 @@ def vote(request):
 				'img_src':photo.flickr_photo_url,
 			})
 		data_list.append(account_data)
+
 	if shared_photo_owner_id and shared_photo_id:
-		return render(request,'photos/vote.html',{'data_list':data_list, 'shared_photo_facebook_post_id': shared_photo.facebook_post_id})
+		return render(request,'photos/vote.html',{'data_list':data_list, 'all_page': all_page, 'page' : page, 'shared_photo_facebook_post_id': shared_photo.facebook_post_id})
 	else:
-		return render(request,'photos/vote.html',{'data_list':data_list})
+		return render(request,'photos/vote.html',{'data_list':data_list, 'all_page': all_page, 'page' : page, })
 
 def ajax_get_votes(request):
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:
@@ -144,7 +164,7 @@ def ajax_get_photo_details(request):
 		except ObjectDoesNotExist:
 			return redirect('index:index')
 	else:
-		return redirect('index:index')	
+		return redirect('index:index')
 
 def flickr_authorization_redirect(request, flickr_photo_id):
 	if (request.method == 'GET'):
@@ -185,11 +205,20 @@ def ajax_post_flickr_favorite(request):
 
 
 def ajax_report_comment(request):
+	class SendMailThread(threading.Thread):
+		def run(self):
+			plain_text = comment.name+u' 在粉絲專頁的留言被多個人檢舉，請確認該留言是否適當\n留言內容 ： '+ comment.message+u'\nFacebook 貼文 : '+comment.facebook_post_url +u'\n清大攝影競賽資料庫 ： '+settings.DOMAIN_NAME + reverse('admin:photos_reportedcomment_changelist')
+			html_str = render_to_string('photos/report_comment_email_template.html', { 'comment': comment, 'domain_name': settings.DOMAIN_NAME } )
+			mail_admins('Facebook reported commands', plain_text , html_message=html_str)
+
+
 	if ( request.method == 'POST' and 'facebook_post_id' in request.POST and 'facebook_comment_id' in request.POST and 'user_id' in request.POST and 'name' in request.POST and 'message' in request.POST):
+		'''
 		if 'report_comment_list' in request.session:
 			request.session['report_comment_list'] += [ request.POST['facebook_comment_id'] ]
 		else:
 			request.session['report_comment_list'] = [ request.POST['facebook_comment_id'] ]
+		'''
 
 		try:
 			comment = ReportedComment.objects.get(facebook_comment_id=request.POST['facebook_comment_id'])
@@ -200,8 +229,7 @@ def ajax_report_comment(request):
 					comment.report_list += ','+request.POST['user_id']
 
 					if comment.report_count >= 5 :
-						html_str = render_to_string('photos/report_comment_email_template.html', { 'comment': comment, 'domain_name': settings.DOMAIN_NAME } )
-						mail_admins('facebook reported commands','content', html_message=html_str)
+						SendMailThread().start()
 			else:
 				comment.report_count = 1
 				comment.report_list = request.POST['user_id']

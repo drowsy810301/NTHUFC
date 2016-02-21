@@ -11,15 +11,9 @@
 {% endblock import_source %}
 
 {% block body_block %}
-<script>
-
-initGallery();
-{% if  shared_photo_facebook_post_id %}
-	$( document ).ready(function() {
-	    getPhotoDetails('{{shared_photo_facebook_post_id}}');
-	})
-{% endif %}
-</script>
+	<script>
+	initGallery();
+	</script>
 
 	<div class='container'>
 		<br>
@@ -56,7 +50,48 @@ initGallery();
 		<br>
 		<hr>
 		{% endfor %}
+
+		{% if all_page > 0 %}
+		<div class="text-center">
+			<ul class="pagination">
+				<li>
+					{% if page|add:-1 < 1 %}
+					<a href="{% url 'photos:vote_with_page' 1%}" aria-label="Previous">
+					{% else %}
+					<a href="{% url 'photos:vote_with_page' page|add:"-1"%}" aria-label="Previous">
+					{% endif%}
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% load get_range%}
+				{% for i in all_page|get_range %}
+				{% if i|add:1 == page %}
+					<li class="active"><a href="#">{{i|add:1}}</a></li>
+				{% else %}
+					<li><a href="{% url 'photos:vote_with_page' i|add:1%}">{{i|add:1}}</a></li>
+				{% endif %}
+				{% endfor %}
+				<li>
+					{% if page|add:1 > all_page %}
+					<a href="{% url 'photos:vote_with_page' all_page %}" aria-label="Next">
+					{% else %}
+					<a href="{% url 'photos:vote_with_page' page|add:1 %}" aria-label="Next">
+					{% endif%}
+
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		{% endif %}
 	</div>
 	<br>
+	<script type="text/javascript">
+		{% if  shared_photo_facebook_post_id %}
+			$( document ).ready(function() {
+			    getPhotoDetails('{{shared_photo_facebook_post_id}}');
+			})
+		{% endif %}
+	</script>
 	{% include "photos/modal.html" %}
 {% endblock body_block %}

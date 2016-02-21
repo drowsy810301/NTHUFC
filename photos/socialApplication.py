@@ -307,7 +307,8 @@ def getCommentList(facebook_post_id):
 
 def getPhotoModalDetails(photo, report_comment_list):
 
-	comment_list = [ c for c in getCommentList(photo.facebook_post_id) if c['comment_id'] not in report_comment_list]
+	#comment_list = [ c for c in getCommentList(photo.facebook_post_id) if c['comment_id'] not in report_comment_list]
+	comment_list = getCommentList(photo.facebook_post_id)
 
 	obj = {
 		'photo_id': photo.id,

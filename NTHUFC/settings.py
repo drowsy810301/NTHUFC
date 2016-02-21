@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'locationMarker',
     'axes',
     'djangobower',
+    'feedback',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -132,6 +133,7 @@ BOWER_INSTALLED_APPS = (
     'https://github.com/FortAwesome/Font-Awesome.git',
     'https://github.com/bootstrap-tagsinput/bootstrap-tagsinput.git',
     'https://github.com/twitter/typeahead.js.git',
+	'js-cookie',
 )
 
 STATICFILES_FINDERS = (
@@ -153,4 +155,4 @@ SERVER_EMAIL = get_config('client', 'email_account')
 EMAIL_SUBJECT_PREFIX = '[NTHUFC]'
 ADMINS = ( ('Eelai Wind', 'tony333ts@gmail.com'), )
 
-DOMAIN_NAME = 'http://photos.cc.nthu.edu.tw'
+DOMAIN_NAME = 'http://dlr05.cc.nthu.edu.tw'

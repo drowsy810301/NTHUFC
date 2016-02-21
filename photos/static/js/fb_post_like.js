@@ -1,4 +1,7 @@
 var hasLogin = false
+var vote_record = {}
+var reported_comments_record = []
+
 function postLike_btn(facebook_post_id){
 	if ($('#'+facebook_post_id+' .facebook_btn').attr('disable') == 'true' ){
 		return;
@@ -19,6 +22,16 @@ function postLike_btn(facebook_post_id){
 			$('#photoModal #photo_liked .facebook_btn').toggleClass("liked");
 			v.html(Number(v.html())-1);
 			$('#photo_votes').html(Number($('#photo_votes').html())-1);
+			if ( vote_record[facebook_post_id] ){
+				if ( vote_record[facebook_post_id].flickr == false ){
+					delete vote_record[facebook_post_id]
+				}
+				else{
+					vote_record[facebook_post_id].vote = Number(v.html())
+					vote_record[facebook_post_id].fb = false
+				}
+			}
+			Cookies.set('vote_record',vote_record)
 		};
 	}
 	else{
@@ -28,6 +41,14 @@ function postLike_btn(facebook_post_id){
 			$('#photoModal #photo_liked .facebook_btn').toggleClass("liked");
 			v.html(Number(v.html())+1);
 			$('#photo_votes').html(Number($('#photo_votes').html())+1);
+			if ( vote_record[facebook_post_id] ){
+				vote_record[facebook_post_id].vote = Number(v.html())
+				vote_record[facebook_post_id].fb = true
+			}
+			else{
+				vote_record[facebook_post_id] = { 'vote': Number(v.html()), 'fb': true, 'flickr': false }
+			}
+			Cookies.set('vote_record',vote_record)
 		};
 	}
 
@@ -59,7 +80,7 @@ function postLike_btn(facebook_post_id){
 			   	console.log('Please login and accept the permission');
 			   	alert('Please login and accept the permission');
 			}
-		}, {auth_type: 'rerequest', scope: 'publish_actions',return_scopes: true});
+		}, {auth_type: 'rerequest', scope: 'publish_actions'});
 	}
 
 }
@@ -159,17 +180,22 @@ function post_command(modal_id, facebook_post_id){
 					  	{"message":$(modal_id+' #comment').val()},
 					  	function(response) {
 					  		if (response && !response.error){
+					  			modal_facebook_comment_list.push({
+									facebook_comment_id:response.id,
+									name: name,
+									message: $(modal_id+' #comment').val(),
+								})
 					  			item = $('#fb_comment_template').clone();
-								item.removeAttr('id');
+								item.attr('id','comment_'+response.id);
 								$('.fb_avatar_frame img',item).attr('src',avatar_url);
 								$('.fb_text_frame .fb_name',item).html(name);
 								$('.fb_text_frame .fb_likecount',item).html(0);
 								$('.fb_text_frame .fb_message',item).html($(modal_id+' #comment').val().replace(/(\n|\r)+/g,'<br>'));
-								$('.fb_text_frame .fb_like',item).click(function(){
-									likeComment(response.id, $(this));
-								});
+								$('.fb_text_frame .fb_like',item).attr('onclick','likeComment("'+response.id+'",$(this))');
+								$('.fb_text_frame .fb_report',item).attr('onclick','reportComment('+(modal_facebook_comment_list.length-1)+')');
 								$('#photoModal #facebook_comments').append(item);
 								$(modal_id+' #comment').val('');
+								$(modal_id+' [data-toggle="tooltip"]').tooltip();
 					  		}
 					  		else{
 					  			console.log(response);
