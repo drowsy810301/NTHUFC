@@ -153,6 +153,6 @@ EMAIL_PORT = 587
 
 SERVER_EMAIL = get_config('client', 'email_account')
 EMAIL_SUBJECT_PREFIX = '[NTHUFC]'
-ADMINS = ( ('Eelai Wind', 'tony333ts@gmail.com'), )
+ADMINS = ( ('Eelai Wind', 'tony333ts@gmail.com'), ('Drowsy', 'lbj39919538@gmail.com'))
 
 DOMAIN_NAME = 'http://dlr05.cc.nthu.edu.tw'

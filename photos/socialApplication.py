@@ -72,7 +72,6 @@ def getFacebookPostContent(photo, isValid=True, photo_info={}):
 		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
 
-@run_in_thread
 def uploadUsingThread(photo):
 
 	if photo.isReady:
