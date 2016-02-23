@@ -46,7 +46,7 @@ class Account(models.Model):
     photos_rank = models.FloatField(default=0)
     user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
     is_agree = models.BooleanField(default=False)
-
+    is_admin = models.BooleanField(default=False)
 
 
     def __unicode__(self):
