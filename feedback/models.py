@@ -8,6 +8,7 @@ class Feedback(models.Model):
 		('SUGGEUST','網站設計建議'),
 		('BUG','錯誤回報'),
 		('MARKER','發現清華秘境'),
+		('ELSE','其他'),
 	)
 
 	email = models.EmailField()

@@ -132,10 +132,10 @@ def ajax_get_photo_details(request):
 	else:
 		return redirect('index:index')
 
-def flickr_authorization_redirect(request, flickr_photo_id):
+def flickr_authorization_redirect(request, flickr_photo_id, facebook_post_id):
 	if (request.method == 'GET'):
 		if ( 'access_key' in request.session and 'access_secret' in request.session ):
-			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id })
+			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id, 'facebook_post_id':facebook_post_id, })
 		elif ( 'oauth_verifier' in request.GET and  'request_key' in request.session and  'request_secret' in request.session):
 			[access_key,access_secret] = getFlickrAccessToken(str(request.session['request_key']),str(request.session['request_secret']), str(request.GET['oauth_verifier']) )
 			del request.session['request_key']
@@ -143,14 +143,14 @@ def flickr_authorization_redirect(request, flickr_photo_id):
 			request.session['access_key'] = access_key
 			request.session['access_secret'] = access_secret
 
-			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id })
+			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id, 'facebook_post_id':facebook_post_id, })
 		else:
 			return render(request,'photos/flickr_authorization_redirect.html')
 
 	return redirect('photos:vote');
 
 def ajax_post_flickr_favorite(request):
-	if (request.method == 'POST' and 'flickr_photo_id' in request.POST ):
+	if (request.method == 'POST' and 'flickr_photo_id' in request.POST and 'facebook_post_id' in request.POST ):
 		method = request.POST.get('method', 'ADD')
 		if ( 'access_key' in request.session and 'access_secret' in request.session ):
 			try:
@@ -162,7 +162,7 @@ def ajax_post_flickr_favorite(request):
 				else:
 					return JsonResponse( { 'status':'error' , 'code': e.code , 'message':e.message } )
 		else:
-			[url,request_key,request_secret] = getFlickrAuthorizationUrl( request.POST['flickr_photo_id'] )
+			[url,request_key,request_secret] = getFlickrAuthorizationUrl( request.POST['flickr_photo_id'], request.POST['facebook_post_id'] )
 			request.session['request_key'] = request_key
 			request.session['request_secret'] = request_secret
 			return JsonResponse( { 'status': 'notLogin', 'auth_url': url} );

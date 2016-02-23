@@ -202,7 +202,7 @@ def forget_password_confirm(request, activation_key):
     user.save()
     # Let user login, so as to modify password
     auth_login(request, user)
-    print ('User %s is ready to reset his/her password' % user.username)
+    #print ('User %s is ready to reset his/her password' % user.username)
     return redirect(reverse('users:reset_password'))
 
 def logout(request):
