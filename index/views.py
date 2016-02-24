@@ -116,7 +116,7 @@ def map(request):
             for key in tagdic:
                 tags.append(key)
 
-    return render(request, "index/map.html",
+        return render(request, "index/map.html",
         {
             'photos': photos,
             'query': query,
@@ -125,4 +125,7 @@ def map(request):
             'markerdic': markerdic,
             'tag_list': tags,
         })
+    
+    else:
+        return redirect(reverse('index:index'))
 

@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^', include('index.urls', namespace='index')),
     url(r'^photos/', include('photos.urls', namespace='photos')),
     url(r'^users/', include('users.urls', namespace='users')),
-    url(r'^marker/', include('locationMarker.urls', namespace='locationMarker')),
+    #url(r'^marker/', include('locationMarker.urls', namespace='locationMarker')),
 )#+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 '''
 if settings.DEBUG == False:

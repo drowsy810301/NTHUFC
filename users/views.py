@@ -62,7 +62,8 @@ def send_forget_password_email(request, user):
     msg.attach_alternative(email_body, "text/html")
 
     #threading.Thread(target=msg.send, args=()).start()
-    SendMailThread(msg).start()
+    #SendMailThread(msg).start()
+    msg.send()	
 
 def get_attemps(request):
     remain_times = 0
@@ -202,7 +203,7 @@ def forget_password_confirm(request, activation_key):
     user.save()
     # Let user login, so as to modify password
     auth_login(request, user)
-    print ('User %s is ready to reset his/her password' % user.username)
+    #print ('User %s is ready to reset his/her password' % user.username)
     return redirect(reverse('users:reset_password'))
 
 def logout(request):
