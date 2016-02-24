@@ -153,22 +153,24 @@
 
 	</div>
 </div>
+
+
+{% load static %}
+<script src="{% static 'js/photo_detail_modal.js' %}" ></script>
+
 <script type="text/javascript">
 	var modal_facebook_post_id;
 	var modal_facebook_comment_list = [];
-
-	$(document).ready(function(){
-    	$('[data-toggle="tooltip"]').tooltip();
-	});
 
 	function loadModal(modal_id,dataObj){
 		if (modal_id[0] != '#')
 			modal_id = '#'+modal_id;
 		modal_facebook_post_id = dataObj.facebook_post_id;
-		modal_facebook_comment_list = []
+
+		modal_facebook_comment_list= []
 
 		$(modal_id).modal('toggle');
-		$(modal_id).on('shown.bs.modal', function (e) {
+		$(modal_id).one('shown.bs.modal', function (e) {
 		  	$(modal_id+' .modal-title').html(dataObj.title);
 			$(modal_id+' .modal-body #photo').attr('src',dataObj.photo_url);
 			$(modal_id+' .modal-body #photo_title').html(dataObj.title);
@@ -178,12 +180,21 @@
 			$(modal_id+' .modal-body #photo_votes').html(dataObj.votes);
 			//$(modal_id+' .modal-body #photo_flickr').attr('href',dataObj.flickr_url);
 			$(modal_id+' #comment').val('');
-			if (dataObj.hasLiked == 'liked'){
-				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').addClass('liked');
+
+			if ($('#'+dataObj.facebook_post_id+' .facebook_btn').hasClass('liked')){
+				$(modal_id+' .modal-body #photo_liked .facebook_btn').addClass('liked');
 			}
 			else{
-				$(modal_id+' .modal-body #photo_liked .fa-thumbs-o-up').removeClass('liked');
+				$(modal_id+' .modal-body #photo_liked .facebook_btn').removeClass('liked');
 			}
+
+			if ($('#'+dataObj.facebook_post_id+' .flickr_btn').hasClass('favorited')){
+				$(modal_id+' .modal-body #photo_flickr .flickr_btn').addClass('favorited');
+			}
+			else{
+				$(modal_id+' .modal-body #photo_flickr .flickr_btn').removeClass('favorited');
+			}
+
 			$(modal_id+' .modal-body #photo_liked').attr('onclick','postLike_btn("'+dataObj.facebook_post_id+'")');
 			$(modal_id+' .modal-body #photo_flickr').attr('onclick','postFavorite_btn("'+dataObj.flickr_photo_id+'","'+dataObj.facebook_post_id+'")');
 			$(modal_id+' .modal-body #photo_share').attr('onclick','sharePhoto('+dataObj.photo_id+')');
@@ -191,8 +202,14 @@
 			$(modal_id+' #btn_add_comment').attr('onclick','post_command("'+modal_id+'","'+dataObj.facebook_post_id+'")');
 			var photo_comments = $('#facebook_comments');
 			photo_comments.empty();
+
 			for (i in dataObj.comment_list){
 				var comment_id = dataObj.comment_list[i].comment_id;
+
+				if ( reported_comments_record.indexOf(comment_id) > -1 ){
+					continue
+				}
+
 				modal_facebook_comment_list.push({
 					facebook_comment_id:comment_id,
 					name: dataObj.comment_list[i].name,
@@ -235,10 +252,6 @@
 			success: function(response){
 				if ($('#'+facebook_post_id+' h2 font').html())
 					response.photo.votes = $('#'+facebook_post_id+' h2 font').html()
-				if ($('#'+facebook_post_id+' .fa-thumbs-up').hasClass('liked'))
-					response.photo.hasLiked = 'liked'
-				else
-					response.photo.hasLiked = ''
 				loadModal('#photoModal',response.photo)
 			},
 			error: function(response){
@@ -270,6 +283,7 @@
 			data:{
 				'csrfmiddlewaretoken': getCookie('csrftoken'),
 				'flickr_photo_id': flickr_photo_id,
+				'facebook_post_id': facebook_post_id,
 				'method':method,
 			},
 			success: function(response){
@@ -286,11 +300,29 @@
 						var v = $('.votes_'+facebook_post_id);
 						v.html(Number(v.html())+1);
 						$('#photo_votes').html(Number($('#photo_votes').html())+1);
+						if ( vote_record[facebook_post_id] ){
+							vote_record[facebook_post_id].vote = Number(v.html())
+							vote_record[facebook_post_id].flickr = true
+						}
+						else{
+							vote_record[facebook_post_id] = { 'vote': Number(v.html()), 'fb': false, 'flickr': true }
+						}
+						Cookies.set('vote_record',vote_record)
 					}
 					else if (method == 'DELETE'){
 						var v = $('.votes_'+facebook_post_id);
 						v.html(Number(v.html())-1);
 						$('#photo_votes').html(Number($('#photo_votes').html())-1);
+						if ( vote_record[facebook_post_id] ){
+							if ( vote_record[facebook_post_id].fb == false ){
+								delete vote_record[facebook_post_id]
+							}
+							else{
+								vote_record[facebook_post_id].vote = Number(v.html())
+								vote_record[facebook_post_id].flickr = false
+							}
+						}
+						Cookies.set('vote_record',vote_record)
 					}
 					$('#'+facebook_post_id+' .flickr_btn').toggleClass("favorited");
 					$('#photoModal #photo_flickr .flickr_btn').toggleClass("favorited");
@@ -339,6 +371,12 @@
 			$('.fb_avatar_frame img', comment_element).css({'filter':'grayscale(100%)','-webkit-filter':'grayscale(100%)'})
 			$('.fb_name', comment_element).css('color','gray')
 			$('.fb_message', comment_element).html('已經收到您的檢舉，管理員確認之後會刪除不適當的留言')
+
+			if ( reported_comments_record.indexOf() == -1 ){
+				reported_comments_record.push(modal_facebook_comment_list[comment_index].facebook_comment_id)
+				Cookies.set('reported_comments_record', reported_comments_record)
+			}
+
 			$.ajax({
 				url: "{% url 'photos:ajax_report_comment'%}",
 				method: 'POST',
@@ -358,8 +396,6 @@
 				},
 			})
 		}
-
-
 
 		if (hasLogin){
 			getUserID();

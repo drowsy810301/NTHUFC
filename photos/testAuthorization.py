@@ -10,12 +10,15 @@ a = flickr_api.auth.AuthHandler()
 url = a.get_authorization_url('delete')
 print url
 verifier_code = raw_input('verifier code = ')
-a.set_verifier(verifier_code)
-a.save('oauth_verifier.txt')
-flickr_api.set_auth_handler('oauth_verifier.txt')
+try:
+	a.set_verifier(verifier_code)
+	a.save('oauth_verifier.txt')
+	flickr_api.set_auth_handler('oauth_verifier.txt')
 
-user = flickr_api.test.login()
-print user
+	user = flickr_api.test.login()
+	print user
+except Exception as e:
+	print str(e)
 
 print 'Testing Facebook API...'
 page = fb_fanpage_graph.get_object(id='1528712347441804')

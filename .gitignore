@@ -24,4 +24,4 @@ allMarker.json
 *.log
 
 #static files
-static/
+/static/

@@ -1,17 +1,27 @@
 from django.contrib import admin
+import threading
+
 from photos.models import Photo, Tag, ReportedComment
 from photos.socialApplication import uploadPhoto
 # Register your models here.
 
 def make_uploaded(modeladmin, request, queryset):
-    for p in queryset:
-    	if not p.isReady:
-    		uploadPhoto(p)
+	class MyUploadPhotoThread(threading.Thread):
+		def __init__(self, queryset):
+			super( MyUploadPhotoThread, self).__init__()
+			self.queryset = queryset
+
+		def run(self):
+			for p in self.queryset:
+				uploadPhoto(p)
+
+	MyUploadPhotoThread(queryset).start()
+
 make_uploaded.short_description = "Uploads photos"
 
 def deletePhoto(modeladmin, request, queryset):
-    for p in queryset:
-    	p.delete();
+	for p in queryset:
+		p.delete();
 deletePhoto.short_description = "Delete photos (customed)"
 
 class PhotoAdmin(admin.ModelAdmin):
@@ -24,8 +34,8 @@ class TagAdmin(admin.ModelAdmin):
 
 
 def delete_comment(modeladmin, request, queryset):
-    for comment in queryset:
-    	comment.delete()
+	for comment in queryset:
+		comment.delete()
 delete_comment.short_description = "Delete from Facebook"
 
 class ReportedCommentAdmin(admin.ModelAdmin):

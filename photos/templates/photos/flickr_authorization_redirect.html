@@ -2,11 +2,11 @@
 
 {% block body_block %}
 
-{% if flickr_photo_id %}
+{% if flickr_photo_id and facebook_post_id %}
 <p> 登入Flickr成功 </p>
 <script type="text/javascript">
 	console.log({{ flickr_photo_id }})
-	opener.postFavorite_btn({{flickr_photo_id}})
+	opener.postFavorite_btn('{{flickr_photo_id}}', '{{facebook_post_id}}')
 	self.window.close()
 </script>
 {% else %}

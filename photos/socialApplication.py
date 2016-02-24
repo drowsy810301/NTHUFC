@@ -4,6 +4,8 @@ import facebook
 import json
 import time
 import threading
+import logging
+
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -11,6 +13,14 @@ from django.conf import settings
 
 from .authorization_token import fb_fanpage_graph, __flickr_api_key, __flickr_api_secret
 from .models import Tag, Photo
+
+logger = logging.getLogger('uploadPhotoLogger')
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler(settings.BASE_DIR+'/uploadPhoto.log')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 def run_in_thread(func):
 	'''
@@ -72,7 +82,6 @@ def getFacebookPostContent(photo, isValid=True, photo_info={}):
 		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
 
-@run_in_thread
 def uploadUsingThread(photo):
 
 	if photo.isReady:
@@ -135,6 +144,7 @@ def uploadUsingThread(photo):
 		except ObjectDoesNotExist:
 			Tag.objects.create(tag_name=tag_text)
 
+	logger.info('{}  {}'.format(photo.title,result))
 	return result
 
 def uploadToFacebook(photo):
@@ -307,7 +317,8 @@ def getCommentList(facebook_post_id):
 
 def getPhotoModalDetails(photo, report_comment_list):
 
-	comment_list = [ c for c in getCommentList(photo.facebook_post_id) if c['comment_id'] not in report_comment_list]
+	#comment_list = [ c for c in getCommentList(photo.facebook_post_id) if c['comment_id'] not in report_comment_list]
+	comment_list = getCommentList(photo.facebook_post_id)
 
 	obj = {
 		'photo_id': photo.id,
@@ -343,9 +354,9 @@ def getFlickrAccessToken(request_token_key, request_token_secret,oauth_verifier)
 	dd = a.todict()
 	return (dd['access_token_key'],dd['access_token_secret'])
 
-def getFlickrAuthorizationUrl(photo_id):
+def getFlickrAuthorizationUrl(flickr_photo_id,facebook_post_id):
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
-	a = flickr_api.auth.AuthHandler(callback=settings.DOMAIN_NAME+reverse('photos:flickr_authorization_redirect', args=(photo_id,)))
+	a = flickr_api.auth.AuthHandler(callback=settings.DOMAIN_NAME+reverse('photos:flickr_authorization_redirect', args=(flickr_photo_id,facebook_post_id, )))
 	#a = flickr_api.auth.AuthHandler()
 	dd = a.todict()
 	return (a.get_authorization_url('write'), dd['request_token_key'],dd['request_token_secret'])

@@ -24,7 +24,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from threading import Thread
+import threading
 
 from django.contrib.auth.models import update_last_login
 from django.contrib.auth.signals import user_logged_in
@@ -34,6 +34,14 @@ user_logged_in.disconnect(update_last_login)
 
 
 def send_forget_password_email(request, user):
+
+    class SendMailThread(threading.Thread):
+        def __init__(self, msg):
+            super(SendMailThread, self).__init__()
+            self.msg = msg
+        def run(self):
+            msg.send()
+
     username = user.username
     email = user.email
     salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
@@ -45,8 +53,7 @@ def send_forget_password_email(request, user):
     new_profile.save()
 
     # Send email with activation key
-    profile_link = request.META['HTTP_HOST'] + \
-        reverse('users:forget_password_confirm', kwargs={'activation_key': activation_key})
+    profile_link = request.META['HTTP_HOST'] + reverse('users:forget_password_confirm', kwargs={'activation_key': activation_key})
     email_subject = 'Password Reset'
     email_body = render_to_string('index/forget_password_email.html',
                     {'username': username, 'profile_link': profile_link,
@@ -54,10 +61,8 @@ def send_forget_password_email(request, user):
     msg = EmailMultiAlternatives(email_subject, email_body, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(email_body, "text/html")
 
-    try:
-        Thread(target=msg.send, args=()).start()
-    except:
-        print ("There is an error when sending email to %s's mailbox" % username)
+    #threading.Thread(target=msg.send, args=()).start()
+    SendMailThread(msg).start()
 
 def get_attemps(request):
     remain_times = 0
@@ -197,7 +202,7 @@ def forget_password_confirm(request, activation_key):
     user.save()
     # Let user login, so as to modify password
     auth_login(request, user)
-    print ('User %s is ready to reset his/her password' % user.username)
+    #print ('User %s is ready to reset his/her password' % user.username)
     return redirect(reverse('users:reset_password'))
 
 def logout(request):

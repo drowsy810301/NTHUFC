@@ -36,6 +36,8 @@ class Account(models.Model):
         (USER, 'User'),
     )
 
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     identity = models.CharField(max_length=2, choices=IDENTITY_CHOICES, default=None)
     major = models.CharField(max_length=20, default='', blank=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
@@ -46,7 +48,6 @@ class Account(models.Model):
     photos_rank = models.FloatField(default=0)
     user_level = models.CharField(max_length=9, choices=USER_LEVEL_CHOICE, default=USER)
     is_agree = models.BooleanField(default=False)
-
 
 
     def __unicode__(self):
