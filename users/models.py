@@ -48,7 +48,6 @@ class Account(models.Model):
     is_agree = models.BooleanField(default=False)
 
 
-
     def __unicode__(self):
         return self.username
 

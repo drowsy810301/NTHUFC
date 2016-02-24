@@ -8,20 +8,136 @@
     </li>
     <li>
       <a href="https://www.flickr.com/photos/138506275@N05/" class="flickr" target="_blank">
-        <i class="fa fa-flickr"></i>
+        <i class="fa fa-camera"></i>
         <span>Flickr</span>
       </a>
     </li>
-    <!--<li>
-      <a href="http://www.nthu.edu.tw/" class="graduation" target="_blank">
-        <i class="fa fa-graduation-cap"></i>
-        <span>NTHU</span>
+    <li>
+      <a class="feedback" style='cursor:pointer;' data-toggle="modal" data-target="#feedback_modal">
+        <i class="fa fa-envelope"></i>
+        <span>聯繫我們</span>
       </a>
-    </li>-->
+    </li>
     <li>
       <a href="{% url 'index:q_a' %}" class="info">
         <i class="fa fa-info"></i>
         <span>Q&A</span></a>
     </li>
-  </ul>
+    </ul>
 </aside>
+
+<!-- Modal -->
+<div id="feedback_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h2 class="modal-title">聯繫我們</h2>
+      </div>
+      <div class="modal-body">
+        <p>
+          <label for='id_feedback_email' >您的信箱 </label><span id='feedback_email_error'></span>
+          <input id='id_feedback_email' >
+        </p>
+        <br>
+        <p>
+          <label for='id_feedback_label' >問題類型 </label><span id='feedback_label_error'></span>
+          <select id='id_feedback_label' >
+            <option value="SUGGEUST">網站設計建議</option>
+            <option value="BUG">錯誤回報</option>
+            <option value="MARKER">發現清華秘境</option>
+            <option value="ELSE">其他</option>
+          </select>
+        </p>
+        <br>
+        <p>
+          <label for='id_feedback_message' >訊息 </label><span id='feedback_message_error'></span>
+          <textarea id='id_feedback_message' rows='10' max_length='512' ></textarea>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+        <button type="button" class="btn btn-primary" onclick='sendFeedback()' >寄信</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style type="text/css">
+  #feedback_modal label{
+    font-size: 20px;
+    margin-right: 20px;
+  }
+
+  #feedback_modal span{
+    color: red;
+    font-size: 20px;
+  }
+
+  #feedback_modal #id_feedback_email, #feedback_modal #id_feedback_message, #feedback_modal #id_feedback_label{
+    width: 100%;
+	padding: 5px;
+  }
+</style>
+
+<script type="text/javascript">
+  function sendFeedback(){
+
+    email = $('#id_feedback_email').val()
+    label = $('#id_feedback_label').val()
+    message = $('#id_feedback_message').val()
+
+    $.ajax({
+      url: "{% url 'feedback:ajax_send_feedback'%}",
+      method: 'POST',
+      data:{
+        'csrfmiddlewaretoken': getCookie('csrftoken'),
+        'email': email,
+        'label': label,
+        'message': message,
+      },
+      success: function(response){
+        console.log(response)
+        if (!response.error){
+          $('#feedback_modal').modal('hide')
+          $('#id_feedback_email').val('')
+          $('#id_feedback_label').val('SUGGEUST')
+          $('#id_feedback_message').val('')
+          $('#feedback_email_error').html('')
+          $('#feedback_label_error').html('')
+          $('#feedback_message_error').html('')
+          alert('非常感謝您的意見! 我們會盡快處理')
+        }
+        else{
+          if (response.error.email){
+            $('#feedback_email_error').html(response.error.email[0])
+          }
+          else{
+            $('#feedback_email_error').html('')
+          }
+
+          if (response.error.label){
+            $('#feedback_label_error').html(response.error.label[0])
+          }
+          else{
+            $('#feedback_label_error').html('')
+          }
+
+          if (response.error.message){
+            $('#feedback_message_error').html(response.error.message[0])
+          }
+          else{
+            $('#feedback_message_error').html('')
+          }
+
+        }
+      },
+      error: function(response){
+        console.log(response)
+      },
+    })
+  }
+</script>

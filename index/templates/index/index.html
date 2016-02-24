@@ -7,7 +7,6 @@
 {% endblock title_name %}
 {% block import_source %}
 <link rel="stylesheet" href={% static "css/index.css" %} media="screen">
-<script src="{% static 'js/fb_post_like.js' %}" ></script>
 {% endblock import_source %}
 {% block body_block %}
 
@@ -60,6 +59,7 @@
       <div id="{{photo.facebook_post_id}}">
         <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
         <a><span class="fa fa-thumbs-up hover-blue facebook_btn"></span></a>
+        <a><span class="fa fa-flickr hover-pink flickr_btn "></span></a>
       </div>
     {% endfor %}
   </div>
@@ -99,5 +99,5 @@ $(function(){
     });
 });
 </script>
-{% include "photos/modal.html" %}
+{% include "photos/photo_detail_modal.html" %}
 {% endblock body_block %}

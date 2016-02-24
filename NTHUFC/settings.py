@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'locationMarker',
     'axes',
     'djangobower',
+    'feedback',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -132,6 +133,7 @@ BOWER_INSTALLED_APPS = (
     'https://github.com/FortAwesome/Font-Awesome.git',
     'https://github.com/bootstrap-tagsinput/bootstrap-tagsinput.git',
     'https://github.com/twitter/typeahead.js.git',
+	'js-cookie',
 )
 
 STATICFILES_FINDERS = (
