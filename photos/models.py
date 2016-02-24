@@ -59,7 +59,7 @@ class Photo(models.Model):
     likes = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
     upload_time = models.DateTimeField(default=timezone.now, blank=False, null=False)
-    image = models.ImageField(upload_to=getFilePath, blank=True, null=True)
+    image = models.ImageField(upload_to=getFilePath)
     isReady = models.BooleanField(default=False)
     last_modified_time = models.DateTimeField(default=timezone.now)
     #score of the photo description
