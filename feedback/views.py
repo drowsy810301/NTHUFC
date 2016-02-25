@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
@@ -22,5 +22,10 @@ def ajax_send_feedback(request):
 			if Feedback.objects.filter(is_solved =False).count()>=5 :
 				SendMailThread().start()
 			return JsonResponse({'status':'success'})
+		
+		else:
+			return JsonResponse({'error':form.errors})
 
-	return JsonResponse({'error':form.errors})
+	else:
+		return redirect('index:index')
+
