@@ -1,0 +1,38 @@
+{% extends 'index/base.html' %}
+
+{% block body_block %}
+
+<style type="text/css">
+	#id_feedback_form label{
+		font-size: 20px;
+		vertical-align: top;
+	}
+
+	#id_feedback_form .errorlist{
+		color: red;
+	}
+</style>
+
+
+<div class='container'>
+	<form id = 'id_feedback_form' action="{% url 'feedback:test' %}" method='post'>
+		{% csrf_token %}
+		<h2>聯繫我們</h2>
+		<p class='error'> {{ form.form.non_field_errors}} </p>
+		<div>
+			<label for="{{ form.email.id_for_label }}">信箱:</label>{{ form.email }}
+			<p class='error'> {{ form.email.errors}} </p>
+    	</div>
+    	<hr>
+    	<div>
+    		<label for="{{ form.type.id_for_label }}">種類:</label>{{ form.type }}
+    		<p class='error'> {{ form.type.errors}} </p>
+    	</div>
+    	<div>
+    		<label for="{{ form.message.id_for_label }}">訊息:</label><br>{{ form.message }}
+    		<p class='error'> {{ form.message.errors}} </p>
+		</div>
+		<button>寄信</button>
+	</form>
+</div>
+{% endblock %}

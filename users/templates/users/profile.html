@@ -1,12 +1,83 @@
 <!DOCTYPE html>
 {% extends "index/base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title_name %}
   <title>Profile</title>
 {% endblock title_name %}
 {% block import_source %}
+<link rel="stylesheet" href={% static "css/profile.css" %} media="screen">
+<link rel="stylesheet" href={% static "css/participate.css" %} media="screen">
+<link rel="stylesheet" href={% static "css/gallery.css" %} media="screen">
+<script src={% static "js/profile.js" %}></script>
+<script src={% static "js/upload.js" %}></script>
+<script src={% static "js/jquery.popconfirm.js" %}></script>
+<script src={% static "js/gallery.js" %}></script>
+<script type="text/javascript">
+  init({{ photos.count }}, 'profile');
+  initGallery();
+</script>
 {% endblock import_source %}
 {% block body_block %}
-
+<div class="container">
+  <div class="page-header" style="display: inline;">
+    <h1 style="text-align:left;float:left;">{{ user.username }}</h1>
+    {% if photos.count < 5 %}
+    <input type="button" class="btn btn-success" value="上傳" onclick="checkImgNumber('upload');" id="upload-btn">
+    {% endif %}
+    <hr style="clear:both;"/>
+  </div>
+  <div class="row thumbnails" id="hover-cap-4col">
+    {% for photo in photos %}
+      <div class="col-xs-offset-1 col-sm-offset-0 col-xs-10 col-sm-6 {% if forloop.counter0 == 0 %} col-md-6 image_frame {% else %} col-md-3 image_frame small_frame {% endif %} ">
+      <a style='display:none;'><span class="fa fa-thumbs-up hover-blue"></span></a>
+        <div class="hovereffect black_border">
+            {% if photo.isReady %}
+            <img class='gallery' src="{{photo.flickr_photo_url}}" alt="{{ photo.title }}" onload="render_image($(this))">
+            {% else %}
+            <img class='gallery desaturate' src="{{photo.image.url}}" alt="{{ photo.title }}" onload="render_image($(this))">
+            {% endif %}
+                <div class="overlay">
+                    {% if photo.isReady %}
+                    <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.favorites|add:photo.likes}}</font>票</h2>
+                    {% else %}
+                    <h2>審核中...</h2>
+                    {% endif %}
+                    <p class="icon-links">
+                        <a href="#" class="popconfirm test-jquery-click" id="{{ photo.id }}">
+                          <span class="fa fa-times hover-red"></span>
+                        </a>
+                        {% if photo.isReady %}
+                        <a style="cursor:pointer;" onclick="getPhotoDetails('{{photo.facebook_post_id}}')">
+                            <span class="fa fa-info-circle hover-green"></span>
+                        </a>
+                        {% endif %}
+                    </p>
+                </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- used for record liked and votes-->
+  <div style='display:none;'>
+    {% for photo in photos %}
+      <div id="{{photo.facebook_post_id}}">
+        <h2><font class='votes_{{ photo.facebook_post_id}}' >{{photo.votes}}</font>票</h2>
+        <a><span class="fa fa-thumbs-up hover-blue facebook_btn"></span></a>
+        <a><span class="fa fa-flickr hover-pink flickr_btn "></span></a>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="well" style="display: none;">
+    <form enctype="multipart/form-data" method="post" action="" class="form-horizontal" role="form">
+      {% crispy formset formset.form.helper %}
+      <div id="submit-btn">
+        <input class="btn" type="submit" value="" id="profile_update" onclick="return checkImgNumber('submit');">
+      </div>
+    </form>
+  </div>
+</div>
+{% include "photos/photo_detail_modal.html" %}
+{% include "index/upload_modal.html" %}
 {% endblock body_block %}

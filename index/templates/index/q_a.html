@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% extends "index/base.html" %}
+{% load static %}
+
+{% block title_name %}
+<title>Q&A</title>
+{% endblock title_name %}
+{% block import_source %}
+<link rel="stylesheet" href={% static "css/q_a.css" %} media="screen">
+{% endblock import_source %}
+{% block body_block %}
+<div class = "container">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        Q: 攝影器材有無限制? 照片有沒有大小限制?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A: 攝影器材沒有限制，所以不論是手機、相機都可以喔。照片大小也沒有限制，但是大小建議在640x480以上，不然照片會糊掉喔~~~
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        Q: 如果不是校友或教職員生可以參賽嗎?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A: 很抱歉不行喔，本活動僅限本校校友、教師、職員及學生參加，並無對外開放喔。
+    </div>
+  </div>
+<div class="panel panel-default">
+	<div class="panel-heading" role="tab" id="headingThree">
+		<h4 class="panel-title">
+		Q: 網站有沒有限定瀏覽器?
+		</h4>
+	</div>
+	<div class="panel-body">
+	 A: 為了更好的網站使用體驗，我們推薦使用Chrome來瀏覽本網站。
+      </div>
+    </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        Q: 參賽的照片能不能更換?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A: 換照片的話可以在登入後使用刪除的方式來做，但是所有的投票數據都會歸零喔，所以請謹慎選擇您要參賽的照片，而且一位參賽者最多只能上傳5張照片。
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFour">
+      <h4 class="panel-title">
+          Q: 上傳照片的時候找不到拍攝地點的選項怎麼辦?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A:  WOW~~我想你一定是找到了傳說中的清華秘境，趕快寄信跟我們說吧，我們會幫您建立。信箱:<u>marker.report@gmail.com</u>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFive">
+      <h4 class="panel-title">
+          Q: 想上傳照片但是不知道作品說明要寫什麼怎麼辦?
+      </h4>
+    </div>
+      <div class="panel-body">
+        A: 真的沒有想法的話可以描述一下照片的內容和拍攝的原因，更歡迎大家分享這張照片背後的故事。<br>
+小秘訣: 作品說明越詳細的話，作品越容易被大家看到喔~~
+      </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingSix">
+      <h4 class="panel-title">
+          Q: 照片有沒有時間限制呢?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A: 我們鼓勵以近期的照片為主，不但符合學校的現況，也可以引起較多的共鳴。
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingSeven">
+      <h4 class="panel-title">
+          Q: 照片後來會拿去做什麼用途嗎?
+      </h4>
+    </div>
+      <div class="panel-body">
+        A: 我們會把適合的照片用在3D校園地圖導覽系統，並且在校慶的時候展示我們的成果。
+      </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingEight">
+      <h4 class="panel-title">
+          Q: 如果同時具有多重身分的話，要以哪個身分參賽呢?
+      </h4>
+    </div>
+    <div class="panel-body">
+      A: 請以最新的身分參賽，例如您原本是本校的學生，畢業後請以校友身分參賽，如果後來又回到學校就業或唸書，那就依您的最新身分來選擇是教師、職員還是學生囉~
+    </div>
+  </div>
+   <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingEight">
+        <h4 class="panel-title">
+            Q: 投票的方式是什麼? 怎麼計算票數呢?
+        </h4>
+      </div>
+      <div class="panel-body">
+        A: 投票的話有Facebook及Flickr帳號都可以投，
+		<br>(1)Facebook投票方式就是在圖片上按讚，按下讚我們就會把資訊送至FB，如果不確定有沒有投票成功的話，可以至<a href="https://www.facebook.com/%E6%94%9D%E5%BD%B1%E7%AB%B6%E8%B3%BD-1528712347441804/">FB專頁</a>查詢。
+		<br>(2)Flickr就是把圖片加入最愛
+		<br>按一次讚或加入一次最愛都算一票，我們會在3月14日擷取最後的投票數據當作網路票選數。
+		<br>請注意照片的票數並不會即時更新，伺服器每隔幾分鐘才會更新所有照片的票數。
+      </div>
+    </div>
+	<div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingEight">
+        <h4 class="panel-title">
+            Q: 上傳的照片要審查多久呢?
+        </h4>
+      </div>
+      <div class="panel-body">
+        	A: 我們會在一天之內完成照片審查，您的照片在完成審查之前不會出現在投票頁面中。
+      </div>
+    </div>
+
+</div>
+{% endblock body_block %}
