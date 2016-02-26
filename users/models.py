@@ -39,7 +39,6 @@ class Account(models.Model):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    
     identity = models.CharField(max_length=2, choices=IDENTITY_CHOICES, default=None)
     major = models.CharField(max_length=20, default='', blank=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
