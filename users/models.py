@@ -36,8 +36,10 @@ class Account(models.Model):
         (USER, 'User'),
     )
 
-    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    
     identity = models.CharField(max_length=2, choices=IDENTITY_CHOICES, default=None)
     major = models.CharField(max_length=20, default='', blank=True, null=True)
     email = models.EmailField(max_length=250, unique=True)
@@ -74,11 +76,12 @@ class Account(models.Model):
     def reset_password(self, raw_password, *args, **kwargs):
         self.password = make_password(raw_password) 
         super(Account, self).save(*args, **kwargs)
-
+	
     '''custom authentication resolve 'is_authenticated' problem'''
     def is_authenticated(self):
         return True
-
+	
+    '''	
     @property
     def is_superuser(self):
         return self.is_admin
@@ -102,7 +105,7 @@ class Account(models.Model):
     def has_judge_auth(self):
         has_auth = ((self.user_level == self.ADMIN) or (self.user_level == self.JUDGE))
         return has_auth
-
+	'''
 class UserProfile(models.Model):
     account = models.OneToOneField(Account)
     activation_key = models.CharField(max_length=40, blank=True)
