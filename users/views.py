@@ -62,7 +62,8 @@ def send_forget_password_email(request, user):
     msg.attach_alternative(email_body, "text/html")
 
     #threading.Thread(target=msg.send, args=()).start()
-    SendMailThread(msg).start()
+    #SendMailThread(msg).start()
+    msg.send()	
 
 def get_attemps(request):
     remain_times = 0

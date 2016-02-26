@@ -82,12 +82,13 @@
 	    </div>
 	</div>
 	<div id="side">
+	<span class = 'btn btn-default btn-xs' style="color: red; cursor:pointer; border-radius:4px;" onclick="cancel_filter();">取消過濾</span>
+	<span class="text-warning">點下標籤2字可以隱藏或展開tag選單喔</span>
 		<div class="row">
 	    	<span>標籤：</span>
 	    	{% for key, value in tagdic.items %}
 	    		<span class = 'btn btn-default btn-xs' id="{{key}}" style="cursor:pointer; border-radius:4px;" onclick="filter_photos_ForTag('{{key}}');">&nbsp;{{ key }} <span class="badge">{{value}}張</span></span>
 	    	{% endfor %}
-	    	<span class = 'btn btn-default btn-xs' style="color: red; cursor:pointer; border-radius:4px;" onclick="cancel_filter();">取消過濾</span>
 	    </div>
 	    <div id="google_map"></div>
 	</div>
@@ -127,6 +128,11 @@
 			photo_list.push({'title': '{{photo.title}}', 'content': '{{photo.content}}', 'tags': '{{photo.tags}}', 'fbID': '{{photo.facebook_post_id}}', 'location': '{{photo.location_marker.title}}', 'isReady': '{{photo.isReady}}'})
 		{% endfor %}
 
+	</script>
+	<script>
+	$("span:contains('標籤：')").click(function(){	
+		$(this).siblings().toggle();
+	});
 	</script>
 
 	{% include "photos/photo_detail_modal.html" %}
