@@ -14,13 +14,20 @@ from django.conf import settings
 from .authorization_token import fb_fanpage_graph, __flickr_api_key, __flickr_api_secret
 from .models import Tag, Photo
 
-logger = logging.getLogger('uploadPhotoLogger')
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(settings.BASE_DIR+'/uploadPhoto.log')
+upload_logger = logging.getLogger('uploadPhotoLogger')
+upload_logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler(settings.BASE_DIR+'/uploadPhoto.log', encoding='utf-8')
 fh.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
-logger.addHandler(fh)
+upload_logger.addHandler(fh)
+
+delete_logger = logging.getLogger('deletePhotoLogger')
+delete_logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler(settings.BASE_DIR+'/deletePhoto.log', encoding='utf-8')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+delete_logger.addHandler(fh)
 
 def run_in_thread(func):
 	'''
@@ -65,7 +72,7 @@ def uploadPhoto(photo):
 
 
 
-def getFacebookPostContent(photo, isValid=True, photo_info={}):
+def getFacebookPostContent(photo, isValid=True):
 	'''
 		產生Facebook的貼文內容，會在標籤地點跟拍攝者前面加上'#'形成facebook的tag
 	'''
@@ -77,10 +84,10 @@ def getFacebookPostContent(photo, isValid=True, photo_info={}):
 		return u'{} {}\n===================\n地點: #{}\n拍攝者: #{}\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
 			photo.title, label, photo.location_marker.title, photo.owner.nickname, photo.content, photo.flickr_photo_id)
 	else:
-		label = ' '+photo_info['tags'];
+		label = ' '+photo.tags;
 		label = label.replace(' ',' #');
 		return u'[無效]{} {} \n===================\n地點: #{}\n[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n{}\n \n活動網站：http://photos.cc.nthu.edu.tw/\nFlickr照片連結: https://www.flickr.com/photos/138506275@N05/{}'.format(
-			photo_info['title'], label, photo_info['location_marker_title'], photo_info['content'], photo_info['flickr_photo_id'])
+			photo.title, label, photo.location_marker.title, photo.content, photo.flickr_photo_id)
 
 def uploadUsingThread(photo):
 
@@ -113,7 +120,7 @@ def uploadUsingThread(photo):
 				photo_info = flickr_response.getInfo()
 				photo.flickr_photo_url = 'https://farm{}.staticflickr.com/{}/{}_{}_b.jpg'.format(photo_info['farm'], photo_info['server'], flickr_response.id, photo_info['secret'])
 				photo.save()
-				result['flickr_response'] = flickr_response
+				result['flickr_response'] = flickr_response.id
 				break;
 			except Exception as e:
 				print str(e)
@@ -133,6 +140,8 @@ def uploadUsingThread(photo):
 	photo.image.delete()
 	photo.save()
 
+	photo.owner.updatePhotosRank()
+
 	for tag_text in photo.tags.split(' '):
 		if tag_text == '':
 			continue
@@ -144,7 +153,7 @@ def uploadUsingThread(photo):
 		except ObjectDoesNotExist:
 			Tag.objects.create(tag_name=tag_text)
 
-	logger.info('{}  {}'.format(photo.title,result))
+	upload_logger.info(u'photo_id={}  {}'.format(photo.id,result))
 	return result
 
 def uploadToFacebook(photo):
@@ -255,20 +264,28 @@ def getHasLiked(photo_facebook_id, user_access_token):
 		print str(e)
 		return False
 
-@run_in_thread
-def deletePhoto(photo_info):
+#@run_in_thread
+def deletePhoto(photo):
+	photo.delete()
+	if not photo.isReady:
+		photo.image.delete()
+		return
+
+	user = photo.owner
+	user.updatePhotosRank()
+
 	result = {}
-	facebook_response = fb_fanpage_graph.put_object(photo_info['facebook_post_id'], '', message= getFacebookPostContent(None, isValid=False, photo_info=photo_info))
+	facebook_response = fb_fanpage_graph.put_object(photo.facebook_post_id, '', message= getFacebookPostContent(photo, isValid=False))
 	flickr_api.set_keys(api_key = __flickr_api_key, api_secret = __flickr_api_secret)
 	flickr_api.set_auth_handler('oauth_verifier.txt')
-	uni_title = u'[無效] '+ photo_info['title']
+	uni_title = u'[無效] '+ photo.title
 	uni_title = uni_title.encode('utf-8')
-	uni_description = u'[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n'+ photo_info['content']
+	uni_description = u'[這張照片已經被投稿者移除，它的票數不會列入計分]\n\n'+ photo.content
 	uni_description = uni_description.encode('utf-8')
 
 	flick_response = flickr_api.objects.Photo(
-		id=photo_info['flickr_photo_id'],
-		editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo_info['flickr_photo_id']
+		id=photo.flickr_photo_id,
+		editurl='https://www.flickr.com/photos/upload/edit/?ids=' + photo.flickr_photo_id
 	).setMeta(
 		title=uni_title,
 		description=uni_description,
@@ -276,8 +293,22 @@ def deletePhoto(photo_info):
 
 	result['facebook_response'] = facebook_response
 	result['flick_response'] = flick_response
-	#photo.image.delete()
+
+	for tag_text in photo.tags.split(' '):
+		if tag_text == '':
+			continue
+		try:
+			tag = Tag.objects.get(tag_name = tag_text)
+			tag.tag_count -= 1
+			if tag.tag_count > 0:
+				tag.save()
+			else:
+				tag.delete()
+		except ObjectDoesNotExist:
+			pass
+
 	print 'deletePhoto result:'+str(result)
+	delete_logger.info(u' {} {}'.format(photo.title,result))
 	return result
 
 def getVotes(photo):

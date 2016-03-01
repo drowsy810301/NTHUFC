@@ -52,7 +52,6 @@ def participate(request, id_account=None):
                     #uploadPhoto(photo)
 
                 user = authenticate(email=email, password = password)
-                user.updatePhotosRank()
                 if user:
                     auth_login(request, user)
                 else:
@@ -125,7 +124,7 @@ def map(request):
             'markerdic': markerdic,
             'tag_list': tags,
         })
-    
+
     else:
         return redirect(reverse('index:index'))
 

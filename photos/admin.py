@@ -2,7 +2,7 @@ from django.contrib import admin
 import threading
 
 from photos.models import Photo, Tag, ReportedComment
-from photos.socialApplication import uploadPhoto
+from photos.socialApplication import uploadPhoto, deletePhoto
 # Register your models here.
 
 def make_uploaded(modeladmin, request, queryset):
@@ -19,15 +19,15 @@ def make_uploaded(modeladmin, request, queryset):
 
 make_uploaded.short_description = "Uploads photos"
 
-def deletePhoto(modeladmin, request, queryset):
+def myDeletePhoto(modeladmin, request, queryset):
 	for p in queryset:
-		p.delete();
-deletePhoto.short_description = "Delete photos (customed)"
+		deletePhoto(p)
+myDeletePhoto.short_description = "Delete photos (customed)"
 
 class PhotoAdmin(admin.ModelAdmin):
 	list_display = ('id','title','content','tags','admin_thumbnail','isReady');
 	ordering = ['isReady']
-	actions = [make_uploaded,deletePhoto]
+	actions = [myDeletePhoto]
 
 class TagAdmin(admin.ModelAdmin):
 	list_display = ('tag_name','tag_count');

@@ -57,7 +57,7 @@ class Account(models.Model):
     def updatePhotosRank(self):
         count = 0
         rank_sum = 0
-        for photo in self.photos.all():
+        for photo in self.photos.filter(isReady=True):
             rank_sum += photo.rank
             count += 1
         if count > 0:
@@ -71,16 +71,16 @@ class Account(models.Model):
         if self.password:
             self.password = make_password(self.password)
         super(Account, self).save(*args, **kwargs)
-    
+
     def reset_password(self, raw_password, *args, **kwargs):
-        self.password = make_password(raw_password) 
+        self.password = make_password(raw_password)
         super(Account, self).save(*args, **kwargs)
-	
+
     '''custom authentication resolve 'is_authenticated' problem'''
     def is_authenticated(self):
         return True
-	
-    '''	
+
+    '''
     @property
     def is_superuser(self):
         return self.is_admin

@@ -11,11 +11,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from users.forms import LoginForm, ForgetPasswordForm, ResetPasswordForm
 from django.core.urlresolvers import reverse
 from photos.models import Photo,Tag
+from photos.socialApplication import deletePhoto
 from users.models import Account, UserProfile
 from index.forms import AccountCreationFrom, PhotoCreationForm
 from django.forms.models import inlineformset_factory
 from locationMarker.models import Marker
-from photos.socialApplication import deletePhoto
 from axes.utils import reset
 from axes.decorators import watch_login, get_ip, FAILURE_LIMIT, get_user_attempts
 from axes.models import AccessAttempt
@@ -63,7 +63,7 @@ def send_forget_password_email(request, user):
 
     #threading.Thread(target=msg.send, args=()).start()
     #SendMailThread(msg).start()
-    msg.send()	
+    msg.send()
 
 def get_attemps(request):
     remain_times = 0
@@ -109,8 +109,6 @@ def users(request):
                 if not photo.isReady:
                     photo.rank = len(photo.content) + len(photo.tags.split(' '))*5;
                     photo.save()
-                    #uploadPhoto(photo)
-            account.updatePhotosRank()
             return redirect(reverse('users:profile'))
         else:
             formset = PhotoInlineFormSet(instance=account, prefix="nested")
@@ -217,17 +215,7 @@ def delete_photo(request, delete_id):
     if delete_id != '':
         try:
             photo = Photo.objects.get(id=long(delete_id))
-            user = photo.owner
-            photo_info['facebook_post_id'] = photo.facebook_post_id
-            photo_info['title'] = photo.title
-            photo_info['location_marker_title'] = photo.location_marker.title
-            photo_info['content'] = photo.content
-            photo_info['flickr_photo_id'] = photo.flickr_photo_id
-            photo_info['tags'] = photo.tags
-            photo.delete()
-            deletePhoto(photo_info)
-
-            user.updatePhotosRank()
+            deletePhoto(photo)
             print('Photo id %ld deletes successfully!' % long(delete_id))
         except Photo.DoesNotExist:
             print('Photo id %ld does not exist!' % long(delete_id))

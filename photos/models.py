@@ -76,23 +76,6 @@ class Photo(models.Model):
     admin_thumbnail.short_description = '相片預覽'
     admin_thumbnail.allow_tags = True
 
-    def delete(self, *args, **kwargs):
-
-        if self.isReady:
-            for tag_text in self.tags.split(' '):
-                if tag_text == '':
-                    continue
-                try:
-                    tag = Tag.objects.get(tag_name = tag_text)
-                    tag.tag_count -= 1
-                    tag.save()
-                except ObjectDoesNotExist:
-                    pass
-        else:
-            self.image.delete()
-
-        super(Photo,self).delete(*args, **kwargs)
-
     def save(self, *args, **kwargs):
         try:
             self.clean()
