@@ -92,7 +92,7 @@ def privacypolicy(request):
 def map(request):
     if request.method =="GET":
         query = request.GET.get('search', '')
-        photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query)
+        photos = Photo.objects.filter(isReady=True, tags__contains=query) | Photo.objects.filter(isReady=True, title__contains=query) | Photo.objects.filter(isReady=True, content__contains=query) | Photo.objects.filter(isReady=True, owner__nickname=query)
         photos = photos.order_by('rank').reverse()
         tags = []
         markers = []

@@ -21,6 +21,9 @@ from users.models import Account
 from flickr_api.flickrerrors import FlickrAPIError
 
 def ajax_post_comment(request):
+	if request.method == 'GET':
+		return redirect('index:index')
+
 	access_token = request.POST.get('access_token','')
 	photo_facebook_id = request.POST.get('photo_facebook_id','')
 	comment_text = request.POST.get('comment_text','')
@@ -31,6 +34,8 @@ def ajax_post_comment(request):
 		return JsonResponse({'photo_facebook_id':photo_facebook_id, 'comment_list': postComment(access_token,photo_facebook_id,comment_text)})
 
 def ajax_post_like(request):
+	if request.method == 'GET':
+		return redirect('index:index')
 
 	user_access_token = request.POST.get('access_token','')
 	#按 photo_facebook_id 的讚
@@ -71,6 +76,8 @@ def vote(request, page=1):
 				raise Exception
 		except:
 			page = 1
+	else:
+		return redirect('photos:vote')
 
 	if ( request.method == 'GET' and 'photo_id' in request.GET ):
 		try:
@@ -119,6 +126,8 @@ def ajax_get_votes(request):
 		facebook_post_id = request.POST['facebook_post_id']
 		photo = Photo.objects.get(facebook_post_id=facebook_post_id)
 		return JsonResponse({'votes': getVotes(photo)})
+	else:
+		return redirect('index:index')
 
 def ajax_get_photo_details(request):
 	if request.method == 'POST' and 'facebook_post_id' in request.POST:
@@ -145,11 +154,14 @@ def flickr_authorization_redirect(request, flickr_photo_id, facebook_post_id):
 
 			return render(request,'photos/flickr_authorization_redirect.html', { 'flickr_photo_id':flickr_photo_id, 'facebook_post_id':facebook_post_id, })
 		else:
-			return render(request,'photos/flickr_authorization_redirect.html')
-
-	return redirect('photos:vote');
+			return redirect('index:index')
+	else:
+		return redirect('photos:vote');
 
 def ajax_post_flickr_favorite(request):
+	if request.method == 'GET':
+		return redirect('index:index')
+
 	if (request.method == 'POST' and 'flickr_photo_id' in request.POST and 'facebook_post_id' in request.POST ):
 		method = request.POST.get('method', 'ADD')
 		if ( 'access_key' in request.session and 'access_secret' in request.session ):
@@ -177,6 +189,8 @@ def ajax_report_comment(request):
 			html_str = render_to_string('photos/report_comment_email_template.html', { 'comment': comment, 'domain_name': settings.DOMAIN_NAME } )
 			mail_admins('Facebook reported commands', plain_text , html_message=html_str)
 
+	if request.method == 'GET':
+		return redirect('index:index')
 
 	if ( request.method == 'POST' and 'facebook_post_id' in request.POST and 'facebook_comment_id' in request.POST and 'user_id' in request.POST and 'name' in request.POST and 'message' in request.POST):
 		'''
