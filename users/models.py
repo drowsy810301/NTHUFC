@@ -13,7 +13,7 @@ def get_default_active_time():
 
 
 class Account(models.Model):
-    username = models.CharField(max_length=20, default='', unique=True)
+    username = models.CharField(max_length=20, default='')
     nickname = models.CharField(max_length=20, default='')
 
     TEACHER = 'TE'
