@@ -15,7 +15,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 @ensure_csrf_cookie
 def index(request):
     top_five = Photo.objects.filter(isReady=True).order_by('-votes')[:5]
-    return render(request, "index/index.html", {'photos': top_five})
+    count = {}
+    count['people'] = Account.objects.count()
+    count['photo'] = Photo.objects.count()
+    return render(request, "index/index.html", {'photos': top_five, 'count': count})
 
 def participate(request, id_account=None):
 

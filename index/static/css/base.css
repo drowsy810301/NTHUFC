@@ -91,6 +91,14 @@ ul {
 #sticky-social a[class*="info"]:hover,
 #sticky-social a[class*="info"] span { background: #eb4924; }
 
+#sticky-social div[class*="people_count"],
+#sticky-social div[class*="people_count"]:hover,
+#sticky-social div[class*="people_count"] span { background: #525357; }
+
+#sticky-social div[class*="photo_count"],
+#sticky-social div[class*="photo_count"]:hover,
+#sticky-social div[class*="photo_count"] span { background: #252527; }
+
 .messages .alert {
   text-align: center;
   font-size: 24px;
@@ -101,4 +109,25 @@ ul {
   left: 50%;
   transform: translate(-50%);
   z-index: 9999;
+}
+
+#sticky-social div {
+  background: #333;
+  color: #fff;
+  display: block;
+  height: 50px;
+  font: 20px "Open Sans", sans-serif;
+  line-height: 50px;
+  position: relative;
+  text-align: center;
+}
+#sticky-social div span {
+  line-height: 50px;
+  left: -140px;
+  position: absolute;
+  text-align:center;
+  width:140px;
+}
+#sticky-social div:hover span {
+  left: 100%;
 }
