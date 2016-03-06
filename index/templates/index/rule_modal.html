@@ -71,7 +71,12 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#id_main-is_agree').attr('disabled', '');
+    if(document.getElementById('id_main-is_agree').checked) {
+        $('#id_main-is_agree').removeAttr('disabled');
+    }
+    else {
+        $('#id_main-is_agree').attr('disabled', '');
+    };
 });
 function agree(){
     $('#rule').modal('hide');

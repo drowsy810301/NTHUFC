@@ -73,7 +73,7 @@ class AccountCreationFrom(forms.ModelForm):
         is_agree = self.cleaned_data.get("is_agree")
 
         if not is_agree:
-            raise forms.ValidationError(u'尚未同意參賽規則',code='not_agree')
+            raise forms.ValidationError(u'尚未同意參賽規則', code='not_agree')
 
         return is_agree
 
