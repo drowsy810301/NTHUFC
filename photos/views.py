@@ -231,3 +231,8 @@ def ajax_report_comment(request):
 	else:
 		return JsonResponse({'status': 'error'})
 
+def judge(request):
+
+    accounts = Account.objects.annotate(num_photos=Count('photos')) \
+                            .filter(num_photos__gt=0).order_by('id')
+    return render(request,'photos/judge.html', {'accounts': accounts})
