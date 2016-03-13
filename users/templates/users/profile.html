@@ -23,7 +23,7 @@
 <div class="container">
   <div class="page-header" style="display: inline;">
     <h1 style="text-align:left;float:left;">{{ user.username }}</h1>
-    {% if photos.count < 5 %}
+    {% if photos.count < 5 and false %}
     <input type="button" class="btn btn-success" value="上傳" onclick="checkImgNumber('upload');" id="upload-btn">
     {% endif %}
     <hr style="clear:both;"/>
