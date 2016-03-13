@@ -231,8 +231,40 @@ def ajax_report_comment(request):
 	else:
 		return JsonResponse({'status': 'error'})
 
-def judge(request):
+def judge(request, page=1):
 
     accounts = Account.objects.annotate(num_photos=Count('photos')) \
                             .filter(num_photos__gt=0).order_by('id')
-    return render(request,'photos/judge.html', {'accounts': accounts})
+
+    all_photos = []
+    for i, account in enumerate(accounts):
+        for j, photo in enumerate(account.photos.all()):
+            all_photos.append({
+                'title': photo.title,
+                'location_marker': photo.location_marker,
+                'flickr_photo_url': photo.flickr_photo_url,
+                'user_id': i+1,
+                'photo_id': j+1,
+                'votes':photo.votes
+            })
+
+    all_page = int( math.ceil(1.0*len(all_photos)/75) )
+    if request.method == 'GET':
+        try:
+            page = int(page)
+            if page <= 0 or page > all_page:
+                raise Exception
+        except:
+            page = 1
+    else:
+        return redirect('photos:judge')
+
+    photos = list(all_photos)
+    photos = photos[75*(page-1):75*page]
+
+
+    return render(request,'photos/judge.html',
+        {'photos': photos,
+        'all_page': all_page,
+        'page': page
+    })

@@ -27,28 +27,62 @@
 {% endblock import_source %}
 
 {% block body_block %}
+
 <div class='container' style="width:50%;">
   <br>
-  {% for account in accounts %}
-    {% for photo in account.photos.all %}
-    <div>
-      <div class="well title">
-        <h3 style="display: inline-block;">
-          {{forloop.parentloop.counter}}-{{ forloop.counter }}&nbsp&nbsp&nbsp
-        </h3>
-        <h3 style="display: inline-block;">
-          {{ photo.title }}&nbsp&nbsp&nbsp
-        </h3>
-        <h3 style="float:right;">
-          <i class="fa fa-map-marker"></i>
-          {{ photo.location_marker }}
-        </h3>
-      </div>
-      <br style="clear:both;">
-      <center><img class="imgBorder" src="{{ photo.flickr_photo_url }}" alt=""></center>
-      <hr style="border:2px solid #dddddd;">
+  {% for photo in photos %}
+  <div>
+    <div class="well title">
+      <h3 style="display: inline-block;">
+        {{ photo.user_id }}-{{ photo.photo_id }}&nbsp&nbsp&nbsp
+      </h3>
+      <h3 style="display: inline-block;">
+        {{ photo.title }}&nbsp&nbsp&nbsp
+      </h3>
+      <h3 style="float:right;">
+        <i class="fa fa-map-marker"></i>
+        {{ photo.location_marker }}
+      </h3>
     </div>
-    {% endfor %}
+    <br style="clear:both;">
+    <center><img class="imgBorder" src="{{ photo.flickr_photo_url }}" alt=""></center>
+    <hr style="border:2px solid #dddddd;">
+  </div>
   {% endfor %}
+
+  {% if all_page > 0 %}
+    <div class="text-center">
+      <ul class="pagination">
+        <li>
+          {% if page|add:-1 < 1 %}
+          <a href="{% url 'photos:judge_with_page' 1%}" aria-label="Previous">
+          {% else %}
+          <a href="{% url 'photos:judge_with_page' page|add:"-1"%}" aria-label="Previous">
+          {% endif%}
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% load get_range %}
+        {% for i in all_page|get_range %}
+        {% if i|add:1 == page %}
+          <li class="active"><a href="#">{{i|add:1}}</a></li>
+        {% else %}
+          <li><a href="{% url 'photos:judge_with_page' i|add:1%}">{{i|add:1}}</a></li>
+        {% endif %}
+        {% endfor %}
+        <li>
+          {% if page|add:1 > all_page %}
+          <a href="{% url 'photos:judge_with_page' all_page %}" aria-label="Next">
+          {% else %}
+          <a href="{% url 'photos:judge_with_page' page|add:1 %}" aria-label="Next">
+          {% endif%}
+
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+
 </dive>
 {% endblock body_block %}
