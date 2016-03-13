@@ -11,7 +11,8 @@ urlpatterns = patterns('',
     url(r'^flickr_authorization_redirect/(?P<flickr_photo_id>[0-9]+)/(?P<facebook_post_id>[_0-9]+)/', views.flickr_authorization_redirect, name='flickr_authorization_redirect'),
     url(r'^ajax_post_flickr_favorite/', views.ajax_post_flickr_favorite, name='ajax_post_flickr_favorite'),
     url(r'^ajax_report_comment/', views.ajax_report_comment, name='ajax_report_comment'),
+    url(r'^sorted_judge/$', views.sorted_judge, name='judge'),
+    url(r'^sorted_judge/(?P<page>[0-9]+)$', views.sorted_judge, name='sorted_judge_with_page'),
     url(r'^judge/$', views.judge, name='judge'),
     url(r'^judge/(?P<page>[0-9]+)$', views.judge, name='judge_with_page'),
 )
-
