@@ -26,7 +26,7 @@ myDeletePhoto.short_description = "Delete photos (customed)"
 
 class PhotoAdmin(admin.ModelAdmin):
 	#list_display = ('id','title','content','tags','admin_thumbnail','isReady');
-	list_display = ('id','title','owner','location_marker','admin_thumbnail','votes','favorites','likes','rank','isReady');
+	list_display = ('id','title','owner','location_marker','flickr_photo_id','votes','favorites','likes','rank','isReady');
 	ordering = ['isReady']
 	actions = [myDeletePhoto]
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+  <head>
+	{% block title_name %}
+	{% endblock title_name %}
+    <link rel="stylesheet" href={% static "css/bootstrap.min.css" %} media="screen">
+    <link rel="stylesheet" href={% static "css/base.css" %} media="screen">
+    <link rel="stylesheet" href={% static "font-awesome/css/font-awesome.min.css" %} media="screen">
+    <script src={% static "jquery/dist/jquery.min.js" %}></script>
+    <script src={% static "js/bootstrap.min.js" %}></script>
+    <script src={% static "js-cookie/src/js.cookie.js" %}></script>
+
+    {% block import_source %}
+    {% endblock import_source %}
+  </head>
+  <body style='margin-top:50px;'>
+    {% include "index/navbar_judge.html" %}
+
+    <!-- wrap all page elements to div -->
+    <div class="wrap-body container-fluid">
+      {% block body_block %}
+      {% endblock body_block %}
+    </div>
+    <br><br>
+    {% include "index/footer.html" %}
+  </body>
+</html>
