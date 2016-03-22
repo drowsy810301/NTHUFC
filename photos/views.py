@@ -300,3 +300,22 @@ def sorted_judge(request, page=1):
         'page': page,
         'sorted':True
     })
+
+def select(request):
+
+    all_photos = []
+    all_photos = get_all_photo()
+
+    ''' selecte photo '''
+    select_list = ['1-1','76-4','101-3']
+
+    select_photos = []
+    for photo in all_photos:
+        label = str(photo['user_id']) + '-' + str(photo['photo_id'])
+        if label in select_list:
+            select_photos.append(photo)
+
+    return render(request,'photos/select.html',
+        {'photos': select_photos,
+        'select': True
+    })

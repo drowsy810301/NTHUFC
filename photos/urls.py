@@ -15,4 +15,5 @@ urlpatterns = patterns('',
     url(r'^sorted_judge/(?P<page>[0-9]+)$', views.sorted_judge, name='sorted_judge_with_page'),
     url(r'^judge/$', views.judge, name='judge'),
     url(r'^judge/(?P<page>[0-9]+)$', views.judge, name='judge_with_page'),
+    url(r'^select/$', views.select, name='select'),
 )
