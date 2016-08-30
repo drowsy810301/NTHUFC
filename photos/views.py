@@ -32,7 +32,10 @@ def get_all_photo():
                 'flickr_photo_url': photo.flickr_photo_url,
                 'user_id': i+1,
                 'photo_id': j+1,
-                'votes':photo.votes
+                'votes':photo.votes,
+				'content':photo.content,
+				'owner':photo.owner,
+                'nickname':photo.owner.nickname
             })
     return all_photos
 
@@ -307,7 +310,7 @@ def select(request):
     all_photos = get_all_photo()
 
     ''' selecte photo '''
-    select_list = ['1-1','76-4','101-3']
+    select_list = ['17-5','26-5','37-5','26-1','42-5','48-1','93-5','82-1','4-5','19-1','29-4','47-3','53-1','61-2','65-2','82-4','86-1','91-3','92-4','97-1','103-1','110-4','114-2']
 
     select_photos = []
     for photo in all_photos:
@@ -318,4 +321,98 @@ def select(request):
     return render(request,'photos/select.html',
         {'photos': select_photos,
         'select': True
+    })
+
+def select1(request):
+	#select best award
+    all_photos = []
+    all_photos = get_all_photo()
+
+    ''' selecte photo '''
+    select_list = ['37-5','23-4','17-5']
+
+    select_photos = []
+    for photo in all_photos:
+        label = str(photo['user_id']) + '-' + str(photo['photo_id'])
+        if label in select_list:
+            select_photos.append(photo)
+
+    return render(request,'photos/select.html',
+        {'photos': select_photos,
+        'select': True,
+		'award':'最佳攝影獎'
+    })
+
+
+def select2(request):
+	#select secret award
+    all_photos = []
+    all_photos = get_all_photo()
+
+    ''' selecte photo '''
+    select_list = ['48-1','27-1','26-1','29-4','3-1']
+
+    select_photos = []
+    for photo in all_photos:
+        label = str(photo['user_id']) + '-' + str(photo['photo_id'])
+        if label in select_list:
+            select_photos.append(photo)
+
+    return render(request,'photos/select.html',
+        {'photos': select_photos,
+        'select': True,
+		'award':'最佳秘境獎'
+    })
+
+
+def select3(request):
+ 	#select Creative award
+    all_photos = []
+    all_photos = get_all_photo()
+
+    ''' selecte photo '''
+    select_list = ['47-3','4-5','12-3','19-1','32-5','44-5','53-1','65-2','75-4','83-5','92-4','114-2','118-1','124-1','127-1']
+
+    select_photos = []
+    for photo in all_photos:
+        label = str(photo['user_id']) + '-' + str(photo['photo_id'])
+        if label in select_list:
+            select_photos.append(photo)
+
+    return render(request,'photos/select.html',
+        {'photos': select_photos,
+        'select': True,
+		'award':'最佳創意獎'
+    })
+
+def select4(request):
+ 	#select Creative award
+    all_photos = []
+    all_photos = get_all_photo()
+
+    ''' selecte photo '''
+    select_list = ['90-2','37-3','4-5','23-5','76-5','47-1','48-1','21-1','13-2','61-3','85-1','50-2','18-2','83-5','86-2','54-4','51-1','75-3','34-2','26-4']
+
+    select_photos = []
+    for photo in all_photos:
+        label = str(photo['user_id']) + '-' + str(photo['photo_id'])
+        if label in select_list:
+            select_photos.append(photo)
+
+    return render(request,'photos/select.html',
+        {'photos': select_photos,
+        'select': True,
+        'award':'最佳人氣獎'
+    })
+
+
+def printall(request):
+
+    all_photos = []
+    all_photos = get_all_photo()
+
+    photos = list(all_photos)
+
+    return render(request,'photos/printall.html',
+        {'photos': photos,
     })

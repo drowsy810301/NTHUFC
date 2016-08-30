@@ -1,0 +1,17 @@
+{% load static %}
+{% block title_name %}
+  <title>評審</title>
+{% endblock title_name %}
+
+{% block import_source %}
+{% endblock import_source %}
+
+{% block body_block %}
+  {% for photo in photos %}
+    {{ photo.user_id }}-{{ photo.photo_id }};;;{{photo.owner}};;;{{photo.nickname}};;;{{ photo.title }};;;{{photo.content}};;;{{ photo.location_marker }};;;{{ photo.flickr_photo_url}}
+	<br>
+  {% endfor %}
+
+{% endblock body_block %}
+
+

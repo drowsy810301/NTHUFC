@@ -1,7 +1,7 @@
 {% extends "index/base_judge.html" %}
 {% load static %}
 {% block title_name %}
-  <title>評審</title>
+  <title>{{award}}評審</title>
 {% endblock title_name %}
 
 {% block import_source %}
@@ -27,7 +27,10 @@
 {% endblock import_source %}
 
 {% block body_block %}
-<!--<div class='container' style="width:50%;">-->
+<div class="page-header text-center">
+	<h1>{{award}}</h1>
+</div>
+
 <div class='container'>
   <br>
   {% for photo in photos %}
@@ -35,7 +38,7 @@
     <div class="well title">
       &nbsp&nbsp&nbsp
       <h3 style="display: inline-block;">
-        {{ photo.user_id }}-{{ photo.photo_id }}&nbsp&nbsp&nbsp
+        {{ photo.nickname}}&nbsp&nbsp&nbsp
       </h3>
       <h3 style="display: inline-block;">
         {{ photo.title }}&nbsp&nbsp&nbsp

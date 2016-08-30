@@ -14,7 +14,7 @@
   <h1 style="margin-top:10px;">國立清華大學60週年校慶攝影比賽</h1>
   <hr style="width: 70%">
   <div class="well" style="padding: 10px; width: 70%">
-    <marquee direction="right" scrollamount="5" id="scrolling-text"></marquee>
+    <marquee onMouseEnter="this.stop()" direction="right" scrollamount="5" id="scrolling-text"></marquee>
   </div>
   <!--<a href="{% url 'index:participate' %}" class="btn btn-primary">我要參加</a>-->
   <br>
@@ -97,6 +97,7 @@ $(function(){
     }).blur(function() {
        $("#myCarousel").carousel('cycle');
     });
+	$('marquee').mouseenter();
 });
 </script>
 {% include "photos/photo_detail_modal.html" %}
